@@ -6,6 +6,7 @@ import smithy4s.http4s.SimpleProtocolBuilder
 import smithy4s.http4s.SimpleRestJsonBuilder
 import hello._
 import com.comcast.ip4s._
+import org.http4s.server.middleware.Logger
 
 object HelloServer extends IOApp.Simple:
   val impl = new WeatherService[IO]:
@@ -19,7 +20,13 @@ object HelloServer extends IOApp.Simple:
       .flatMap { routes =>
         EmberServerBuilder
           .default[IO]
-          .withHttpApp(routes.orNotFound)
+          .withHttpApp(
+            Logger.httpApp(
+              logHeaders = true,
+              logBody = true,
+              logAction = Some(IO.println(_: String))
+            )(routes.orNotFound)
+          )
           .withHost(host"localhost")
           .withPort(port"4000")
           .build
