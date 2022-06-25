@@ -16,7 +16,6 @@ object HelloClient extends IOApp.Simple:
           client,
           uri"http://localhost:4000"
         )
-
       }
       .use(_.getWeather("New York"))
       .flatMap(IO.println(_))

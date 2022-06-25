@@ -11,7 +11,8 @@ import org.http4s.server.middleware.Logger
 object HelloServer extends IOApp.Simple:
   val impl = new WeatherService[IO]:
     def getWeather(city: String): IO[GetWeatherOutput] =
-      IO.pure(GetWeatherOutput("good weather in " + city))
+      IO.println(city) *>
+        IO.pure(GetWeatherOutput("good weather in " + city))
 
   val run: IO[Unit] =
     SimpleRestJsonBuilder(WeatherService)
