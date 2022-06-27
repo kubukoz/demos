@@ -7,14 +7,17 @@ import smithy4s.http4s.SimpleRestJsonBuilder
 import hello._
 import com.comcast.ip4s._
 import org.http4s.server.middleware.Logger
+import cats.effect.ResourceApp
+import cats.effect.kernel.Resource
+import cats.implicits._
 
-object HelloServer extends IOApp.Simple:
+object HelloServer extends ResourceApp.Forever:
   val impl = new WeatherService[IO]:
     def getWeather(city: String): IO[GetWeatherOutput] =
       IO.println(city) *>
         IO.pure(GetWeatherOutput("good weather in " + city))
 
-  val run: IO[Unit] =
+  def run(args: List[String]): Resource[cats.effect.IO, Unit] =
     SimpleRestJsonBuilder(WeatherService)
       .routes(impl)
       .resource
@@ -32,4 +35,4 @@ object HelloServer extends IOApp.Simple:
           .withPort(port"4000")
           .build
       }
-      .useForever
+      .void
