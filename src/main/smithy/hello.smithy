@@ -1,5 +1,4 @@
 namespace hello
-
 use smithy4s.api#simpleRestJson
 
 @simpleRestJson

@@ -29,7 +29,10 @@ object HelloServer extends ResourceApp.Forever:
               logHeaders = true,
               logBody = true,
               logAction = Some(IO.println(_: String))
-            )(routes.orNotFound)
+            )(
+              (routes <+> smithy4s.http4s.swagger
+                .docs[IO](WeatherService)).orNotFound
+            )
           )
           .withHost(host"localhost")
           .withPort(port"4000")
