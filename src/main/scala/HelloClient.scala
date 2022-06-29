@@ -6,7 +6,7 @@ import org.http4s.ember.client.EmberClientBuilder
 import org.http4s.implicits._
 import smithy4s.http4s.SimpleRestJsonBuilder
 
-object HelloClient extends IOApp.Simple:
+object HelloClient extends IOApp.Simple {
   def run: IO[Unit] =
     EmberClientBuilder
       .default[IO]
@@ -19,3 +19,4 @@ object HelloClient extends IOApp.Simple:
       }
       .use(_.getWeather("Warsaw"))
       .flatMap(IO.println(_))
+}
