@@ -2,3 +2,5 @@
 .scala-build/
 **/target
 .bsp/
+
+node_modules/
