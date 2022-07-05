@@ -1,2 +1,8 @@
 **/target
 .smithy.lsp.log
+.direnv/
+.scala-build/
+**/target
+.bsp/
+
+node_modules/
