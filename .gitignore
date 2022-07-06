@@ -1,3 +1,5 @@
+**/target
+.smithy.lsp.log
 .direnv/
 .scala-build/
 **/target
