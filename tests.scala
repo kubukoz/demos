@@ -45,4 +45,26 @@ object ApplicativeEitherTests extends FunSuite with Discipline {
         .applicative[Int, Int, Int]
     )
   }
+  locally {
+    implicit def eitherApplicativeKeepRightError[E]: Applicative[Either[E, *]] =
+      new Applicative[Either[E, *]] {
+
+        def ap[A, B](ff: Either[E, A => B])(fa: Either[E, A]): Either[E, B] =
+          (ff, fa) match {
+            case (Left(_), Left(e2))  => Left(e2)
+            case (Left(e), _)         => Left(e)
+            case (_, Left(e))         => Left(e)
+            case (Right(f), Right(a)) => Right(f(a))
+          }
+
+        def pure[A](x: A): Either[E, A] = Right(x)
+
+      }
+
+    checkAll(
+      "ApplicativeTrzeci[Either[Int, *]]",
+      ApplicativeTests[Either[Int, *]](eitherApplicativeKeepRightError[Int])
+        .applicative[Int, Int, Int]
+    )
+  }
 }
