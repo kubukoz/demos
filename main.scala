@@ -4,7 +4,7 @@ import smithy4s.schema.Schema
 import smithy4s.http.PayloadError
 import smithy4s.http4s.SimpleRestJsonBuilder
 
-object main {
+object codecs {
 
   def makeDecoder[A: Schema]: String => Either[PayloadError, A] = {
     val codecApi = SimpleRestJsonBuilder.codecs
