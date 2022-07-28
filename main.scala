@@ -22,3 +22,19 @@ object codecs {
     codecApi.writeToArray(codec, _)
   }
 }
+
+object usage {
+
+  // generated code will look something like this
+  case class Foo(s: String)
+
+  object Foo {
+    implicit val schema: Schema[Foo] = ???
+  }
+
+  val fooEncoder = codecs.makeEncoder[Foo]
+
+  def myBusinessLogic(foo: Foo): Unit = {
+    println(fooEncoder.apply(foo))
+  }
+}
