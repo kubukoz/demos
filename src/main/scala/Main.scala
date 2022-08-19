@@ -86,9 +86,11 @@ case class MethodInfo(
   attributes: List[AttributeInfo],
 )
 
-object Main extends IOApp {
+object ClassFileCodecs {
 
-  def masked[A](range: Codec[Int], valuesWithMasks: Map[A, Int]): Codec[Set[A]] =
+  import scodec.codecs._
+
+  private def masked[A](range: Codec[Int], valuesWithMasks: Map[A, Int]): Codec[Set[A]] =
     range
       .imap { v =>
         valuesWithMasks.collect {
@@ -98,162 +100,164 @@ object Main extends IOApp {
         flags.map(flag => valuesWithMasks(flag)).foldLeft(0)(_ | _)
       }
 
-  val c = {
+  private val u1 = byte
+  private val u1Int = uint(8)
+  private val u2 = uint(16)
+  private val u4 = ulong(32)
 
-    import scodec.codecs._
+  private val constantPoolIndex = u2.as[ConstantIndex]
 
-    val u1 = byte
-    val u1Int = uint(8)
-    val u2 = uint(16)
-    val u4 = ulong(32)
+  private val fieldRefCommon =
+    ("class index" | constantPoolIndex) ::
+      ("name and type index" | constantPoolIndex)
 
-    val constantPoolIndex = u2.as[ConstantIndex]
+  val methodRef: Codec[Constant.MethodRef] = fieldRefCommon.as[Constant.MethodRef]
+  val fieldRef: Codec[Constant.FieldRef] = fieldRefCommon.as[Constant.FieldRef]
+  val interfaceMethodRef: Codec[Constant.InterfaceMethodRef] = fieldRefCommon
+    .as[Constant.InterfaceMethodRef]
 
-    val fieldRefCommon =
-      ("class index" | constantPoolIndex) ::
-        ("name and type index" | constantPoolIndex)
+  val nameAndType: Codec[Constant.NameAndType] =
+    (("name index" | constantPoolIndex) :: ("descriptor index" | constantPoolIndex))
+      .as[Constant.NameAndType]
 
-    val methodRef = fieldRefCommon.as[Constant.MethodRef]
-    val fieldRef = fieldRefCommon.as[Constant.FieldRef]
-    val interfaceMethodRef = fieldRefCommon.as[Constant.InterfaceMethodRef]
+  val classConstant: Codec[Constant.Class] = ("name index" | constantPoolIndex).as[Constant.Class]
 
-    val nameAndType =
-      (("name index" | constantPoolIndex) :: ("descriptor index" | constantPoolIndex))
-        .as[Constant.NameAndType]
+  val utf8Constant: Codec[Constant.Utf8] = vectorOfN("length" | u2, u1)
+    .xmap(bytes => new String(bytes.toArray), _.getBytes(StandardCharsets.UTF_8).toVector)
+    .as[Constant.Utf8]
 
-    val classConstant = ("name index" | constantPoolIndex).as[Constant.Class]
+  val stringConstant: Codec[Constant.StringRef] = ("string index" | constantPoolIndex)
+    .as[Constant.StringRef]
 
-    val utf8Constant = vectorOfN("length" | u2, u1)
-      .xmap(bytes => new String(bytes.toArray), _.getBytes(StandardCharsets.UTF_8).toVector)
-      .as[Constant.Utf8]
+  private val numeric = "bytes" | bytes(4)
+  private val bigNumeric = ("high bytes" | bytes(4)) :: ("low bytes" | bytes(4))
 
-    val stringConstant = ("string index" | constantPoolIndex).as[Constant.StringRef]
+  val intConstant: Codec[Constant.IntConstant] = numeric.as[Constant.IntConstant]
+  val floatConstant: Codec[Constant.FloatConstant] = numeric.as[Constant.FloatConstant]
+  val longConstant: Codec[Constant.LongConstant] = bigNumeric.as[Constant.LongConstant]
+  val doubleConstant: Codec[Constant.DoubleConstant] = bigNumeric.as[Constant.DoubleConstant]
 
-    val numeric = "bytes" | bytes(4)
-    val bigNumeric = ("high bytes" | bytes(4)) :: ("low bytes" | bytes(4))
+  val methodType: Codec[Constant.MethodType] = ("descriptor index" | constantPoolIndex)
+    .as[Constant.MethodType]
 
-    val intConstant = numeric.as[Constant.IntConstant]
-    val floatConstant = numeric.as[Constant.FloatConstant]
-    val longConstant = bigNumeric.as[Constant.LongConstant]
-    val doubleConstant = bigNumeric.as[Constant.DoubleConstant]
+  val methodHandle: Codec[Constant.MethodHandle] =
+    (("reference kind" | mappedEnum(
+      u1Int,
+      MethodReferenceKind.values.map(k => k -> k.ordinal).toMap,
+    )) ::
+      ("reference index" | constantPoolIndex))
+      .as[Constant.MethodHandle]
 
-    val methodType = ("descriptor index" | constantPoolIndex).as[Constant.MethodType]
-    val methodHandle =
-      (("reference kind" | mappedEnum(
-        u1Int,
-        MethodReferenceKind.values.map(k => k -> k.ordinal).toMap,
-      )) ::
-        ("reference index" | constantPoolIndex))
-        .as[Constant.MethodHandle]
+  val invokeDynamic: Codec[Constant.InvokeDynamic] =
+    (("bootstrap method attr index" | u2) ::
+      ("name and type index" | constantPoolIndex))
+      .as[Constant.InvokeDynamic]
 
-    val invokeDynamic =
-      (("bootstrap method attr index" | u2) ::
-        ("name and type index" | constantPoolIndex))
-        .as[Constant.InvokeDynamic]
+  val constantEntry: Codec[Constant] =
+    "constant pool entry" |
+      discriminated[Constant]
+        .by(u1)
+        .typecase(7, classConstant)
+        .typecase(9, fieldRef)
+        .typecase(10, methodRef)
+        .typecase(11, interfaceMethodRef)
+        .typecase(8, stringConstant)
+        .typecase(3, intConstant)
+        .typecase(4, floatConstant)
+        // .typecase(5, longConstant)
+        // .typecase(6, doubleConstant)
+        .typecase(12, nameAndType)
+        .typecase(1, utf8Constant)
+        .typecase(15, methodHandle)
+        .typecase(16, methodType)
+        .typecase(18, invokeDynamic)
 
-    val constantEntry =
-      "constant pool entry" |
-        discriminated[Constant]
-          .by(u1)
-          .typecase(7, classConstant)
-          .typecase(9, fieldRef)
-          .typecase(10, methodRef)
-          .typecase(11, interfaceMethodRef)
-          .typecase(8, stringConstant)
-          .typecase(3, intConstant)
-          .typecase(4, floatConstant)
-          // .typecase(5, longConstant)
-          // .typecase(6, doubleConstant)
-          .typecase(12, nameAndType)
-          .typecase(1, utf8Constant)
-          .typecase(15, methodHandle)
-          .typecase(16, methodType)
-          .typecase(18, invokeDynamic)
+  val classAccessFlags: Codec[Set[ClassAccessFlag]] = {
+    import ClassAccessFlag._
+    "access flags" | masked(
+      u2,
+      Map(
+        Public -> 0x0001,
+        Final -> 0x0010,
+        Super -> 0x0020,
+        Interface -> 0x0200,
+        Abstract -> 0x0400,
+        Synthetic -> 0x1000,
+        Annotation -> 0x2000,
+        Enum -> 0x4000,
+      ),
+    )
+  }
 
-    val classAccessFlags = {
-      import ClassAccessFlag._
-      "access flags" | masked(
-        u2,
-        Map(
-          Public -> 0x0001,
-          Final -> 0x0010,
-          Super -> 0x0020,
-          Interface -> 0x0200,
-          Abstract -> 0x0400,
-          Synthetic -> 0x1000,
-          Annotation -> 0x2000,
-          Enum -> 0x4000,
-        ),
-      )
-    }
+  val fieldAccessFlags: Codec[Set[FieldAccessFlag]] = {
+    import FieldAccessFlag._
+    "access flags" | masked(
+      u2,
+      Map(
+        Public -> 0x0001,
+        Private -> 0x0002,
+        Protected -> 0x0004,
+        Static -> 0x0008,
+        Final -> 0x0010,
+        Volatile -> 0x0040,
+        Transient -> 0x0080,
+        Synthetic -> 0x1000,
+        Enum -> 0x4000,
+      ),
+    )
+  }
 
-    val fieldAccessFlags = {
-      import FieldAccessFlag._
-      "access flags" | masked(
-        u2,
-        Map(
-          Public -> 0x0001,
-          Private -> 0x0002,
-          Protected -> 0x0004,
-          Static -> 0x0008,
-          Final -> 0x0010,
-          Volatile -> 0x0040,
-          Transient -> 0x0080,
-          Synthetic -> 0x1000,
-          Enum -> 0x4000,
-        ),
-      )
-    }
+  val methodAccessFlags: Codec[Set[MethodAccessFlag]] = {
+    import MethodAccessFlag._
+    "access flags" | masked(
+      u2,
+      Map(
+        Public -> 0x0001,
+        Private -> 0x0002,
+        Protected -> 0x0004,
+        Static -> 0x0008,
+        Final -> 0x0010,
+        Synchronized -> 0x0020,
+        Bridge -> 0x0040,
+        Varargs -> 0x0080,
+        Native -> 0x0100,
+        Abstract -> 0x0400,
+        Strict -> 0x0800,
+        Synthetic -> 0x1000,
+      ),
+    )
+  }
 
-    val methodAccessFlags = {
-      import MethodAccessFlag._
-      "access flags" | masked(
-        u2,
-        Map(
-          Public -> 0x0001,
-          Private -> 0x0002,
-          Protected -> 0x0004,
-          Static -> 0x0008,
-          Final -> 0x0010,
-          Synchronized -> 0x0020,
-          Bridge -> 0x0040,
-          Varargs -> 0x0080,
-          Native -> 0x0100,
-          Abstract -> 0x0400,
-          Strict -> 0x0800,
-          Synthetic -> 0x1000,
-        ),
-      )
-    }
+  val attribute: Codec[AttributeInfo] =
+    "attribute" | (
+      ("name index" | constantPoolIndex) ::
+        variableSizeBytesLong(
+          "attribute length" | u4,
+          "info" | vector(u1),
+        ).imap(ByteVector(_))(_.toArray.toVector)
+    ).as[AttributeInfo]
 
-    val attribute =
-      "attribute" | (
-        ("name index" | constantPoolIndex) ::
-          variableSizeBytesLong(
-            "attribute length" | u4,
-            "info" | vector(u1),
-          ).imap(ByteVector(_))(_.toArray.toVector)
-      ).as[AttributeInfo]
+  val attributes: Codec[List[AttributeInfo]] =
+    "attributes" | listOfN("attributes count" | u2, attribute)
 
-    val attributes = "attributes" | listOfN("attributes count" | u2, attribute)
-
-    val fieldInfo =
-      "field info" |
-        (
-          "access flags" | fieldAccessFlags ::
-            ("name index" | constantPoolIndex) ::
-            ("descriptor index" | constantPoolIndex) ::
-            attributes
-        ).as[FieldInfo]
-
-    val methodInfo =
-      "method info" | (
-        ("access flags" | methodAccessFlags) ::
+  val fieldInfo: Codec[FieldInfo] =
+    "field info" |
+      (
+        "access flags" | fieldAccessFlags ::
           ("name index" | constantPoolIndex) ::
           ("descriptor index" | constantPoolIndex) ::
           attributes
-      ).as[MethodInfo]
+      ).as[FieldInfo]
 
+  val methodInfo =
+    "method info" | (
+      ("access flags" | methodAccessFlags) ::
+        ("name index" | constantPoolIndex) ::
+        ("descriptor index" | constantPoolIndex) ::
+        attributes
+    ).as[MethodInfo]
+
+  val classFile: Codec[ClassFile] =
     (
       ("magic number " | constant(hex"CAFEBABE")) ::
         ("minor version" | u2) ::
@@ -279,7 +283,10 @@ object Main extends IOApp {
         ) ::
         attributes
     ).dropUnits.as[ClassFile]
-  }
+
+}
+
+object Main extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] = Files[IO]
     .readAll(Path(args(0)))
@@ -288,7 +295,9 @@ object Main extends IOApp {
     .map { bytes =>
       val bits = ByteVector(bytes).bits
 
-      c.decode(bits)
+      ClassFileCodecs
+        .classFile
+        .decode(bits)
         .map(_.value)
     }
     .map(_.map(pprint(_)))
