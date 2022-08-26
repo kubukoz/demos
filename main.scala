@@ -3,27 +3,6 @@
 import util.chaining._
 import com.kubukoz.DebugUtils
 
-object main {
-
-  trait Lens[S, A] {
-    def update(s: S, a: A): S
-  }
-
-  case class User(name: String, age: Int)
-
-  object User {
-    val name: Lens[User, String] = ???
-    val age: Lens[User, Int] = ???
-  }
-
-  val u = User("hello", 400)
-
-  u
-    .pipe(User.name(_) = "foo")
-    .pipe(User.age(_) = 42)
-
-}
-
 object main2 {
 
   trait Setter[S, A]
