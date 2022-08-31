@@ -1,25 +1,10 @@
+$version: "2"
+
 namespace hello
-use smithy4s.api#simpleRestJson
 
-@simpleRestJson
-service WeatherService {
-  operations: [GetWeather]
+@mixin
+structure HasContext {
+  context: String = "default"
 }
 
-@http(method: "GET", uri: "/weather/{city}")
-@readonly
-operation GetWeather {
-  input: GetWeatherInput,
-  output: GetWeatherOutput
-}
-
-structure GetWeatherInput {
-  @required
-  @httpLabel
-  city: String
-}
-
-structure GetWeatherOutput {
-  @required
-  weather: String
-}
+structure Input with [HasContext] {}
