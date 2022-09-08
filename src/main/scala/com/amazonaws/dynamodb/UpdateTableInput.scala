@@ -1,0 +1,30 @@
+package com.amazonaws.dynamodb
+
+import smithy4s.Schema
+import smithy4s.Hints
+import smithy4s.ShapeId
+import smithy4s.schema.Schema.struct
+import smithy4s.ShapeTag
+
+case class UpdateTableInput(tableName: TableName, attributeDefinitions: Option[List[AttributeDefinition]] = None, billingMode: Option[BillingMode] = None, provisionedThroughput: Option[ProvisionedThroughput] = None, globalSecondaryIndexUpdates: Option[List[GlobalSecondaryIndexUpdate]] = None, streamSpecification: Option[StreamSpecification] = None, sSESpecification: Option[SSESpecification] = None, replicaUpdates: Option[List[ReplicationGroupUpdate]] = None, tableClass: Option[TableClass] = None)
+object UpdateTableInput extends ShapeTag.Companion[UpdateTableInput] {
+  val id: ShapeId = ShapeId("com.amazonaws.dynamodb", "UpdateTableInput")
+
+  val hints : Hints = Hints(
+    smithy.api.Documentation("<p>Represents the input of an <code>UpdateTable</code> operation.</p>"),
+  )
+
+  implicit val schema: Schema[UpdateTableInput] = struct(
+    TableName.schema.required[UpdateTableInput]("TableName", _.tableName).addHints(smithy.api.Documentation("<p>The name of the table to be updated.</p>"), smithy.api.Required()),
+    AttributeDefinitions.underlyingSchema.optional[UpdateTableInput]("AttributeDefinitions", _.attributeDefinitions).addHints(smithy.api.Documentation("<p>An array of attributes that describe the key schema for the table and indexes. If you\n            are adding a new global secondary index to the table, <code>AttributeDefinitions</code>\n            must include the key element(s) of the new index.</p>")),
+    BillingMode.schema.optional[UpdateTableInput]("BillingMode", _.billingMode).addHints(smithy.api.Documentation("<p>Controls how you are charged for read and write throughput and how you manage\n            capacity. When switching from pay-per-request to provisioned capacity, initial\n            provisioned capacity values must be set. The initial provisioned capacity values are\n            estimated based on the consumed read and write capacity of your table and global\n            secondary indexes over the past 30 minutes.</p>\n        <ul>\n            <li>\n                <p>\n                    <code>PROVISIONED</code> - We recommend using <code>PROVISIONED</code> for\n                    predictable workloads. <code>PROVISIONED</code> sets the billing mode to <a href=\"https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.ProvisionedThroughput.Manual\">Provisioned Mode</a>.</p>\n            </li>\n            <li>\n                <p>\n                    <code>PAY_PER_REQUEST</code> - We recommend using <code>PAY_PER_REQUEST</code>\n                    for unpredictable workloads. <code>PAY_PER_REQUEST</code> sets the billing mode\n                    to <a href=\"https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html#HowItWorks.OnDemand\">On-Demand Mode</a>. </p>\n            </li>\n         </ul>")),
+    ProvisionedThroughput.schema.optional[UpdateTableInput]("ProvisionedThroughput", _.provisionedThroughput).addHints(smithy.api.Documentation("<p>The new provisioned throughput settings for the specified table or index.</p>")),
+    GlobalSecondaryIndexUpdateList.underlyingSchema.optional[UpdateTableInput]("GlobalSecondaryIndexUpdates", _.globalSecondaryIndexUpdates).addHints(smithy.api.Documentation("<p>An array of one or more global secondary indexes for the table. For each index in the\n            array, you can request one action:</p>\n        <ul>\n            <li>\n                <p>\n                    <code>Create</code> - add a new global secondary index to the table.</p>\n            </li>\n            <li>\n                <p>\n                    <code>Update</code> - modify the provisioned throughput settings of an existing\n                    global secondary index.</p>\n            </li>\n            <li>\n                <p>\n                    <code>Delete</code> - remove a global secondary index from the table.</p>\n            </li>\n         </ul>\n        <p>You can create or delete only one global secondary index per <code>UpdateTable</code>\n            operation.</p>\n        <p>For more information, see <a href=\"https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.OnlineOps.html\">Managing Global\n                Secondary Indexes</a> in the <i>Amazon DynamoDB Developer\n                Guide</i>. </p>")),
+    StreamSpecification.schema.optional[UpdateTableInput]("StreamSpecification", _.streamSpecification).addHints(smithy.api.Documentation("<p>Represents the DynamoDB Streams configuration for the table.</p>\n        <note>\n            <p>You receive a <code>ResourceInUseException</code> if you try to enable a stream on\n                a table that already has a stream, or if you try to disable a stream on a table that\n                doesn\'t have a stream.</p>\n        </note>")),
+    SSESpecification.schema.optional[UpdateTableInput]("SSESpecification", _.sSESpecification).addHints(smithy.api.Documentation("<p>The new server-side encryption settings for the specified table.</p>")),
+    ReplicationGroupUpdateList.underlyingSchema.optional[UpdateTableInput]("ReplicaUpdates", _.replicaUpdates).addHints(smithy.api.Documentation("<p>A list of replica update actions (create, delete, or update) for the table.</p>\n        <note>\n            <p>This property only applies to <a href=\"https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables.V2.html\">Version\n                    2019.11.21</a> of global tables.</p>\n        </note>")),
+    TableClass.schema.optional[UpdateTableInput]("TableClass", _.tableClass).addHints(smithy.api.Documentation("<p>The table class of the table to be updated. Valid values are <code>STANDARD</code> and\n                <code>STANDARD_INFREQUENT_ACCESS</code>.</p>")),
+  ){
+    UpdateTableInput.apply
+  }.withId(id).addHints(hints)
+}

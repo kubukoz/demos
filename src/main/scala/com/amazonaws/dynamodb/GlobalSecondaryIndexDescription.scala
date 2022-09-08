@@ -1,0 +1,32 @@
+package com.amazonaws.dynamodb
+
+import smithy4s.Schema
+import smithy4s.Hints
+import smithy4s.schema.Schema.string
+import smithy4s.ShapeId
+import smithy4s.schema.Schema.struct
+import smithy4s.ShapeTag
+import smithy4s.schema.Schema.long
+
+case class GlobalSecondaryIndexDescription(indexSizeBytes: Long = 0, itemCount: Long = 0, indexName: Option[IndexName] = None, keySchema: Option[List[KeySchemaElement]] = None, projection: Option[Projection] = None, indexStatus: Option[IndexStatus] = None, backfilling: Option[Backfilling] = None, provisionedThroughput: Option[ProvisionedThroughputDescription] = None, indexArn: Option[String] = None)
+object GlobalSecondaryIndexDescription extends ShapeTag.Companion[GlobalSecondaryIndexDescription] {
+  val id: ShapeId = ShapeId("com.amazonaws.dynamodb", "GlobalSecondaryIndexDescription")
+
+  val hints : Hints = Hints(
+    smithy.api.Documentation("<p>Represents the properties of a global secondary index.</p>"),
+  )
+
+  implicit val schema: Schema[GlobalSecondaryIndexDescription] = struct(
+    long.required[GlobalSecondaryIndexDescription]("IndexSizeBytes", _.indexSizeBytes).addHints(smithy.api.Documentation("<p>The total size of the specified index, in bytes. DynamoDB updates this value\n            approximately every six hours. Recent changes might not be reflected in this\n            value.</p>"), smithy.api.Default(smithy4s.Document.fromDouble(0.0))),
+    long.required[GlobalSecondaryIndexDescription]("ItemCount", _.itemCount).addHints(smithy.api.Documentation("<p>The number of items in the specified index. DynamoDB updates this value approximately\n            every six hours. Recent changes might not be reflected in this value.</p>"), smithy.api.Default(smithy4s.Document.fromDouble(0.0))),
+    IndexName.schema.optional[GlobalSecondaryIndexDescription]("IndexName", _.indexName).addHints(smithy.api.Documentation("<p>The name of the global secondary index.</p>")),
+    KeySchema.underlyingSchema.optional[GlobalSecondaryIndexDescription]("KeySchema", _.keySchema).addHints(smithy.api.Documentation("<p>The complete key schema for a global secondary index, which consists of one or more\n            pairs of attribute names and key types:</p>\n        <ul>\n            <li>\n                <p>\n                    <code>HASH</code> - partition key</p>\n            </li>\n            <li>\n                <p>\n                    <code>RANGE</code> - sort key</p>\n            </li>\n         </ul>\n        <note>\n            <p>The partition key of an item is also known as its <i>hash\n                    attribute</i>. The term \"hash attribute\" derives from DynamoDB\'s usage of an internal hash function to evenly distribute data items across\n                partitions, based on their partition key values.</p>\n            <p>The sort key of an item is also known as its <i>range attribute</i>.\n                The term \"range attribute\" derives from the way DynamoDB stores items with\n                the same partition key physically close together, in sorted order by the sort key\n                value.</p>\n        </note>")),
+    Projection.schema.optional[GlobalSecondaryIndexDescription]("Projection", _.projection).addHints(smithy.api.Documentation("<p>Represents attributes that are copied (projected) from the table into the global\n            secondary index. These are in addition to the primary key attributes and index key\n            attributes, which are automatically projected. </p>")),
+    IndexStatus.schema.optional[GlobalSecondaryIndexDescription]("IndexStatus", _.indexStatus).addHints(smithy.api.Documentation("<p>The current state of the global secondary index:</p>\n        <ul>\n            <li>\n                <p>\n                    <code>CREATING</code> - The index is being created.</p>\n            </li>\n            <li>\n                <p>\n                    <code>UPDATING</code> - The index is being updated.</p>\n            </li>\n            <li>\n                <p>\n                    <code>DELETING</code> - The index is being deleted.</p>\n            </li>\n            <li>\n                <p>\n                    <code>ACTIVE</code> - The index is ready for use.</p>\n            </li>\n         </ul>")),
+    Backfilling.schema.optional[GlobalSecondaryIndexDescription]("Backfilling", _.backfilling).addHints(smithy.api.Box(), smithy.api.Documentation("<p>Indicates whether the index is currently backfilling. <i>Backfilling</i>\n            is the process of reading items from the table and determining whether they can be added\n            to the index. (Not all items will qualify: For example, a partition key cannot have any\n            duplicate values.) If an item can be added to the index, DynamoDB will do so. After all\n            items have been processed, the backfilling operation is complete and\n                <code>Backfilling</code> is false.</p>\n        <p>You can delete an index that is being created during the <code>Backfilling</code>\n            phase when <code>IndexStatus</code> is set to CREATING and <code>Backfilling</code> is\n            true. You can\'t delete the index that is being created when <code>IndexStatus</code> is\n            set to CREATING and <code>Backfilling</code> is false. </p>\n        <note>\n            <p>For indexes that were created during a <code>CreateTable</code> operation, the\n                    <code>Backfilling</code> attribute does not appear in the\n                    <code>DescribeTable</code> output.</p>\n        </note>")),
+    ProvisionedThroughputDescription.schema.optional[GlobalSecondaryIndexDescription]("ProvisionedThroughput", _.provisionedThroughput).addHints(smithy.api.Documentation("<p>Represents the provisioned throughput settings for the specified global secondary\n            index.</p>\n        <p>For current minimum and maximum provisioned throughput values, see <a href=\"https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html\">Service,\n                Account, and Table Quotas</a> in the <i>Amazon DynamoDB Developer\n                Guide</i>.</p>")),
+    string.optional[GlobalSecondaryIndexDescription]("IndexArn", _.indexArn).addHints(smithy.api.Documentation("<p>The Amazon Resource Name (ARN) that uniquely identifies the index.</p>")),
+  ){
+    GlobalSecondaryIndexDescription.apply
+  }.withId(id).addHints(hints)
+}
