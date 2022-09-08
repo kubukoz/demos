@@ -16,11 +16,6 @@ object ForceActivate extends IOApp {
       dynamop
         .getItem("a", Map.empty)
         .run
-        .flatMap { out =>
-          IO.println(
-            ()
-          )
-        }
     }
     .as(ExitCode.Success)
 
