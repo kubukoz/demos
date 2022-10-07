@@ -1,5 +1,7 @@
 import smithy4s.codegen.Smithy4sCodegenPlugin
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 val root = project
   .in(file("."))
   .enablePlugins(Smithy4sCodegenPlugin)
@@ -7,5 +9,6 @@ val root = project
     scalaVersion := "2.13.8",
     libraryDependencies ++= Seq(
       "com.disneystreaming.smithy4s" %% "smithy4s-core" % smithy4sVersion.value
-    )
+    ),
+    Smithy4sCodegenPlugin.defaultSettings(Test)
   )
