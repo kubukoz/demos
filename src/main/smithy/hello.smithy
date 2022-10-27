@@ -2,24 +2,20 @@ namespace hello
 use smithy4s.api#simpleRestJson
 
 @simpleRestJson
-service WeatherService {
-  operations: [GetWeather]
+service ReportService {
+  operations: [Report]
 }
 
-@http(method: "GET", uri: "/weather/{city}")
-@readonly
-operation GetWeather {
-  input: GetWeatherInput,
-  output: GetWeatherOutput
+@http(method: "POST", uri: "/api", code: 200)
+operation Report {
+    input: CameraQuery,
 }
 
-structure GetWeatherInput {
-  @required
-  @httpLabel
-  city: String
-}
+@mediaType("application/x-www-form-urlencoded;charset=utf-8")
+string FormPayload
 
-structure GetWeatherOutput {
-  @required
-  weather: String
+structure CameraQuery {
+    @required
+    @httpPayload
+    payload: FormPayload
 }
