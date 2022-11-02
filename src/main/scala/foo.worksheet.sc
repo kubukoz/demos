@@ -182,24 +182,20 @@ def interpret(statements: Program) =
     .value
 
 val statements = Program(
-  // Statement.Binding("a", Expr.Value(42)),
-  Statement.Run("a", "reverse", Expr.Value(Value.Str("hello"))),
-  Statement.Run("b", "length", Expr.Variable("a")),
-  Statement.Run("x", "inc", Expr.Variable("b")),
-  Statement.Run("x", "double", Expr.Variable("x")),
-  Statement.Run("_", "double", Expr.Variable("x")),
-  Statement.Run("_", "double", Expr.Variable("x")),
-  Statement.Run(
-    "_",
-    "add",
-    Expr.Value(Value.Struct(Map("a1" -> Expr.Variable("b"), "a2" -> Expr.Variable("x")))),
-  ),
-  Statement.Run("c", "lol", Expr.Value(Value.Str("aaaa"))),
-  Statement.Run("_", "lol2", Expr.Variable("c")),
+  // val a = olleh
+  // val b = length(a)
+  // val x = inc(b)
+  // x = double(x)
+  // Statement.Run("a", "reverse", Expr.Value(Value.Str("hello"))),
+  // Statement.Run("b", "length", Expr.Variable("a")),
+  // Statement.Run("x", "inc", Expr.Variable("b")),
+  // Statement.Run("x", "double", Expr.Variable("x")),
+  Statement.Run("z", "lol", Expr.Value(Value.Str(""))),
+  Statement.Run("_", "lol2", Expr.Value(Value.Str("hello2"))),
 )
 
 typecheck(statements)
 
-interpret(statements)
+interpret(statements)._2
 
 scala.util.Random.nextInt()
