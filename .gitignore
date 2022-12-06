@@ -4,4 +4,6 @@
 .bsp/
 
 node_modules/
+
+out
 .smithy.lsp.log
