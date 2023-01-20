@@ -31,19 +31,23 @@ object demo extends IOApp.Simple {
       def getWeather(
           other: String
       ): Streamed[Request, Response, GetWeatherOutput] = {
+
         println("other: " + other)
 
-        _.debug()
-          .map { case InputCase(input) =>
-            Left(
-              Response.OutputCase(
-                ResponseOutput(s"${input.city} is going to be hot!")
-              )
-            )
-          }
-          .take(5) ++ fs2.Stream.emit(
-          Right(GetWeatherOutput("That's all folks!"))
-        )
+        in =>
+          (
+            in
+              .debug()
+              .map { case InputCase(input) =>
+                Response
+                  .OutputCase(
+                    ResponseOutput(s"${input.city} is going to be hot!")
+                  )
+                  .widen
+              }
+              .take(5),
+            IO(GetWeatherOutput("That's all folks!"))
+          )
       }
     }
 
@@ -69,7 +73,7 @@ object SmithyStreaming {
 
   import cats.implicits._
 
-  type Streamed[SI, SO, O] = fs2.Stream[IO, SI] => fs2.Stream[IO, Either[SO, O]]
+  type Streamed[SI, SO, O] = fs2.Stream[IO, SI] => (fs2.Stream[IO, SO], IO[O])
   type Streamed5[I, E, O, SI, SO] = Streamed[SI, SO, O]
 
   def make[Alg[_[_, _, _, _, _]]](
@@ -126,32 +130,38 @@ object SmithyStreaming {
 
         val pipe: Streamed5[I, E, O, SI, SO] = runner(e.wrap(plainInput))
 
-        wb.build(input =>
-          input
-            .evalMap { frame =>
-              capi
-                .decodeFromByteArray(
-                  streamedInputCodec,
-                  frame.data.toArray
-                )
-                .liftTo[IO]
-            }
+        wb.build { input =>
+          val (stream, outF) = pipe(
+            input
+              .evalMap { frame =>
+                capi
+                  .decodeFromByteArray(
+                    streamedInputCodec,
+                    frame.data.toArray
+                  )
+                  .liftTo[IO]
+              }
+              .debug()
+          )
+
+          stream
             .debug()
-            .through(pipe)
-            .debug()
-            .map { case Left(o) =>
+            .map { o =>
               WebSocketFrame.Binary(
                 ByteVector(capi.writeToArray(streamedOutputCodec, o))
               )
-              case Right(o) =>
+            }
+            .append(
+              fs2.Stream.eval(outF).map { o =>
                 WebSocketFrame.Binary(
                   ByteVector(capi.writeToArray(outputCodec, o))
                 )
-            }
+              }
+            )
             .handleErrorWith { case e =>
               fs2.Stream.emit(WebSocketFrame.Text("Error: " + e.getMessage))
             }
-        )
+        }
       }
     }
 
