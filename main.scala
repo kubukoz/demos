@@ -22,6 +22,9 @@ import org.http4s
 import smithy4s.Document
 import smithy4s.http.Metadata
 import smithy4s.http.BodyPartial
+import cats.effect.kernel.Resource
+import cats.effect.implicits._
+import cats.implicits._
 
 object demo extends IOApp.Simple {
   import SmithyStreaming._
@@ -32,22 +35,24 @@ object demo extends IOApp.Simple {
           other: String
       ): Streamed[Request, Response, GetWeatherOutput] = {
 
-        println("other: " + other)
-
-        in =>
-          (
-            in
-              .debug()
-              .map { case InputCase(input) =>
-                Response
-                  .OutputCase(
-                    ResponseOutput(s"${input.city} is going to be hot!")
-                  )
-                  .widen
-              }
-              .take(5),
-            IO(GetWeatherOutput("That's all folks!"))
-          )
+        IO.println("other: " + other)
+          .toResource
+          .onFinalize(IO.println(s"Finished request with value: " + other))
+          .as { in =>
+            (
+              in
+                .debug()
+                .map { case InputCase(input) =>
+                  Response
+                    .OutputCase(
+                      ResponseOutput(s"${input.city} is going to be hot!")
+                    )
+                    .widen
+                }
+                .take(5),
+              IO(GetWeatherOutput("That's all folks!"))
+            )
+          }
       }
     }
 
@@ -71,9 +76,22 @@ object demo extends IOApp.Simple {
 
 object SmithyStreaming {
 
-  import cats.implicits._
+  type Streamed[SI, SO, O] =
+    Resource[
+      IO,
+      // I _think_ the input stream needs to be outside of the tuple to account for endpoints that only have a streaming input, and the output is not streamed.
+      // That way, this stream can be consumed as part of IO[O].
+      // The downside is that this can be abused easily, and someone could try to consume this input stream twice (both for the output stream and the output value)
+      // so maybe some helper types/utils should be provided to account for all the supported combinations (with safer APIs, e.g. for the duplex case we'd have (SI => SO, F[O]) instead of this).
+      fs2.Stream[IO, SI] => (
+          fs2.Stream[IO, SO],
+          // this is implicitly only runnable once,
+          // perhaps we could even safeguard clients against that by failing early if they try to reuse it.
+          // this can allocate state that will be visible to both the output stream and the output effect.
+          IO[O]
+      )
+    ]
 
-  type Streamed[SI, SO, O] = fs2.Stream[IO, SI] => (fs2.Stream[IO, SO], IO[O])
   type Streamed5[I, E, O, SI, SO] = Streamed[SI, SO, O]
 
   def make[Alg[_[_, _, _, _, _]]](
@@ -131,35 +149,38 @@ object SmithyStreaming {
         val pipe: Streamed5[I, E, O, SI, SO] = runner(e.wrap(plainInput))
 
         wb.build { input =>
-          val (stream, outF) = pipe(
-            input
-              .evalMap { frame =>
-                capi
-                  .decodeFromByteArray(
-                    streamedInputCodec,
-                    frame.data.toArray
-                  )
-                  .liftTo[IO]
+          fs2.Stream
+            .resource(pipe)
+            .flatMap { inner =>
+              val (stream, outF) = inner {
+                input
+                  .evalMap { frame =>
+                    capi
+                      .decodeFromByteArray(
+                        streamedInputCodec,
+                        frame.data.toArray
+                      )
+                      .liftTo[IO]
+                  }
+                  .debug()
               }
-              .debug()
-          )
 
-          stream
-            .debug()
-            .map { o =>
-              WebSocketFrame.Binary(
-                ByteVector(capi.writeToArray(streamedOutputCodec, o))
-              )
-            }
-            .append(
-              fs2.Stream.eval(outF).map { o =>
-                WebSocketFrame.Binary(
-                  ByteVector(capi.writeToArray(outputCodec, o))
+              stream
+                .map { o =>
+                  WebSocketFrame.Binary(
+                    ByteVector(capi.writeToArray(streamedOutputCodec, o))
+                  )
+                }
+                .append(
+                  fs2.Stream.eval(outF).map { o =>
+                    WebSocketFrame.Binary(
+                      ByteVector(capi.writeToArray(outputCodec, o))
+                    )
+                  }
                 )
-              }
-            )
-            .handleErrorWith { case e =>
-              fs2.Stream.emit(WebSocketFrame.Text("Error: " + e.getMessage))
+                .handleErrorWith { case e =>
+                  fs2.Stream.emit(WebSocketFrame.Text("Error: " + e.getMessage))
+                }
             }
         }
       }
