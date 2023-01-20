@@ -28,14 +28,22 @@ object demo extends IOApp.Simple {
 
   val impl: WeatherStreamServiceGen[Streamed5] =
     new WeatherStreamServiceGen[Streamed5] {
-      def getWeather(other: String): Streamed[Request, Response] = {
+      def getWeather(
+          other: String
+      ): Streamed[Request, Response, GetWeatherOutput] = {
         println("other: " + other)
 
-        _.debug().map { case InputCase(input) =>
-          Response.OutputCase(
-            ResponseOutput(s"${input.city} is going to be hot!")
-          )
-        }
+        _.debug()
+          .map { case InputCase(input) =>
+            Left(
+              Response.OutputCase(
+                ResponseOutput(s"${input.city} is going to be hot!")
+              )
+            )
+          }
+          .take(5) ++ fs2.Stream.emit(
+          Right(GetWeatherOutput("That's all folks!"))
+        )
       }
     }
 
@@ -61,8 +69,8 @@ object SmithyStreaming {
 
   import cats.implicits._
 
-  type Streamed[SI, SO] = fs2.Pipe[IO, SI, SO]
-  type Streamed5[I, E, O, SI, SO] = Streamed[SI, SO]
+  type Streamed[SI, SO, O] = fs2.Stream[IO, SI] => fs2.Stream[IO, Either[SO, O]]
+  type Streamed5[I, E, O, SI, SO] = Streamed[SI, SO, O]
 
   def make[Alg[_[_, _, _, _, _]]](
       impl: Alg[Streamed5]
@@ -93,6 +101,7 @@ object SmithyStreaming {
         e.streamedOutput.asInstanceOf[StreamingSchema.Streamed[SO]].schema,
         cache
       )
+      val outputCodec: capi.Codec[O] = capi.compileCodec(e.output, cache)
 
       HttpRoutes.of { case req @ GET -> Root / `opname` =>
         val plainInput: I = inputCodec
@@ -130,10 +139,14 @@ object SmithyStreaming {
             .debug()
             .through(pipe)
             .debug()
-            .map { o =>
+            .map { case Left(o) =>
               WebSocketFrame.Binary(
                 ByteVector(capi.writeToArray(streamedOutputCodec, o))
               )
+              case Right(o) =>
+                WebSocketFrame.Binary(
+                  ByteVector(capi.writeToArray(outputCodec, o))
+                )
             }
             .handleErrorWith { case e =>
               fs2.Stream.emit(WebSocketFrame.Text("Error: " + e.getMessage))

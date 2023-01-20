@@ -38,6 +38,8 @@ operation GetWeather {
     other: String
   },
   output := {
-    @required response: Response
+    @required response: Response,
+    @required
+    other: String
   }
 }
