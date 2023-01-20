@@ -75,6 +75,7 @@ object demo extends IOApp.Simple {
 }
 
 object SmithyStreaming {
+  // example: input streams, output doesn't stream.
 
   type Streamed[SI, SO, O] =
     Resource[
@@ -82,7 +83,7 @@ object SmithyStreaming {
       // I _think_ the input stream needs to be outside of the tuple to account for endpoints that only have a streaming input, and the output is not streamed.
       // That way, this stream can be consumed as part of IO[O].
       // The downside is that this can be abused easily, and someone could try to consume this input stream twice (both for the output stream and the output value)
-      // so maybe some helper types/utils should be provided to account for all the supported combinations (with safer APIs, e.g. for the duplex case we'd have (SI => SO, F[O]) instead of this).
+      // so maybe some helper types/utils should be provided to account for all the supported combinations (with safer APIs, see helpers below this).
       fs2.Stream[IO, SI] => (
           fs2.Stream[IO, SO],
           // this is implicitly only runnable once,
@@ -91,6 +92,11 @@ object SmithyStreaming {
           IO[O]
       )
     ]
+
+  // possible helpers. should be wrapped in Resource, and these would be fs2.Stream instead of scala's but you get the idea
+  type StreamedOnlyInput[SI, O] = Stream[SI] => IO[O]
+  type StreamedOnlyOutput[SO, O] = (Stream[SO], IO[O])
+  type StreamedDuplex[SI, SO, O] = (Stream[SI] => Stream[SO], IO[O])
 
   type Streamed5[I, E, O, SI, SO] = Streamed[SI, SO, O]
 
