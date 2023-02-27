@@ -1,0 +1,9 @@
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run:
+          echo "${{ github.context.payload.pull_request.label }}"
