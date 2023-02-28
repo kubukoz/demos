@@ -4,8 +4,18 @@ on:
       - "**"
 
 jobs:
-  build:
+  publish-release:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
-      - run:
-          echo "${{ github.event }}"
+      - name: Print Version
+        id: print-version
+        run: |
+          echo 'version<<EOF' >> $GITHUB_OUTPUT
+          echo "0.1.1" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.print-version.outputs.version }}
