@@ -1,0 +1,389 @@
+//> using lib "software.amazon.smithy:smithy-model:1.28.1"
+//> using lib "org.typelevel::cats-core:2.9.0"
+import software.amazon.smithy.model.shapes.ShapeId
+import software.amazon.smithy.model.Model
+import software.amazon.smithy.model.traits.DocumentationTrait
+import scala.jdk.CollectionConverters._
+import software.amazon.smithy.model.shapes.ServiceShape
+import cats.data.NonEmptyList
+import cats.implicits._
+
+val m = Model
+  .assembler()
+  .addUnparsedModel(
+    "test.smithy",
+    """
+    $version: "2"
+    namespace test
+
+    list Strings { member: S }
+
+    /// foobar
+    string S
+  """,
+  )
+  .assemble()
+  .unwrap()
+
+/*
+  Selector =
+    SelectorExpression *(SelectorExpression)
+
+SelectorExpression =
+    SelectorShapeTypes
+  / SelectorAttr
+  / SelectorScopedAttr
+  / SelectorFunction
+  / SelectorForwardUndirectedNeighbor
+  / SelectorReverseUndirectedNeighbor
+  / SelectorForwardDirectedNeighbor
+  / SelectorForwardRecursiveNeighbor
+  / SelectorReverseDirectedNeighbor
+  / SelectorVariableSet
+  / SelectorVariableGet
+
+SelectorShapeTypes =
+    "*" / smithy:Identifier
+
+SelectorForwardUndirectedNeighbor =
+    ">"
+
+SelectorReverseUndirectedNeighbor =
+    "<"
+
+SelectorForwardDirectedNeighbor =
+    "-[" SelectorDirectedRelationships "]->"
+
+SelectorReverseDirectedNeighbor =
+    "<-[" SelectorDirectedRelationships "]-"
+
+SelectorDirectedRelationships =
+    smithy:Identifier *("," smithy:Identifier)
+
+SelectorForwardRecursiveNeighbor =
+    "~>"
+
+SelectorAttr =
+    "[" SelectorKey [SelectorAttrComparison] "]"
+
+SelectorAttrComparison =
+    SelectorComparator SelectorAttrValues ["i"]
+
+SelectorKey =
+    smithy:Identifier ["|" SelectorPath]
+
+SelectorPath =
+    SelectorPathSegment *("|" SelectorPathSegment)
+
+SelectorPathSegment =
+    SelectorValue / SelectorFunctionProperty
+
+SelectorValue =
+    SelectorText / smithy:Number / smithy:RootShapeId
+
+SelectorFunctionProperty =
+    "(" smithy:Identifier ")"
+
+SelectorAttrValues =
+    SelectorValue *("," SelectorValue)
+
+SelectorComparator =
+    SelectorStringComparator
+  / SelectorNumericComparator
+  / SelectorProjectionComparator
+
+SelectorStringComparator =
+    "^=" / "$=" / "*=" / "!=" / "=" / "?="
+
+SelectorNumericComparator =
+    ">=" / ">" / "<=" / "<"
+
+SelectorProjectionComparator =
+    "{=}" / "{!=}" / "{<}" / "{<<}"
+
+SelectorAbsoluteRootShapeId =
+    smithy:Namespace "#" smithy:Identifier
+
+SelectorScopedAttr =
+    "[@" [SelectorKey] ":" SelectorScopedAssertions "]"
+
+SelectorScopedAssertions =
+    SelectorScopedAssertion *("&&" SelectorScopedAssertion)
+
+SelectorScopedAssertion =
+    SelectorScopedValue SelectorComparator SelectorScopedValues ["i"]
+
+SelectorScopedValue =
+    SelectorValue / SelectorContextValue
+
+SelectorContextValue =
+    "@{" SelectorPath "}"
+
+SelectorScopedValues =
+    SelectorScopedValue *("," SelectorScopedValue)
+
+SelectorFunction =
+    ":" smithy:Identifier "(" SelectorFunctionArgs ")"
+
+SelectorFunctionArgs =
+    Selector *("," Selector)
+
+SelectorText =
+    SelectorSingleQuotedText / SelectorDoubleQuotedText
+
+SelectorSingleQuotedText =
+    "'" 1*SelectorSingleQuotedChar "'"
+
+SelectorDoubleQuotedText =
+    DQUOTE 1*SelectorDoubleQuotedChar DQUOTE
+
+SelectorSingleQuotedChar =
+    %x20-26 / %x28-5B / %x5D-10FFFF ; Excludes (')
+
+SelectorDoubleQuotedChar =
+    %x20-21 / %x23-5B / %x5D-10FFFF ; Excludes (")
+
+SelectorVariableSet =
+    "$" smithy:Identifier "(" Selector ")"
+
+SelectorVariableGet =
+    "${" smithy:Identifier "}"
+ */
+object AST {
+  case class Selector(expressions: NonEmptyList[SelectorExpression])
+
+  case class Identifier(value: String)
+
+  enum SelectorExpression {
+    case SelectorShapeTypes(value: "*" | Identifier)
+    case SelectorFunction(name: Identifier, args: NonEmptyList[Selector])
+    case SelectorAttr(key: SelectorKey, comparison: Option[SelectorAttrComparison])
+  }
+
+  case class SelectorAttrComparison(
+    comparator: SelectorComparator,
+    values: NonEmptyList[SelectorValue],
+  )
+
+  enum SelectorComparator {
+    // todo others
+    case Numeric(value: ">=" | ">" | "<=" | "<")
+  }
+
+  case class SelectorKey(
+    value: Identifier,
+    path: List[SelectorPathSegment],
+  )
+
+  enum SelectorPathSegment {
+    case SelectorValue(value: AST.SelectorValue)
+    case SelectorFunctionProperty(value: Identifier)
+  }
+
+  case class SelectorValue(value: String | Int | ShapeId)
+
+}
+
+import AST._
+
+object dsl {
+
+  val shape = Selector(
+    NonEmptyList.one(SelectorExpression.SelectorShapeTypes("*"))
+  )
+
+  val `trait`: SelectorExpression.SelectorAttr = SelectorExpression.SelectorAttr(
+    SelectorKey(
+      Identifier("trait"),
+      Nil,
+    ),
+    comparison = None,
+  )
+
+  extension (k: SelectorExpression.SelectorAttr) {
+
+    def append(
+      expr: SelectorPathSegment
+    ): SelectorExpression.SelectorAttr = k.copy(
+      key = k.key.copy(path = k.key.path.appended(expr))
+    )
+
+    def hasId(traitId: String | ShapeId): SelectorExpression.SelectorAttr = k.append(
+      SelectorPathSegment.SelectorValue(SelectorValue(traitId))
+    )
+
+    // todo: this is not really a thing
+    def hasParam(s: String): SelectorExpression.SelectorAttr = k.append(
+      SelectorPathSegment.SelectorValue(SelectorValue(s"($s)"))
+    )
+
+    def <(maxValue: Int): SelectorExpression = k.copy(
+      comparison = Some(
+        SelectorAttrComparison(
+          SelectorComparator.Numeric("<"),
+          NonEmptyList.one(SelectorValue(maxValue)),
+        )
+      )
+    )
+
+  }
+
+  extension (sel: Selector) {
+
+    def append(expr: SelectorExpression): Selector =
+      // optimization: if we're appending to an all-star (hehe) selector, just replace it
+      if (sel == shape)
+        Selector(NonEmptyList.one(expr))
+      else
+        Selector(sel.expressions.append(expr))
+
+    def string = sel.append(
+      SelectorExpression.SelectorShapeTypes(Identifier("string"))
+    )
+
+    def integer = sel.append(
+      SelectorExpression.SelectorShapeTypes(Identifier("integer"))
+    )
+
+    // this is sorta like "filter" - if either of the selectors in the args match the currently selected shape, it's allowed through.
+    def test(selector: Selector, more: Selector*): Selector = append(
+      SelectorExpression.SelectorFunction(
+        Identifier("test"),
+        NonEmptyList(selector, more.toList),
+      )
+    )
+
+    def is(selector: Selector, more: Selector*): Selector = append(
+      SelectorExpression.SelectorFunction(
+        Identifier("is"),
+        NonEmptyList(selector, more.toList),
+      )
+    )
+
+    def ||(another: Selector): Selector = shape.is(sel, another)
+
+    def unary_! : Selector = Selector(
+      NonEmptyList.one(
+        SelectorExpression.SelectorFunction(
+          Identifier("not"),
+          NonEmptyList.one(sel),
+        )
+      )
+    )
+
+    def hasTrait(traitId: String | ShapeId): Selector = append(
+      `trait`
+        .hasId(traitId)
+    )
+
+  }
+
+}
+
+def renderSelectorValue(v: SelectorValue): String = v.value.toString()
+
+def renderKey(k: SelectorKey): String =
+  k.value.value + k
+    .path
+    .some
+    .filterNot(_.isEmpty)
+    .map(_.map {
+      case SelectorPathSegment.SelectorValue(value)            => renderSelectorValue(value)
+      case SelectorPathSegment.SelectorFunctionProperty(value) => s"(${value.value})"
+    }.mkString_("|", "|", ""))
+    .getOrElse("")
+
+def renderComparison(c: SelectorAttrComparison): String =
+  c.comparator match {
+    case SelectorComparator.Numeric(value) =>
+      s"${value} ${c.values.map(renderSelectorValue).mkString_(", ")}"
+  }
+
+def renderExpr(e: SelectorExpression): String =
+  e match {
+    case SelectorExpression.SelectorShapeTypes(v) =>
+      v match {
+        case "*"               => "*"
+        case Identifier(value) => value
+      }
+
+    case SelectorExpression.SelectorFunction(name, args) =>
+      s":${name.value}(${args.map(render).mkString_(", ")})"
+
+    case SelectorExpression.SelectorAttr(key, comparison) =>
+      s"[${renderKey(key)}${comparison.map(renderComparison).getOrElse("")}]"
+  }
+
+def render(s: Selector): String = s.expressions.map(renderExpr).mkString_(" ")
+
+def go(s: Selector) = {
+  val ss = render(s)
+
+  val result =
+    software
+      .amazon
+      .smithy
+      .model
+      .selector
+      .Selector
+      .parse(ss)
+      .select(m)
+      .asScala
+      .toList
+
+  s"""selector: $ss,${" "}
+     |result: $result""".stripMargin
+}
+
+import dsl._
+
+println(
+  go(
+    shape
+      .hasTrait("documentation")
+  )
+)
+go(
+  shape
+    .string
+    .test(
+      shape
+        .string
+        .hasTrait("deprecated")
+    )
+    .test(
+      shape.is(shape.string)
+    )
+)
+
+render(
+  shape
+    .hasTrait("documentation")
+)
+
+go(
+  shape.append(
+    `trait`.hasId("documentation").hasParam("length") < 20
+  )
+)
+
+go(
+  shape.string || shape.integer
+)
+
+go(
+  shape.integer
+)
+
+software
+  .amazon
+  .smithy
+  .model
+  .selector
+  .Selector
+  .parse("[trait|documentation|(length)<30]")
+  .select(m)
+  .asScala
+  .toList
+  .fproduct(_.expectTrait(classOf[DocumentationTrait]).getValue())
+//
