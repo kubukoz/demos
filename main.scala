@@ -1,7 +1,6 @@
 //> using scala "2.13.10"
 //> using lib "com.disneystreaming.smithy4s::smithy4s-core:0.17.5"
 //> using plugin "org.typelevel:::kind-projector:0.13.2"
-//> using lib "org.slf4j:slf4j-simple:2.0.7"
 //> using option "-Wunused:imports"
 import demo._
 import smithy4s.Endpoint
@@ -138,7 +137,8 @@ object Consume extends App {
     def showRegisteredOperations(
       implicit pipe: Pipe[Alg]
     ): List[String] =
-      /* the choice of endpoint is arbitrary - all operations return the same value - so I'm using .head */
+      // the choice of endpoint is arbitrary - all operations return the same value - so I'm using .head.
+      // anyway, here's why I think I need a toPolyFunction...
       pipe
         .toPolyFunction(builder)(pipe.service.endpoints.head)
         .currentEndpoints
@@ -222,6 +222,8 @@ object Consume extends App {
 
     type In[I, E, O, SI, SO] = p.service.Endpoint[I, E, O, SI, SO]
     type Out[I, E, O, SI, SO] = p.service.Endpoint[I, E, O, SI, SO]
+
+    // start here
 
     // this and the polyfunction need to be lazy vals to avoid a stack overflow.
     // the PF needs a reference to the end result of the building, which is this impl.
