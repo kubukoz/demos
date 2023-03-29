@@ -1,0 +1,48 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "DemoService",
+        "version": ""
+    },
+    "paths": {
+        "/demo": {
+            "get": {
+                "operationId": "DemoOp",
+                "responses": {
+                    "200": {
+                        "description": "DemoOp 200 response"
+                    },
+                    "500": {
+                        "description": "DynamoError 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DynamoErrorResponseContent"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "DynamoErrorResponseContent": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "age": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            }
+        }
+    }
+}
