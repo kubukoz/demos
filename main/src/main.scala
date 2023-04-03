@@ -12,7 +12,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 
 enum Msg {
   case InputChanged(newText: Int)
-  case FetchedProduct(product: Either[Throwable, GetProductOutput])
+  case Errored(e: Throwable)
+  case FetchedProduct(product: GetProductOutput)
 }
 
 case class Model(text: Int, request: Option[Int], product: ProductState)
@@ -21,7 +22,7 @@ enum ProductState {
   case Empty
   case Fetching
   case Found(response: GetProductOutput)
-  case Errored(message: String)
+  case Errored(e: Throwable)
 }
 
 object Model {
@@ -62,10 +63,9 @@ object App extends TyrianApp[Msg, Model] {
             .eval(
               client
                 .getProduct(request)
-                .attempt
-                .guaranteeCase(IO.println(_))
-            )
-            .map(Msg.FetchedProduct(_)),
+                .map(Msg.FetchedProduct(_))
+                .handleError(Msg.Errored(_))
+            ),
         )
     }
 
@@ -77,19 +77,18 @@ object App extends TyrianApp[Msg, Model] {
           product = ProductState.Fetching,
           request = Some(newInput),
         ),
-        Cmd.Run(
-          client.getProduct(newInput).attempt
-        )(out => Msg.FetchedProduct(out)),
+        Cmd.None,
+      )
+
+    case Msg.Errored(e) =>
+      (
+        model.copy(product = ProductState.Errored(e)),
+        Cmd.None,
       )
 
     case Msg.FetchedProduct(response) =>
       (
-        model.copy(product =
-          response.fold(
-            e => ProductState.Errored(e.getMessage),
-            product => ProductState.Found(product),
-          )
-        ),
+        model.copy(product = ProductState.Found(response)),
         Cmd.None,
       )
 
@@ -111,10 +110,10 @@ object App extends TyrianApp[Msg, Model] {
         case ProductState.Found(response) =>
           p(s"The product is: ${response.title}: ${response.description}")
 
-        case ProductState.Errored(msg) =>
+        case ProductState.Errored(e) =>
           p(
             text("error"),
-            pre(code(msg)),
+            pre(code(e.getMessage)),
           )
       },
     )
