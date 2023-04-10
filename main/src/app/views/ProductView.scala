@@ -5,7 +5,6 @@ import demo._
 import tyrian._
 
 import Html._
-import app.ProductState
 
 object ProductView {
 

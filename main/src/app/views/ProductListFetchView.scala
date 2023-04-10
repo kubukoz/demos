@@ -1,11 +1,17 @@
-package app
+package app.views
 
 import cats.effect.IO
 import cats.implicits._
 import demo._
 import tyrian._
-import views.ProductListView
 import Html._
+import app.ProductApi
+
+enum ProductListState {
+  case Fetching(skip: Int)
+  case Done
+  case Errored(e: Throwable)
+}
 
 object ProductListFetchView {
 
