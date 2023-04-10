@@ -8,7 +8,11 @@ import Html._
 
 object ProductListView {
 
-  def view[Msg](products: List[Product])(productSelected: Product => Msg): Html[Msg] =
+  enum PropagatedMsg {
+    case ProductSelected(product: Product)
+  }
+
+  def view(products: List[Product]): Html[PropagatedMsg] =
     table(className := "table table-striped")(
       thead(
         tr(
@@ -31,7 +35,7 @@ object ProductListView {
               a(
                 href := "",
                 onClick(
-                  productSelected(product)
+                  PropagatedMsg.ProductSelected(product)
                 ),
               )(b(product.title))
             ),
