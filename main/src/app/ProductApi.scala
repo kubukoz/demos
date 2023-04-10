@@ -5,7 +5,6 @@ import demo._
 import org.http4s.dom.FetchClientBuilder
 import org.http4s.implicits._
 import smithy4s.http4s.SimpleRestJsonBuilder
-import tyrian._
 
 object ProductApi {
 
