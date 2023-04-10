@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["scala-cli", "jre"]
+
+[phases.build]
+cmds = ["scala-cli package --server=false . -v -v -v -v -v"]
+
+[start]
+cmd = "./demo"

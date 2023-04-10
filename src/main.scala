@@ -8,5 +8,9 @@ object demo extends MainRoutes {
   @get("/")
   def hello() = "Hello World!"
 
+  override def port: Int = sys.env.get("PORT").map(_.toInt).getOrElse(8080)
+  override def host: String = "0.0.0.0"
+
   initialize()
+
 }
