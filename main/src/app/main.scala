@@ -1,3 +1,6 @@
+package app
+
+import views.ProductView
 import cats.effect.IO
 
 import cats.implicits._
@@ -9,9 +12,12 @@ import tyrian.TyrianApp
 import tyrian._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
+import Html._
+
+import views.ProductListView
 
 enum Msg {
-  case InputChanged(newText: Int)
+  case ProductIdChanged(newId: Int)
   case Errored(e: Throwable)
   case FetchedProduct(product: Product)
   case FetchedProductList(response: GetAllProductsOutput)
@@ -106,7 +112,7 @@ object App extends TyrianApp[Msg, Model] {
   }
 
   override def update(model: Model): Msg => (Model, Cmd[IO, Msg]) = {
-    case Msg.InputChanged(newInput) =>
+    case Msg.ProductIdChanged(newInput) =>
       (
         model.copy(
           text = newInput,
@@ -149,9 +155,7 @@ object App extends TyrianApp[Msg, Model] {
       )
   }
 
-  override def view(model: Model): Html[Msg] = {
-    import Html._
-
+  override def view(model: Model): Html[Msg] =
     div(className := "container")(
       div(
         className := "container"
@@ -159,39 +163,11 @@ object App extends TyrianApp[Msg, Model] {
         span("Select product ID: "),
         input(
           tpe := "number",
-          onInput(in => Msg.InputChanged(in.toIntOption.getOrElse(0))),
+          onInput(in => Msg.ProductIdChanged(in.toIntOption.getOrElse(0))),
           value := model.text.show,
         ),
       ),
-      div(model.product.match {
-        case ProductState.Empty       => p()
-        case ProductState.Fetching(_) => p("fetching...")
-
-        case ProductState.Found(response) =>
-          div(
-            p(
-              text("The chosen product is: "),
-              b(response.title),
-              text(s": ${response.description}"),
-            ),
-            p(
-              response.images.map { url =>
-                span(
-                  img(
-                    src := url,
-                    width := "100",
-                  )
-                )
-              }
-            ),
-          )
-
-        case ProductState.Errored(e) =>
-          p(
-            text("error"),
-            pre(code(e.getMessage)),
-          )
-      }),
+      ProductView.view(model.product),
       div(model.list match {
         case ProductListState.Fetching(_) => p("fetching products...")
         case ProductListState.Done        => p()
@@ -201,40 +177,8 @@ object App extends TyrianApp[Msg, Model] {
             pre(code(e.getMessage)),
           )
       }),
-      table(className := "table table-striped")(
-        thead(
-          tr(
-            th("Photo"),
-            th("Title"),
-            th("Price"),
-            th("Description"),
-          )
-        ),
-        tbody(
-          model.products.map { product =>
-            tr(
-              td(
-                img(
-                  src := product.thumbnail.getOrElse(""),
-                  width := "100",
-                )
-              ),
-              td(
-                a(
-                  href := "",
-                  onClick(
-                    Msg.InputChanged(product.id)
-                  ),
-                )(b(product.title))
-              ),
-              td(product.price.toString),
-              td(product.description),
-            )
-          }
-        ),
-      ),
+      ProductListView.view(model.products)(productSelected = p => Msg.ProductIdChanged(p.id)),
     )
-  }
 
 }
 
