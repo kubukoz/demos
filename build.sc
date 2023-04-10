@@ -13,13 +13,13 @@ import mill.scalajslib.api._
 object main extends ScalaJSModule with Smithy4sModule {
   def scalaVersion = "3.3.0-RC3"
 
-  def scalaJSVersion: T[String] = "1.13.0"
+  def scalaJSVersion: T[String] = "1.13.1"
+
   override def scalacOptions: Target[Seq[String]] = Seq("-no-indent", "-Wunused:imports")
 
   override def ivyDeps: T[Agg[Dep]] = Agg(
     ivy"io.indigoengine::tyrian-io::0.6.2",
     ivy"org.scala-js::scalajs-dom::2.4.0",
-    ivy"com.disneystreaming.smithy4s::smithy4s-dynamic::0.17.5",
     ivy"com.disneystreaming.smithy4s::smithy4s-http4s::0.17.5",
     ivy"org.http4s::http4s-dom::0.2.7",
   )
