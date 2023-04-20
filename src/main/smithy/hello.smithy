@@ -9,7 +9,7 @@ service WeatherService {
     operations: [GetWeather]
 }
 
-@http(method: "GET", uri: "/weather/{city}")
+@http(method: "GET", uri: "/weather/{city}", code: 200)
 @readonly
 operation GetWeather {
     input := {
@@ -20,5 +20,12 @@ operation GetWeather {
     output := {
         @required
         weather: String
+        @required
+        @httpResponseCode
+        code: MyCode
     }
+}
+
+intEnum MyCode {
+    NICE = 420
 }
