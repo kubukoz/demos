@@ -1,19 +1,18 @@
 package hello
 
-import org.http4s.ember.server.EmberServerBuilder
-import smithy4s.http4s.SimpleRestJsonBuilder
 import cats.effect.IO
 import cats.effect.IOApp
 import hello.WeatherService
 import org.http4s.ember.client.EmberClientBuilder
-import org.http4s.Request
+import org.http4s.ember.server.EmberServerBuilder
+import smithy4s.http4s.SimpleRestJsonBuilder
 
 object Main extends IOApp.Simple {
   def run = SimpleRestJsonBuilder
     .routes(
       new WeatherService[IO] {
         def getWeather(city: String): IO[GetWeatherOutput] =
-          IO.pure(GetWeatherOutput("bad weather in " + city, MyCode.NICE))
+          IO.pure(GetWeatherOutput("bad weather in " + city, 420))
       }
     )
     .resource
@@ -24,16 +23,18 @@ object Main extends IOApp.Simple {
         .build
     }
     .flatMap { server =>
-      EmberClientBuilder.default[IO].build.flatMap { c =>
-        c.run(Request[IO](uri = server.baseUri / "weather" / "London"))
-          .evalMap { response =>
-            response.bodyText.compile.string.flatMap { body =>
-              IO.println(s"""Status: ${response.status}
-                          |Body: $body
-                          |""".stripMargin)
+      EmberClientBuilder
+        .default[IO]
+        .build
+        .flatMap { c =>
+          SimpleRestJsonBuilder(WeatherService)
+            .client(c)
+            .uri(server.baseUri)
+            .resource
+            .evalMap {
+              _.getWeather("London").flatMap(IO.println(_))
             }
-          }
-      }
+        }
     }
     .use_
 }

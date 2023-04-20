@@ -22,10 +22,6 @@ operation GetWeather {
         weather: String
         @required
         @httpResponseCode
-        code: MyCode
+        code: Integer
     }
-}
-
-intEnum MyCode {
-    NICE = 420
 }
