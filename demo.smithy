@@ -6,36 +6,30 @@ use alloy#simpleRestJson
 
 @simpleRestJson
 service WeatherService {
-    operations: [GetWeather, CreateCity]
+    operations: [GetWeather]
 }
 
-@http(method: "GET", uri: "/cities/{cityId}/weather")
+@http(method: "GET", uri: "/weather")
 @readonly
 operation GetWeather {
-    input := {
-        @required
-        @httpLabel
-        cityId: CityId
-    }
     output := {
         @required
-        weather: String
-        degrees: Integer
+        record: RecordsNestedUnion
     }
 }
 
-@http(method: "POST", uri: "/cities", code: 201)
-operation CreateCity {
-    input := {
-        @required
-        city: String
-        @required
-        country: String
-    }
-    output := {
-        @required
-        cityId: CityId
-    }
+union RecordsNestedUnion {
+    id: String
+    myDetails: StringOrIntOrStruct
 }
 
-string CityId
+union StringOrIntOrStruct {
+    name: String
+    age: Integer
+    address: Address
+}
+
+structure Address {
+    @required
+    street: String
+}
