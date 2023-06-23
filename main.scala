@@ -1,5 +1,4 @@
 //> using lib "org.typelevel::cats-core:2.9.0"
-//> using plugin "org.polyvariant:::better-tostring:0.3.17"
 //> using option "-no-indent"
 
 import cats.implicits._
