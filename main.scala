@@ -14,8 +14,6 @@ trait Copy[T] {
   def copyWith(t: T)(f: Mod): T
 }
 
-type AnyTypeTest[T] = TypeTest[Any, T]
-
 object Copy {
 
   inline given derived[T: AnyTypeTest]: Copy[T] = summonFrom {
@@ -65,20 +63,25 @@ object Copy {
   }
 
   given [T: Copy: AnyTypeTest]: Copy[List[T]] with {
-    override def copyWith(t: List[T])(f: Mod): List[T] = t.map(_.copyWith(f))
+    override def copyWith(t: List[T])(f: Mod): List[T] = t.map(_.copyWith(f(_)))
   }
 
   given [K: Copy, V: Copy]: Copy[ListMap[K, V]] with {
 
     override def copyWith(t: ListMap[K, V])(f: Mod): ListMap[K, V] = t.map { case (k, v) =>
-      (k.copyWith(f), v.copyWith(f))
+      (k.copyWith(f(_)), v.copyWith(f(_)))
     }
 
   }
 
 }
 
-extension [T: Copy](t: T) def copyWith(f: Mod): T = summon[Copy[T]].copyWith(t)(f)
+type AnyTypeTest[T] = TypeTest[Any, T]
+
+extension [T: Copy](t: T) {
+  def copyWith[U: AnyTypeTest](f: PartialFunction[U, U]): T =
+    summon[Copy[T]].copyWith(t)(Mod.collect(f))
+}
 
 trait Mod {
   def apply[U: AnyTypeTest](a: U): U
@@ -86,15 +89,21 @@ trait Mod {
 
 object Mod {
 
-  def collect[T: AnyTypeTest](f: T => T): Mod =
+  def collect[T: AnyTypeTest](f: PartialFunction[T, T]): Mod =
     new Mod {
 
       override def apply[U: AnyTypeTest](a: U): U =
         a match {
           case t: T =>
-            f(t) match {
-              case b: U => b
-              case _    => a // return unmodified
+            f.lift(t) match {
+              case Some(b: U) => b
+              case Some(b) =>
+                throw new IllegalAccessException(
+                  s"The function passed to copyWith resulted in a value of an invalid type: ${b
+                      .getClass
+                      .getName()} (output) doesn't match the type of ${a.getClass.getName()} (input)"
+                )
+              case None => a // return unmodified
             }
           case _ => a
         }
@@ -129,10 +138,8 @@ enum RecIdent {
 }
 
 def censorIdentifiers[T: Copy](t: T): T = t
-  .copyWith {
-    Mod.collect[Identifier] { id =>
-      id.copy(name = s"""${Console.GREEN}modified:${Console.RESET} ${id.name}""")
-    }
+  .copyWith { (id: Identifier) =>
+    id.copy(name = s"""${Console.GREEN}modified:${Console.RESET} ${id.name}""")
   }
 
 @main def main(): Unit = {
