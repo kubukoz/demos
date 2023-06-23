@@ -2,6 +2,9 @@
 //> using plugin "org.polyvariant:::better-tostring:0.3.17"
 //> using option "-no-indent"
 
+import cats.implicits._
+import cats.Functor
+
 import scala.collection.immutable.ListMap
 import scala.compiletime._
 import scala.deriving.Mirror
@@ -62,8 +65,8 @@ object Copy {
       }
   }
 
-  given [T: Copy: AnyTypeTest]: Copy[List[T]] with {
-    override def copyWith(t: List[T])(f: Mod): List[T] = t.map(_.copyWith(f(_)))
+  given [T: Copy: AnyTypeTest, F[_]: Functor]: Copy[F[T]] with {
+    override def copyWith(t: F[T])(f: Mod): F[T] = t.map(_.copyWith(f(_)))
   }
 
   given [K: Copy, V: Copy]: Copy[ListMap[K, V]] with {
