@@ -6,7 +6,7 @@ use alloy#simpleRestJson
 
 @simpleRestJson
 service WeatherService {
-    operations: [GetWeather]
+    operations: [GetWeather, NoOutput]
 }
 
 @http(method: "GET", uri: "/weather")
@@ -32,4 +32,14 @@ union StringOrIntOrStruct {
 structure Address {
     @required
     street: String
+}
+
+@http(method: "GET", uri: "/no-output")
+@readonly
+operation NoOutput {
+    input := {
+        @required
+        @httpQuery("id")
+        id: Integer
+    }
 }

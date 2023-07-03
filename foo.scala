@@ -1,8 +1,8 @@
-//> using scala "3.2.2"
-//> using lib "com.disneystreaming.smithy4s::smithy4s-dynamic:0.17.9"
-//> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.17.9"
-//> using lib "org.http4s::http4s-ember-server:0.23.19"
-//> using lib "com.disneystreaming.alloy:alloy-core:0.1.18"
+//> using scala "3.3.0"
+//> using lib "com.disneystreaming.smithy4s::smithy4s-dynamic:0.18.0-595-e8a6dc6"
+//> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.18.0-595-e8a6dc6"
+//> using lib "org.http4s::http4s-ember-server:0.23.22"
+//> using lib "com.disneystreaming.alloy:alloy-core:0.2.3"
 //> using resourceDir "./resources"
 import cats.effect.IOApp
 import cats.effect.IO
@@ -50,9 +50,14 @@ object Main extends IOApp.Simple {
     def enumeration[E](
       shapeId: ShapeId,
       hints: Hints,
+      tag: smithy4s.schema.EnumTag,
       values: List[EnumValue[E]],
       total: E => EnumValue[E],
     ): ExampleOf[E] = () => pick(values.map(_.value))
+
+    def nullable[A](underlying: Schema[A]): ExampleOf[Option[A]] =
+      val base = underlying.compile(this)
+      () => Option.when(Random.nextBoolean())(base.example())
 
     def lazily[A](suspend: Lazy[Schema[A]]): ExampleOf[A] =
       val u = suspend.map(_.compile(this))
@@ -60,7 +65,6 @@ object Main extends IOApp.Simple {
 
     def primitive[P](shapeId: ShapeId, hints: Hints, tag: Primitive[P]): ExampleOf[P] =
       tag match {
-        case PUnit       => () => ()
         case PInt        => () => Random.nextInt()
         case PLong       => () => Random.nextLong()
         case PFloat      => () => Random.nextFloat()
