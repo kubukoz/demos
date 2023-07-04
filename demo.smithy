@@ -6,7 +6,11 @@ use alloy#simpleRestJson
 
 @simpleRestJson
 service WeatherService {
-    operations: [GetWeather, NoOutput]
+    operations: [
+        GetWeather
+        NoOutput
+        OptionalOutput
+    ]
 }
 
 @http(method: "GET", uri: "/weather")
@@ -41,5 +45,14 @@ operation NoOutput {
         @required
         @httpQuery("id")
         id: Integer
+    }
+}
+
+@http(method: "GET", uri: "/optional-output")
+@readonly
+operation OptionalOutput {
+    output := {
+        @httpPayload
+        bod: String
     }
 }

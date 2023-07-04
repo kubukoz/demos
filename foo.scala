@@ -36,6 +36,7 @@ import smithy4s.Document
 import org.http4s.HttpApp
 import java.nio.file.Files
 import java.nio.file.Paths
+import smithy4s.schema.Field.Wrapped
 
 object Main extends IOApp.Simple {
 
@@ -116,7 +117,14 @@ object Main extends IOApp.Simple {
       fields: Vector[Field[smithy4s.schema.Schema, S, ?]],
       make: IndexedSeq[Any] => S,
     ): ExampleOf[S] =
-      val fieldsCompiled = fields.map(_.instance.compile(this))
+      val fieldsCompiled = fields.map(f =>
+        f
+          .instanceA(new Field.ToOptional[Schema] {
+            override def apply[A0](fa: Schema[A0]): Schema[Option[A0]] = fa.nullable
+          })
+          .compile(this)
+      )
+
       () =>
         make(
           fieldsCompiled.map(_.example())
