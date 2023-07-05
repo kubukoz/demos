@@ -1,12 +1,9 @@
 //> using scala "2.13.10"
-//> using lib "software.amazon.smithy:smithy-model:1.30.0"
+//> using lib "software.amazon.smithy:smithy-jsonschema:1.33.0"
+import software.amazon.smithy.jsonschema.JsonSchemaConverter
 import software.amazon.smithy.model.Model
-import software.amazon.smithy.model.selector.Selector
+import software.amazon.smithy.model.node.Node
 import software.amazon.smithy.model.shapes.ShapeId
-import scala.jdk.CollectionConverters._
-import software.amazon.smithy.model.transform.ModelTransformer
-import software.amazon.smithy.model.shapes.ServiceShape
-import software.amazon.smithy.model.shapes.OperationShape
 
 val r = Model
   .assembler()
@@ -17,17 +14,18 @@ val r = Model
       |structure Foo { @required s: String }
       |""".stripMargin,
   )
-  .addUnparsedModel(
-    "test2.smithy",
-    """namespace test
-      |
-      |structure Foo { s: String }
-      |""".stripMargin,
-  )
   .assemble()
+  .unwrap()
 
-r.getValidationEvents().asScala.toList
-
-val m = r.unwrap()
-
-// ModelTransformer.create().
+println {
+  Node.prettyPrintJson {
+    JsonSchemaConverter
+      .builder()
+      .model(r)
+      .build()
+      .convertShape(
+        r.expectShape(ShapeId.from("test#Foo"))
+      )
+      .toNode()
+  }
+}
