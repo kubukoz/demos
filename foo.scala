@@ -5,6 +5,7 @@
 //> using lib "com.disneystreaming.alloy:alloy-core:0.2.3"
 //> using lib "com.kubukoz::debug-utils:1.1.3"
 //> using resourceDir "./resources"
+//> using option "-Wunused:all"
 import cats.effect.IOApp
 import cats.effect.IO
 import org.http4s.ember.server.EmberServerBuilder
@@ -37,10 +38,6 @@ import smithy4s.Document
 import org.http4s.HttpApp
 import java.nio.file.Files
 import java.nio.file.Paths
-import smithy4s.schema.Field.Wrapped
-import com.kubukoz.DebugUtils
-import smithy4s.kinds.Kind1
-import smithy4s.kinds.Kind5
 
 object Main extends IOApp.Simple {
 
