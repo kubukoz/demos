@@ -1,6 +1,6 @@
 //> using scala "3.3.0"
-//> using lib "com.disneystreaming.smithy4s::smithy4s-dynamic:0.18.0-634-afed74e"
-//> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.18.0-634-afed74e"
+//> using lib "com.disneystreaming.smithy4s::smithy4s-dynamic:0.18.0-660-83ca092"
+//> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.18.0-660-83ca092"
 //> using lib "org.http4s::http4s-ember-server:0.23.22"
 //> using lib "com.disneystreaming.alloy:alloy-core:0.2.3"
 //> using lib "com.kubukoz::debug-utils:1.1.3"
@@ -45,7 +45,10 @@ object Main extends IOApp.Simple {
     def example(): A
   }
 
-  def pick[A](as: Seq[A]): A = as(Random.nextInt(as.size))
+  // explicit seed can be set
+  val random = new Random( /* 1000L */ )
+
+  def pick[A](as: Seq[A]): A = as(random.nextInt(as.size))
 
   object ExampleVisitor extends SchemaVisitor[ExampleOf] {
 
@@ -57,9 +60,9 @@ object Main extends IOApp.Simple {
       total: E => EnumValue[E],
     ): ExampleOf[E] = () => pick(values.map(_.value))
 
-    def nullable[A](underlying: Schema[A]): ExampleOf[Option[A]] =
+    def option[A](underlying: Schema[A]): ExampleOf[Option[A]] =
       val base = underlying.compile(this)
-      () => Option.when(Random.nextBoolean())(base.example())
+      () => Option.when(random.nextBoolean())(base.example())
 
     def lazily[A](suspend: Lazy[Schema[A]]): ExampleOf[A] =
       val u = suspend.map(_.compile(this))
@@ -67,15 +70,15 @@ object Main extends IOApp.Simple {
 
     def primitive[P](shapeId: ShapeId, hints: Hints, tag: Primitive[P]): ExampleOf[P] =
       tag match {
-        case PInt        => () => Random.nextInt()
-        case PLong       => () => Random.nextLong()
-        case PFloat      => () => Random.nextFloat()
-        case PDouble     => () => Random.nextDouble()
-        case PShort      => () => Random.nextBytes(1).head.toShort
-        case PByte       => () => Random.nextBytes(1).head
-        case PBigInt     => () => BigInt(Random.nextLong())
-        case PBigDecimal => () => BigDecimal(Random.nextDouble())
-        case PBoolean    => () => Random.nextBoolean()
+        case PInt        => () => random.nextInt()
+        case PLong       => () => random.nextLong()
+        case PFloat      => () => random.nextFloat()
+        case PDouble     => () => random.nextDouble()
+        case PShort      => () => random.nextBytes(1).head.toShort
+        case PByte       => () => random.nextBytes(1).head
+        case PBigInt     => () => BigInt(random.nextLong())
+        case PBigDecimal => () => BigDecimal(random.nextDouble())
+        case PBoolean    => () => random.nextBoolean()
         case PString =>
           () =>
             pick(
@@ -88,8 +91,8 @@ object Main extends IOApp.Simple {
               )
             )
         case PUUID      => () => java.util.UUID.randomUUID()
-        case PTimestamp => () => Timestamp(Random.nextLong(Long.MaxValue), Random.nextInt(1000_000))
-        case PBlob      => () => ByteArray(Random.nextBytes(10))
+        case PTimestamp => () => Timestamp(random.nextLong(Long.MaxValue), random.nextInt(1000_000))
+        case PBlob      => () => ByteArray(random.nextBytes(10))
         case PDocument =>
           () =>
             pick(
@@ -115,16 +118,10 @@ object Main extends IOApp.Simple {
     def struct[S](
       shapeId: ShapeId,
       hints: Hints,
-      fields: Vector[Field[smithy4s.schema.Schema, S, ?]],
+      fields: Vector[Field[S, ?]],
       make: IndexedSeq[Any] => S,
     ): ExampleOf[S] =
-      val fieldsCompiled = fields.map(f =>
-        f
-          .instanceA(new Field.ToOptional[Schema] {
-            override def apply[A0](fa: Schema[A0]): Schema[Option[A0]] = fa.nullable
-          })
-          .compile(this)
-      )
+      val fieldsCompiled = fields.map(_.schema.compile(this))
 
       () =>
         make(
@@ -134,8 +131,8 @@ object Main extends IOApp.Simple {
     def union[U](
       shapeId: ShapeId,
       hints: Hints,
-      alternatives: Vector[Alt[smithy4s.schema.Schema, U, ?]],
-      dispatch: Dispatcher[smithy4s.schema.Schema, U],
+      alternatives: Vector[Alt[U, ?]],
+      dispatch: Dispatcher[U],
     ): ExampleOf[U] =
       val alts = alternatives.map { alt =>
         val i = alt.instance.compile(this)

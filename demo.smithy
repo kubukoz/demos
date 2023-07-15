@@ -36,6 +36,7 @@ union StringOrIntOrStruct {
 structure Address {
     @required
     street: String
+    extra: String
 }
 
 @http(method: "GET", uri: "/no-output")
