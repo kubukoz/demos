@@ -3,6 +3,7 @@
 //> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.18.0-634-afed74e"
 //> using lib "org.http4s::http4s-ember-server:0.23.22"
 //> using lib "com.disneystreaming.alloy:alloy-core:0.2.3"
+//> using lib "com.kubukoz::debug-utils:1.1.3"
 //> using resourceDir "./resources"
 import cats.effect.IOApp
 import cats.effect.IO
@@ -37,6 +38,9 @@ import org.http4s.HttpApp
 import java.nio.file.Files
 import java.nio.file.Paths
 import smithy4s.schema.Field.Wrapped
+import com.kubukoz.DebugUtils
+import smithy4s.kinds.Kind1
+import smithy4s.kinds.Kind5
 
 object Main extends IOApp.Simple {
 
@@ -184,18 +188,20 @@ object Main extends IOApp.Simple {
   }
 
   def interpret[Alg[_[_, _, _, _, _]]](using service: Service[Alg]): HttpRoutes[IO] =
-    val pf: service.FunctorInterpreter[IO] =
-      new service.FunctorInterpreter[IO] {
+    val pf: service.FunctorEndpointCompiler[IO] =
+      new service.FunctorEndpointCompiler[IO] {
         override def apply[I, E, O, SI, SO](
-          fa: service.Operation[I, E, O, SI, SO]
-        ): IO[O] = {
-          val (_, e) = service.endpoint(fa)
-          e.output.compile(ExampleVisitor).example().pure[IO]
+          e: service.Endpoint[I, E, O, SI, SO]
+        ): I => IO[O] = {
+          val visitor = e.output.compile(ExampleVisitor)
+
+          Function.const(visitor.example().pure[IO])
         }
+
       }
 
     println("Building service: " + service.id)
-    val impl = service.fromPolyFunction(pf)
+    val impl = service.impl(pf)
     SimpleRestJsonBuilder.routes(impl).make.toTry.get
 
   override def run: IO[Unit] =
