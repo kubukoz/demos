@@ -15,7 +15,7 @@ on:
   push:
     branches: ["scheduled-job"]
   schedule:
-    - cron: "* * * * *"
+    - cron: "*/5 * * * *"
 
 
 jobs:
