@@ -14,8 +14,8 @@ on:
         type: boolean
   push:
     branches: ["scheduled-job"]
-  schedule:
-    - cron: "*/5 * * * *"
+  # schedule:
+  #   - cron: "*/5 * * * *"
 
 
 jobs:
