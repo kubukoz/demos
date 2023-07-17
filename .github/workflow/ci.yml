@@ -14,11 +14,14 @@ on:
         type: boolean
   push:
     branches: ["scheduled-job"]
-  schedule:
-    - cron: '* * 17-18 7 *'
+  # schedule:
+  #   - cron: '* * 17-18 7 *'
 
 
 jobs:
+  build:
+    steps:
+      - echo "building"
   release:
     name: Release
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'schedule' || github.event.inputs.publishSnapshot
