@@ -12,16 +12,10 @@ val r = Model
   .assembler()
   .addUnparsedModel(
     "test.smithy",
-    """namespace test
+    """$version: "2"
+      |namespace test
       |
       |structure Foo { @required s: String }
-      |""".stripMargin,
-  )
-  .addUnparsedModel(
-    "test2.smithy",
-    """namespace test
-      |
-      |structure Foo { s: String }
       |""".stripMargin,
   )
   .assemble()
