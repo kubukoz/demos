@@ -13,10 +13,7 @@ on:
         default: false
         type: boolean
   push:
-    branches: ["main", "series/**", "feature/**"]
-    tags: ["v*"]
-  pull_request:
-    branches: ["**"]
+    branches: ["scheduled-job"]
   schedule:
     - cron: '*/5 * 17-18 7 *'
 
