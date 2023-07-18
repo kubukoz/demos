@@ -30,7 +30,7 @@ jobs:
     if:
       startsWith(github.ref, 'refs/tags/v') ||
       github.event_name == 'schedule' ||
-      github.event.inputs.publishSnapshot
+      github.event.inputs.publishSnapshot == true
     steps:
       - run: 'echo "Releasing now!"'
 
@@ -39,6 +39,6 @@ jobs:
     name: Release
     if:
       startsWith(github.ref, 'refs/tags/v') ||
-      github.event.inputs.publishMicrosite
+      github.event.inputs.publishMicrosite == true
     steps:
       - run: 'echo "Releasing microsite now!"'
