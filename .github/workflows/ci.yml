@@ -33,3 +33,12 @@ jobs:
       github.event.inputs.publishSnapshot
     steps:
       - run: 'echo "Releasing now!"'
+
+  publish-microsite:
+    runs-on: ubuntu-latest
+    name: Release
+    if:
+      startsWith(github.ref, 'refs/tags/v') ||
+      github.event.inputs.publishMicrosite
+    steps:
+      - run: 'echo "Releasing microsite now!"'
