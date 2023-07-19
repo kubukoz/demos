@@ -10,6 +10,7 @@ service WeatherService {
         GetWeather
         NoOutput
         OptionalOutput
+        Errorables
     ]
 }
 
@@ -57,3 +58,19 @@ operation OptionalOutput {
         bod: String
     }
 }
+
+@http(method: "POST", uri: "/errorables")
+operation Errorables {
+    output := {
+        successText: String
+    }
+    errors: [NotFoundError, BadRequestError]
+}
+
+@error("client")
+@httpError(404)
+structure NotFoundError {}
+
+@error("client")
+@httpError(400)
+structure BadRequestError {}

@@ -41,12 +41,21 @@ import java.nio.file.Paths
 
 object Main extends IOApp.Simple {
 
-  trait ExampleOf[A] {
-    def example(): A
-  }
-
   // explicit seed can be set
   val random = new Random( /* 1000L */ )
+
+  trait ExampleOf[A] {
+    def example(): A
+
+    def either[B](another: ExampleOf[B]): ExampleOf[Either[A, B]] =
+      () =>
+        if (random.nextBoolean())
+          Left(example())
+        else
+          Right(another.example())
+
+    def map[B](f: A => B): ExampleOf[B] = () => f(example())
+  }
 
   def pick[A](as: Seq[A]): A = as(random.nextInt(as.size))
 
@@ -187,9 +196,14 @@ object Main extends IOApp.Simple {
         override def apply[I, E, O, SI, SO](
           e: service.Endpoint[I, E, O, SI, SO]
         ): I => IO[O] = {
-          val visitor = e.output.compile(ExampleVisitor)
+          val outExample = e.output.compile(ExampleVisitor)
+          val errExample = e
+            .errorable
+            .map(e => e.error.compile(ExampleVisitor).map(e.unliftError(_)))
 
-          Function.const(visitor.example().pure[IO])
+          val combinedExample = errExample.fold(outExample.map(_.asRight))(_.either(outExample))
+
+          _ => combinedExample.example().liftTo[IO]
         }
 
       }
