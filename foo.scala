@@ -1,11 +1,11 @@
 //> using scala "3.3.0"
-//> using lib "com.disneystreaming.smithy4s::smithy4s-dynamic:0.18.0-698-c1f0883"
-//> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.18.0-698-c1f0883"
+//> using lib "com.disneystreaming.smithy4s::smithy4s-dynamic:0.18.0-710-219c644"
+//> using lib "com.disneystreaming.smithy4s::smithy4s-http4s:0.18.0-710-219c644"
 //> using lib "org.http4s::http4s-ember-server:0.23.22"
 //> using lib "com.disneystreaming.alloy:alloy-core:0.2.3"
 //> using lib "com.kubukoz::debug-utils:1.1.3"
 //> using resourceDir "./resources"
-//> using option "-Wunused:all"
+//> using options "-Wunused:all" "-deprecation"
 import cats.effect.IOApp
 import cats.effect.IO
 import org.http4s.ember.server.EmberServerBuilder
@@ -144,7 +144,7 @@ object Main extends IOApp.Simple {
       dispatch: Dispatcher[U],
     ): ExampleOf[U] =
       val alts = alternatives.map { alt =>
-        val i = alt.instance.compile(this)
+        val i = alt.schema.compile(this)
         () => alt.inject(i.example())
       }
 
