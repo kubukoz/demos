@@ -101,4 +101,68 @@ scan(".=[]{},")
 scan("import com.kubukoz#identifier")
 scan("import co111m.kub1ukoz#ident_ifie---,_,r\nimport a")
 
+case class FQN(
+  namespace: List[String],
+  name: String,
+)
+
+def parseIdent(t: List[Token]) = {
+  var tokens = t
+
+  // find hash, which is the central piece here
+  val hashIndex = tokens.indexOf(Token.Hash)
+
+  def parseNamespace(tokens: List[Token]): List[String] =
+    tokens match {
+      case Token.Identifier(value) :: Token.Dot :: rest => value :: parseNamespace(rest)
+      case Token.Identifier(value) :: Nil               => List(value)
+      case Token.Identifier(value) :: rest =>
+        value :: "ERROR(no dot, extra tokens)" :: parseNamespace(rest)
+      case somethingElse :: Nil  => List(s"ERROR($somethingElse)")
+      case somethingElse :: rest => s"ERROR($somethingElse)" :: parseNamespace(rest)
+      case Nil                   => "ERROR(nothing left for namespace)" :: Nil
+    }
+
+  def parseName(tokens: List[Token]): String =
+    tokens match {
+      case Token.Identifier(value) :: Nil  => value
+      case Token.Identifier(value) :: more => value + s"(more tokens afterwards: $more)"
+      case others => s"ERROR(no identifier after hash, extra tokens: $others)"
+    }
+
+  hashIndex match {
+    case n if n > 0 =>
+      // there's defo a hash here.
+      // split at it and deconstruct namespace
+      val (nsTokens, nameTokens) = tokens.splitAt(n)
+
+      FQN(parseNamespace(nsTokens), parseName(nameTokens.tail))
+
+    case n if n < 0 =>
+      // hash is missing.
+      // treat everything as the namespace
+      FQN(parseNamespace(tokens), "NULL")
+
+    case n if n == 0 =>
+      // hash is the first token.
+      // treat everything as the name
+      FQN(List.empty, parseName(tokens))
+  }
+
+}
+
+scan("com.kubukoz#foo")
+parseIdent(scan("com.kubukoz#foo"))
+// so far so good
+// what if no hash?
+parseIdent(scan("com.kubukozfoo"))
+// what if no ns?
+parseIdent(scan("#foo"))
+
+// what if... extra tokens?
+parseIdent(scan("com.ku3bukoz#foo"))
+parseIdent(scan("com.kubukoz#foo.bar"))
+parseIdent(scan("com.kubukoz#foo#bar"))
+parseIdent(scan("com.kubukoz#foo#bar.boo"))
+
 Instant.now()
