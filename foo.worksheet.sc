@@ -1,3 +1,5 @@
+//> using lib "org.typelevel::cats-core:2.10.0"
+import cats.syntax.all.*
 import java.time.Instant
 
 import scala.util.matching.Regex
@@ -11,27 +13,65 @@ import scala.util.matching.Regex
 // import = importToken namespace hashToken identifier
 // program = import*
 
-sealed trait Token extends Product with Serializable
+sealed trait Token extends Product with Serializable {
+  // todo: might be useful
+  // def kind: SyntaxKind
+  def text: String
+}
 
 object Token {
-  case object Import extends Token
-  case object Dot extends Token
-  case object Comma extends Token
-  case object Hash extends Token
-  case object LB extends Token
-  case object RB extends Token
-  case object LBR extends Token
-  case object RBR extends Token
-  case object Equals extends Token
-  case object Space extends Token
-  case object Newline extends Token
+
+  case object Import extends Token {
+    def text: String = "import"
+  }
+
+  case object Dot extends Token {
+    def text: String = "."
+  }
+
+  case object Comma extends Token {
+    def text: String = ","
+  }
+
+  case object Hash extends Token {
+    def text: String = "#"
+  }
+
+  case object LB extends Token {
+    def text: String = "["
+  }
+
+  case object RB extends Token {
+    def text: String = "]"
+  }
+
+  case object LBR extends Token {
+    def text: String = "{"
+  }
+
+  case object RBR extends Token {
+    def text: String = "}"
+  }
+
+  case object Equals extends Token {
+    def text: String = "="
+  }
+
+  case object Space extends Token {
+    def text: String = " "
+  }
+
+  case object Newline extends Token {
+    def text: String = "\n"
+
+  }
 
   case class Identifier(
-    value: String
+    text: String
   ) extends Token
 
   case class Error(
-    value: String
+    text: String
   ) extends Token
 
 }
@@ -101,68 +141,191 @@ scan(".=[]{},")
 scan("import com.kubukoz#identifier")
 scan("import co111m.kub1ukoz#ident_ifie---,_,r\nimport a")
 
-case class FQN(
-  namespace: List[String],
-  name: String,
-)
+enum SyntaxKind {
+  case File
+  case FQN
+  case Namespace
+  case Identifier
+  case ERROR
+}
 
-def parseIdent(t: List[Token]) = {
-  var tokens = t
+// library
+case class GreenNode(
+  kind: SyntaxKind,
+  width: Int,
+  children: List[Either[GreenNode, Token]],
+) {
+  def cast[A](using mirror: AstNodeMirror[A]): Option[A] = mirror.cast(this)
+}
 
-  // find hash, which is the central piece here
-  val hashIndex = tokens.indexOf(Token.Hash)
+object GreenNode {
+  def builder(kind: SyntaxKind) = new GreenNodeBuilder(kind)
 
-  def parseNamespace(tokens: List[Token]): List[String] =
-    tokens match {
-      case Token.Identifier(value) :: Token.Dot :: rest => value :: parseNamespace(rest)
-      case Token.Identifier(value) :: Nil               => List(value)
-      case Token.Identifier(value) :: rest =>
-        value :: "ERROR(no dot, extra tokens)" :: parseNamespace(rest)
-      case somethingElse :: Nil  => List(s"ERROR($somethingElse)")
-      case somethingElse :: rest => s"ERROR($somethingElse)" :: parseNamespace(rest)
-      case Nil                   => "ERROR(nothing left for namespace)" :: Nil
+  def error(
+    token: Token
+  ): GreenNode = builder(SyntaxKind.ERROR).addChild(token).build()
+
+  class GreenNodeBuilder(kind: SyntaxKind) {
+    private var _width: Int = _
+    private var _children: Vector[Either[GreenNode, Token]] = Vector.empty
+
+    def addChild(child: GreenNode): this.type = addChild(child.asLeft)
+    def addChild(child: Token): this.type = addChild(child.asRight)
+
+    def addChild(child: Either[GreenNode, Token]): this.type = {
+      this._children :+= child
+      this
     }
 
-  def parseName(tokens: List[Token]): String =
-    tokens match {
-      case Token.Identifier(value) :: Nil  => value
-      case Token.Identifier(value) :: more => value + s"(more tokens afterwards: $more)"
-      case others => s"ERROR(no identifier after hash, extra tokens: $others)"
-    }
+    def build(): GreenNode = GreenNode(
+      kind = kind,
+      width = _children.foldMap(_.fold(_.width, _.text.length())),
+      children = _children.toList,
+    )
 
-  hashIndex match {
-    case n if n > 0 =>
-      // there's defo a hash here.
-      // split at it and deconstruct namespace
-      val (nsTokens, nameTokens) = tokens.splitAt(n)
-
-      FQN(parseNamespace(nsTokens), parseName(nameTokens.tail))
-
-    case n if n < 0 =>
-      // hash is missing.
-      // treat everything as the namespace
-      FQN(parseNamespace(tokens), "NULL")
-
-    case n if n == 0 =>
-      // hash is the first token.
-      // treat everything as the name
-      FQN(List.empty, parseName(tokens))
   }
 
 }
 
-scan("com.kubukoz#foo")
-parseIdent(scan("com.kubukoz#foo"))
-// so far so good
-// what if no hash?
-parseIdent(scan("com.kubukozfoo"))
-// what if no ns?
-parseIdent(scan("#foo"))
+trait AstNode[Self] {
+  def syntax: GreenNode
+}
 
-// what if... extra tokens?
-parseIdent(scan("com.ku3bukoz#foo"))
-parseIdent(scan("com.kubukoz#foo.bar"))
-parseIdent(scan("com.kubukoz#foo#bar"))
-parseIdent(scan("com.kubukoz#foo#bar.boo"))
+trait AstNodeMirror[Self] {
+  def cast(node: GreenNode): Option[Self]
+}
 
-Instant.now()
+// concrete
+
+case class Ident(syntax: GreenNode) extends AstNode[Ident] {
+
+  def value: Option[String] = syntax
+    .children
+    .collectFirst { case Right(Token.Identifier(value)) => value }
+
+}
+
+given AstNodeMirror[Ident] =
+  node =>
+    node.kind match {
+      case SyntaxKind.Identifier => Some(Ident(node))
+      case _                     => None
+    }
+
+case class Namespace(syntax: GreenNode) extends AstNode[Namespace] {
+
+  def parts: List[Ident] = syntax.children.flatMap {
+    case Left(ident) => ident.cast[Ident]
+    case Right(_)    => None
+  }
+
+}
+
+given AstNodeMirror[Namespace] =
+  node =>
+    node.kind match {
+      case SyntaxKind.Namespace => Some(Namespace(node))
+      case _                    => None
+    }
+
+case class FQN(syntax: GreenNode) extends AstNode[FQN] {
+
+  def namespace: Option[Namespace] = syntax
+    .children
+    .collectFirstSome(_.left.toOption.flatMap(_.cast[Namespace]))
+
+  def name: Option[Ident] = syntax.children.collectFirstSome(_.left.toOption.flatMap(_.cast[Ident]))
+
+}
+
+given AstNodeMirror[FQN] =
+  node =>
+    node.kind match {
+      case SyntaxKind.FQN => Some(FQN(node))
+      case _              => None
+    }
+
+case class Tokens(private var all: List[Token], private var cursor: Int) {
+
+  def eof: Boolean = cursor >= all.length
+
+  def peek(): Token = all(cursor)
+
+  def bump(): Token = {
+    val result = peek()
+    cursor += 1
+    result
+  }
+
+}
+
+object Tokens {
+  def apply(tokens: List[Token]): Tokens = Tokens(tokens, 0)
+}
+
+def parseIdent(
+  tokens: Tokens
+): GreenNode = {
+  val builder = GreenNode.builder(SyntaxKind.Identifier)
+  val next = tokens.bump()
+  next match {
+    case _: Token.Identifier => builder.addChild(next)
+    case other               => builder.addChild(GreenNode.error(other))
+  }
+  builder.build()
+}
+
+def parseNamespace(tokens: Tokens): GreenNode = {
+  val builder = GreenNode.builder(SyntaxKind.Namespace)
+
+  var done = false
+
+  while (!tokens.eof && !done)
+    tokens.peek() match {
+      case t: Token.Identifier =>
+        // todo: after an ident, expect dot or hash (some sort of state machine / another method in the recursive descent?)
+        // if it's an ident, report an error but don't wrap in ERROR
+        // otherwise, wrap in ERROR
+        builder.addChild(parseIdent(tokens))
+
+      case Token.Dot =>
+        // swallow token
+        builder.addChild(tokens.bump())
+
+      case Token.Hash => done = true // end of namespace, move on
+
+      case _ =>
+        // skip extra/invalid tokens. we will report these in the future
+        builder.addChild(GreenNode.error(tokens.bump()))
+        tokens.bump()
+    }
+
+  builder.build()
+}
+
+def parseFQN(tokens: Tokens): GreenNode = {
+  val builder = GreenNode.builder(SyntaxKind.FQN)
+  builder.addChild(parseNamespace(tokens))
+  if (tokens.peek() == Token.Hash) {
+    builder.addChild(tokens.bump())
+  }
+  builder.addChild(parseIdent(tokens))
+  builder.build()
+}
+
+parseIdent(Tokens(Token.Identifier("hello") :: Nil)).cast[Ident].get.value
+
+parseIdent(Tokens(Token.Identifier("hello") :: Token.Identifier("world") :: Nil))
+
+parseNamespace(Tokens(Nil))
+parseNamespace(Tokens(Token.Identifier("hello") :: Nil))
+
+parseNamespace(Tokens(scan("com.kubukoz.world")))
+  .cast[Namespace]
+  .get
+  .parts
+  .map(_.value)
+
+val fqn = parseFQN(Tokens(scan("com.kubukoz#foo"))).cast[FQN]
+fqn.get.namespace.get.parts.map(_.value.get)
+fqn.get.name.get.value.get
