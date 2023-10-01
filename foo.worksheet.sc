@@ -96,6 +96,9 @@ case class SyntaxNode(
       None
     }
 
+  /** Returns children of this node as a SyntaxNode representation. NOTE: direct children that are
+    * tokens are not included: you'll only see children that are green nodes themselves.
+    */
   def children: List[SyntaxNode] = {
     val rawChildren = green.fold(_.children, tok => Nil)
     val childOffsets = rawChildren.scanLeft[Int](offset)(_ + _.fold(_.width, _.width))
@@ -103,7 +106,6 @@ case class SyntaxNode(
     rawChildren.zip(childOffsets).map { (child, offset) =>
       SyntaxNode(offset, Eval.now(this.some), child)
     }
-
   }
 
   def print: String = {
@@ -147,6 +149,7 @@ trait AstNode[Self] { self: Product =>
   }
 
   def allChildNodes[N: AstNodeMirror]: List[N] = syntax.children.mapFilter(_.cast[N])
+
   def firstChildNode[N: AstNodeMirror]: Option[N] = syntax.children.collectFirstSome(_.cast[N])
 
 }
