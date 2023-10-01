@@ -92,11 +92,13 @@ case class SyntaxNode(
 
   def width = green.fold(_.width, _.width)
 
+  def range: (Int, Int) = (offset, offset + width)
+
   def print: String = {
     def go(depth: Int, self: SyntaxNode): String = {
       val content = self.green.fold(_ => "", t => s" \"${t.text}\"")
       "  " * depth +
-        s"""${self.green.fold(_.kind, _.kind)}@${self.offset}..${self.offset + self.width}$content
+        s"""${self.green.fold(_.kind, _.kind)}@${self.range._1}..${self.range._2}$content
            |""".stripMargin +
         self
           .children
@@ -191,11 +193,24 @@ object Tokens {
   def apply(tokens: List[Token]): Tokens = Tokens(tokens, 0)
 }
 
+enum Error {
+  case UnexpectedToken(token: Token)
+  case MisingToken(kind: TokenKind)
+  // case MissingNode(kind: SyntaxKind)
+}
+
+case class ParserState(tokens: Tokens, errors: List[Error])
+
+object ParserState {
+  def init(tokens: List[Token]): ParserState = ParserState(Tokens(tokens), errors = Nil)
+  def fromString(s: String): ParserState = init(scan(s))
+}
+
 def parseIdent(
-  tokens: Tokens
+  state: ParserState
 ): GreenNode = {
   val builder = GreenNode.builder(SyntaxKind.Identifier)
-  val next = tokens.bump()
+  val next = state.tokens.bump()
   next.kind match {
     case TokenKind.IDENT => builder.addChild(next)
     case _               => builder.addChild(GreenNode.error(next))
@@ -203,7 +218,8 @@ def parseIdent(
   builder.build()
 }
 
-def parseNamespace(tokens: Tokens): GreenNode = {
+def parseNamespace(state: ParserState): GreenNode = {
+  import state.tokens
   val builder = GreenNode.builder(SyntaxKind.Namespace)
 
   var done = false
@@ -214,7 +230,7 @@ def parseNamespace(tokens: Tokens): GreenNode = {
         // todo: after an ident, expect dot or hash (some sort of state machine / another method in the recursive descent?)
         // if it's an ident, report an error but don't wrap in ERROR
         // otherwise, wrap in ERROR
-        builder.addChild(parseIdent(tokens))
+        builder.addChild(parseIdent(state))
 
       case TokenKind.DOT =>
         // swallow token
@@ -231,43 +247,48 @@ def parseNamespace(tokens: Tokens): GreenNode = {
   builder.build()
 }
 
-def parseFQN(tokens: Tokens): GreenNode = {
+def parseFQN(state: ParserState): GreenNode = {
+  import state.tokens
   val builder = GreenNode.builder(SyntaxKind.FQN)
-  builder.addChild(parseNamespace(tokens))
+  builder.addChild(parseNamespace(state))
   if (tokens.peek().kind == TokenKind.HASH) {
     builder.addChild(tokens.bump())
   }
-  builder.addChild(parseIdent(tokens))
+  builder.addChild(parseIdent(state))
   builder.build()
 }
 
-SyntaxNode.newRoot(parseIdent(Tokens(TokenKind.IDENT("hello") :: Nil))).cast[Identifier].get.value
+SyntaxNode
+  .newRoot(parseIdent(ParserState.init(TokenKind.IDENT("hello") :: Nil)))
+  .cast[Identifier]
+  .get
+  .value
 
-parseIdent(Tokens(TokenKind.IDENT("hello") :: TokenKind.IDENT("world") :: Nil))
+parseIdent(ParserState.init(TokenKind.IDENT("hello") :: TokenKind.IDENT("world") :: Nil))
 
-parseNamespace(Tokens(Nil))
-parseNamespace(Tokens(TokenKind.IDENT("hello") :: Nil))
+parseNamespace(ParserState.init(Nil))
+parseNamespace(ParserState.init(TokenKind.IDENT("hello") :: Nil))
 
 SyntaxNode
-  .newRoot(parseNamespace(Tokens(scan("com.kubukoz.world"))))
+  .newRoot(parseNamespace(ParserState.init(scan("com.kubukoz.world"))))
   .cast[Namespace]
   .get
   .parts
   .map(_.value)
 
-val fqn = SyntaxNode.newRoot(parseFQN(Tokens(scan("com.kubukoz#foo")))).cast[FQN]
+val fqn = SyntaxNode.newRoot(parseFQN(ParserState.fromString("com.kubukoz#foo"))).cast[FQN]
 fqn.get.namespace.get.parts.map(_.value.get)
 fqn.get.name.get.value.get
 
 //todo: this should have all tokens, even extraneous ones. Should render to the string above.
-parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).allTokens.foldMap(_.text)
+parseFQN(ParserState.fromString("co111m.kub1ukoz#shrek_blob---,_,r")).allTokens.foldMap(_.text)
 
-parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r")))
-parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).print
+parseFQN(ParserState.fromString("co111m.kub1ukoz#shrek_blob---,_,r"))
+parseFQN(ParserState.fromString("co111m.kub1ukoz#shrek_blob---,_,r")).print
 
 val text = "com.kubukoz#helloworld"
 pprint.pprintln(scan(text))
-pprint.pprintln(parseFQN(Tokens(scan(text))))
-pprint.pprintln(SyntaxNode.newRoot(parseFQN(Tokens(scan(text)))))
-// pprint.pprintln(SyntaxNode.newRoot(parseFQN(Tokens(scan(text)))).children)
-println(SyntaxNode.newRoot(parseFQN(Tokens(scan(text)))).print)
+pprint.pprintln(parseFQN(ParserState.init(scan(text))))
+pprint.pprintln(SyntaxNode.newRoot(parseFQN(ParserState.init(scan(text)))))
+// pprint.pprintln(SyntaxNode.newRoot(parseFQN(ParserState.init(scan(text)))).children)
+println(SyntaxNode.newRoot(parseFQN(ParserState.fromString(text))).print)
