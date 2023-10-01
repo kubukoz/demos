@@ -1,9 +1,7 @@
 //> using lib "org.typelevel::cats-core:2.10.0"
 //> using lib "com.lihaoyi::pprint:0.8.1"
-//> using lib "org.polyvariant::colorize:0.3.2"
 //> using option "-Wunused:imports"
-import scala.quoted.Quotes
-import org.polyvariant.colorize.string.ColorizedString
+import scala.annotation.tailrec
 import cats.Eval
 import cats.syntax.all.*
 import scala.deriving.Mirror
@@ -76,23 +74,37 @@ case class SyntaxNode(
 ) {
   def cast[A](using mirror: AstNodeMirror[A]): Option[A] = mirror.cast(this)
 
-  def children: List[SyntaxNode] = {
-    def go(offset: Int, remaining: List[Either[GreenNode, Token]]): List[SyntaxNode] =
-      remaining match {
-        case Nil => Nil
-        case one :: more =>
-          SyntaxNode(offset, Eval.later(this.some), one) :: go(
-            offset + one.fold(_.width, _.width),
-            more,
-          )
-      }
-
-    go(offset, green.fold(_.children, _ => Nil))
-  }
-
   def width = green.fold(_.width, _.width)
 
-  def range: (Int, Int) = (offset, offset + width)
+  def range: (Int, Int) = (offset, offsetUntil)
+
+  def offsetUntil: Int = offset + width
+
+  def includes(index: Int): Boolean = offset.until(offsetUntil).contains(index)
+
+  def pathTo: List[SyntaxKind] = parent
+    .value
+    .foldMap { parent =>
+      parent.pathTo ++
+        parent.green.fold(_.kind.some, _ => None).toList
+    }
+
+  def findAt(index: Int): Option[SyntaxNode] =
+    if (includes(index))
+      children.collectFirstSome(_.findAt(index)).orElse(this.some)
+    else {
+      None
+    }
+
+  def children: List[SyntaxNode] = {
+    val rawChildren = green.fold(_.children, tok => Nil)
+    val childOffsets = rawChildren.scanLeft[Int](offset)(_ + _.fold(_.width, _.width))
+
+    rawChildren.zip(childOffsets).map { (child, offset) =>
+      SyntaxNode(offset, Eval.now(this.some), child)
+    }
+
+  }
 
   def print: String = {
     def go(depth: Int, self: SyntaxNode): String = {
@@ -292,3 +304,10 @@ pprint.pprintln(parseFQN(ParserState.init(scan(text))))
 pprint.pprintln(SyntaxNode.newRoot(parseFQN(ParserState.init(scan(text)))))
 // pprint.pprintln(SyntaxNode.newRoot(parseFQN(ParserState.init(scan(text)))).children)
 println(SyntaxNode.newRoot(parseFQN(ParserState.fromString(text))).print)
+println(
+  SyntaxNode
+    .newRoot(parseFQN(ParserState.fromString(text)))
+    .findAt("com.kubukoz#h".length)
+    .get
+    .pathTo
+)
