@@ -2,10 +2,12 @@ package scanner
 
 import cats.syntax.all.*
 
-case class Token(kind: TokenKind, text: String)
+case class Token(kind: TokenKind, text: String) {
+  def width = text.length()
+}
 
 enum TokenKind {
-  case Import, Dot, Comma, Hash, LB, RB, LBR, RBR, Equals, Space, Newline, Identifier, Comment,
+  case KW_IMPORT, DOT, COMMA, HASH, LB, RB, LBR, RBR, EQ, SPACE, NEWLINE, IDENT, COMMENT,
     Error
 
   def apply(text: String): Token = Token(this, text)
@@ -32,18 +34,18 @@ def scan(
     .reduce(_ orElse _)
 
   val readOne: PartialFunction[Char, Unit] = simpleTokens(
-    '.' -> TokenKind.Dot,
-    ',' -> TokenKind.Comma,
-    '#' -> TokenKind.Hash,
+    '.' -> TokenKind.DOT,
+    ',' -> TokenKind.COMMA,
+    '#' -> TokenKind.HASH,
     '[' -> TokenKind.LB,
     ']' -> TokenKind.RB,
     '{' -> TokenKind.LBR,
     '}' -> TokenKind.RBR,
-    '=' -> TokenKind.Equals,
+    '=' -> TokenKind.EQ,
   ).orElse {
     case letter if letter.isLetter =>
       val (letters, rest) = remaining.span(_.isLetter)
-      add(TokenKind.Identifier(letters))
+      add(TokenKind.IDENT(letters))
       remaining = rest
   }
 
@@ -54,10 +56,10 @@ def scan(
     if (whitespace.isEmpty) Nil
     else if (isNewline(whitespace.head)) {
       val (nl, rest) = whitespace.span(isNewline)
-      TokenKind.Newline(nl) :: whitespaceChains(rest)
+      TokenKind.NEWLINE(nl) :: whitespaceChains(rest)
     } else {
       val (wsp, rest) = whitespace.span(!isNewline(_))
-      TokenKind.Space(wsp) :: whitespaceChains(rest)
+      TokenKind.SPACE(wsp) :: whitespaceChains(rest)
     }
   }
 
@@ -89,7 +91,7 @@ def scan(
         }
       }
 
-      add(TokenKind.Comment(commentFull.toString()))
+      add(TokenKind.COMMENT(commentFull.toString()))
 
       true
     }

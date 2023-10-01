@@ -1,17 +1,21 @@
 //> using lib "org.typelevel::cats-core:2.10.0"
 //> using lib "com.lihaoyi::pprint:0.8.1"
+//> using lib "org.polyvariant::colorize:0.3.2"
 //> using option "-Wunused:imports"
+import scala.quoted.Quotes
+import org.polyvariant.colorize.string.ColorizedString
+import cats.Eval
 import cats.syntax.all.*
 import scala.deriving.Mirror
 import scanner.*
 import util.chaining.*
+
 scan(".=[]{},")
 scan("import com.kubukoz#identifier")
 scan("import co111m.kub1ukoz#ident_ifie---,_,r\nimport a")
 
 case class GreenNode(
   kind: SyntaxKind,
-  width: Int,
   children: List[Either[GreenNode, Token]],
 ) {
   def cast[A](using mirror: AstNodeMirror[A]): Option[A] = mirror.cast(this)
@@ -19,6 +23,8 @@ case class GreenNode(
   def allTokens: List[Token] = children.flatMap {
     _.fold(_.allTokens, _.some)
   }
+
+  lazy val width: Int = children.foldMap(_.fold(_.width, _.text.length()))
 
   def print: String = {
     def go(depth: Int, self: GreenNode): String =
@@ -57,11 +63,57 @@ object GreenNode {
 
     def build(): GreenNode = GreenNode(
       kind = kind,
-      width = _children.foldMap(_.fold(_.width, _.text.length())),
       children = _children.toList,
     )
 
   }
+
+}
+
+case class SyntaxNode(
+  offset: Int,
+  parent: Eval[Option[SyntaxNode]],
+  green: Either[GreenNode, Token],
+) {
+
+  def children: List[SyntaxNode] = {
+    def go(offset: Int, remaining: List[Either[GreenNode, Token]]): List[SyntaxNode] =
+      remaining match {
+        case Nil => Nil
+        case one :: more =>
+          SyntaxNode(offset, Eval.later(this.some), one) :: go(
+            offset + one.fold(_.width, _.width),
+            more,
+          )
+      }
+
+    go(offset, green.fold(_.children, _ => Nil))
+  }
+
+  def width = green.fold(_.width, _.width)
+
+  def print: String = {
+    def go(depth: Int, self: SyntaxNode): String = {
+      val content = self.green.fold(_ => "", t => s" \"${t.text}\"")
+      "  " * depth +
+        s"""${self.green.fold(_.kind, _.kind)}@${self.offset}..${self.offset + self.width}$content
+           |""".stripMargin +
+        self
+          .children
+          .map(go(depth + 1, _))
+          .mkString
+    }
+
+    go(0, this)
+  }
+
+}
+
+object SyntaxNode {
+
+  def newRoot(
+    green: GreenNode
+  ): SyntaxNode = SyntaxNode(offset = 0, parent = Eval.now(None), green = green.asLeft)
 
 }
 
@@ -114,7 +166,7 @@ object AstNodeMirror {
 // concrete
 
 case class Identifier(syntax: GreenNode) extends AstNode[Identifier] derives AstNodeMirror {
-  def value: Option[Token] = firstChildToken(TokenKind.Identifier)
+  def value: Option[Token] = firstChildToken(TokenKind.IDENT)
 }
 
 case class Namespace(syntax: GreenNode) extends AstNode[Namespace] derives AstNodeMirror {
@@ -150,8 +202,8 @@ def parseIdent(
   val builder = GreenNode.builder(SyntaxKind.Identifier)
   val next = tokens.bump()
   next.kind match {
-    case TokenKind.Identifier => builder.addChild(next)
-    case _                    => builder.addChild(GreenNode.error(next))
+    case TokenKind.IDENT => builder.addChild(next)
+    case _               => builder.addChild(GreenNode.error(next))
   }
   builder.build()
 }
@@ -163,17 +215,17 @@ def parseNamespace(tokens: Tokens): GreenNode = {
 
   while (!tokens.eof && !done)
     tokens.peek().kind match {
-      case TokenKind.Identifier =>
+      case TokenKind.IDENT =>
         // todo: after an ident, expect dot or hash (some sort of state machine / another method in the recursive descent?)
         // if it's an ident, report an error but don't wrap in ERROR
         // otherwise, wrap in ERROR
         builder.addChild(parseIdent(tokens))
 
-      case TokenKind.Dot =>
+      case TokenKind.DOT =>
         // swallow token
         builder.addChild(tokens.bump())
 
-      case TokenKind.Hash => done = true // end of namespace, move on
+      case TokenKind.HASH => done = true // end of namespace, move on
 
       case _ =>
         // skip extra/invalid tokens. we will report these in the future
@@ -187,19 +239,19 @@ def parseNamespace(tokens: Tokens): GreenNode = {
 def parseFQN(tokens: Tokens): GreenNode = {
   val builder = GreenNode.builder(SyntaxKind.FQN)
   builder.addChild(parseNamespace(tokens))
-  if (tokens.peek().kind == TokenKind.Hash) {
+  if (tokens.peek().kind == TokenKind.HASH) {
     builder.addChild(tokens.bump())
   }
   builder.addChild(parseIdent(tokens))
   builder.build()
 }
 
-parseIdent(Tokens(TokenKind.Identifier("hello") :: Nil)).cast[Identifier].get.value
+parseIdent(Tokens(TokenKind.IDENT("hello") :: Nil)).cast[Identifier].get.value
 
-parseIdent(Tokens(TokenKind.Identifier("hello") :: TokenKind.Identifier("world") :: Nil))
+parseIdent(Tokens(TokenKind.IDENT("hello") :: TokenKind.IDENT("world") :: Nil))
 
 parseNamespace(Tokens(Nil))
-parseNamespace(Tokens(TokenKind.Identifier("hello") :: Nil))
+parseNamespace(Tokens(TokenKind.IDENT("hello") :: Nil))
 
 parseNamespace(Tokens(scan("com.kubukoz.world")))
   .cast[Namespace]
@@ -226,22 +278,18 @@ val text =
      |//another comment
      |""".stripMargin
 
-scan(text)
-  .tapEach(pprint.pprintln(_))
+// scan(text)
+//   .tapEach(pprint.pprintln(_))
 
-val colors = List(
-  Console.RED,
-  Console.GREEN,
-  Console.YELLOW,
-  Console.BLUE,
-  Console.CYAN,
-  Console.WHITE,
-).to(LazyList)
+// println(
+//   scan(text)
+//     .map(t =>
+//       s"${Console.GREEN}${t.kind}:${Console.RESET}${t.text.replace(" ", "·").replace("\n", "⏎")}"
+//     )
+//     .mkString("\n")
+// )
+// println(scan(text).foldMap(_.text) == text)
 
-val colorsAll: LazyList[String] = colors #::: colorsAll
-
-println(
-  scan(text).zip(colorsAll).foldMap { case (tok, color) => s"$color${tok.text}${Console.RESET}" }
-)
-
-println(scan(text).foldMap(_.text) == text)
+pprint.pprintln(scan("com.kubukoz#helloworld"))
+// pprint.pprintln(SyntaxNode.newRoot(parseFQN(Tokens(scan("com.kubukoz#helloworld")))).children)
+println(SyntaxNode.newRoot(parseFQN(Tokens(scan("com.kubukoz#helloworld")))).print)
