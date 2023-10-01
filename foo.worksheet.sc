@@ -13,8 +13,15 @@ import scala.util.matching.Regex
 // import = importToken namespace hashToken identifier
 // program = import*
 
+enum SyntaxKind {
+  case File
+  case FQN
+  case Namespace
+  case Identifier
+  case ERROR
+}
+
 sealed trait Token extends Product with Serializable {
-  // todo: might be useful
   // def kind: SyntaxKind
   def text: String
 }
@@ -141,14 +148,6 @@ scan(".=[]{},")
 scan("import com.kubukoz#identifier")
 scan("import co111m.kub1ukoz#ident_ifie---,_,r\nimport a")
 
-enum SyntaxKind {
-  case File
-  case FQN
-  case Namespace
-  case Identifier
-  case ERROR
-}
-
 // library
 case class GreenNode(
   kind: SyntaxKind,
@@ -166,7 +165,6 @@ object GreenNode {
   ): GreenNode = builder(SyntaxKind.ERROR).addChild(token).build()
 
   class GreenNodeBuilder(kind: SyntaxKind) {
-    private var _width: Int = _
     private var _children: Vector[Either[GreenNode, Token]] = Vector.empty
 
     def addChild(child: GreenNode): this.type = addChild(child.asLeft)
@@ -329,3 +327,5 @@ parseNamespace(Tokens(scan("com.kubukoz.world")))
 val fqn = parseFQN(Tokens(scan("com.kubukoz#foo"))).cast[FQN]
 fqn.get.namespace.get.parts.map(_.value.get)
 fqn.get.name.get.value.get
+
+parseFQN(Tokens(scan("co111m.kub1ukoz#ident_ifie---,_,r")))
