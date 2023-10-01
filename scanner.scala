@@ -5,7 +5,8 @@ import cats.syntax.all.*
 case class Token(kind: TokenKind, text: String)
 
 enum TokenKind {
-  case Import, Dot, Comma, Hash, LB, RB, LBR, RBR, Equals, Space, Newline, Identifier, Error
+  case Import, Dot, Comma, Hash, LB, RB, LBR, RBR, Equals, Space, Newline, Identifier, Comment,
+    Error
 
   def apply(text: String): Token = Token(this, text)
 }
@@ -62,8 +63,46 @@ def scan(
 
   def eatWhitespace() = {
     val (wsp, rest) = remaining.span(ch => ch.isWhitespace)
-    whitespaceChains(wsp).foreach(add)
+    if (wsp.isEmpty()) false
+    else {
+      whitespaceChains(wsp).foreach(add)
+      remaining = rest
+
+      true
+    }
+  }
+
+  def eatComments() =
+    if (!remaining.startsWith("//")) false
+    else {
+      var commentFull = java.lang.StringBuilder()
+      while (remaining.startsWith("//")) {
+        println(s"${Console.RED}iteratin${Console.RESET}: ${remaining}")
+        val (comment, rest) = remaining.span(_ != '\n')
+        commentFull.append(comment)
+        remaining = rest
+
+        if (remaining.startsWith("\n")) {
+          // more whitespace here. consume it
+          commentFull.append("\n")
+          remaining = remaining.tail
+        }
+      }
+
+      add(TokenKind.Comment(commentFull.toString()))
+
+      true
+    }
+
+  def eatErrors() = {
+    // todo: bug: even if the next character starts a multi-char token, this will consider it an error.
+    // instead, we should rework "readOne" to consume arbitrary constant-length tokens, and also include the possibility that `rest` has comments or whitespace.
+    val (failures, rest) = remaining.span(!readOne.isDefinedAt(_))
     remaining = rest
+    if (failures.nonEmpty)
+      add(TokenKind.Error(failures))
+      true
+    else false
   }
 
   while (remaining.nonEmpty) // lol, clearly proper interruption handling here
@@ -75,14 +114,9 @@ def scan(
 
       readOne.applyOrElse(
         remaining.head,
-        _ => {
+        _ =>
           // nothing matched. Eat whitespace and see if the rest is an error
-          eatWhitespace()
-          val (failures, rest) = remaining.span(!readOne.isDefinedAt(_))
-          if (failures.nonEmpty)
-            add(TokenKind.Error(failures))
-          remaining = rest
-        },
+          eatWhitespace() || eatComments() || eatErrors(),
       )
 
       if (remaining == last)

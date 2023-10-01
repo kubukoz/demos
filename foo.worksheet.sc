@@ -1,9 +1,10 @@
 //> using lib "org.typelevel::cats-core:2.10.0"
+//> using lib "com.lihaoyi::pprint:0.8.1"
 //> using option "-Wunused:imports"
 import cats.syntax.all.*
 import scala.deriving.Mirror
 import scanner.*
-
+import util.chaining.*
 scan(".=[]{},")
 scan("import com.kubukoz#identifier")
 scan("import co111m.kub1ukoz#ident_ifie---,_,r\nimport a")
@@ -210,9 +211,37 @@ val fqn = parseFQN(Tokens(scan("com.kubukoz#foo"))).cast[FQN]
 fqn.get.namespace.get.parts.map(_.value.get)
 fqn.get.name.get.value.get
 
-println("co111m.kub1ukoz#shrek_blob---,_,r")
 //todo: this should have all tokens, even extraneous ones. Should render to the string above.
-println(parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).allTokens.foldMap(_.text))
+parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).allTokens.foldMap(_.text)
 
-println(parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))))
-println(parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).print)
+parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r")))
+parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).print
+
+val text =
+  """|import com.kubukoz.foo#bar
+     |hello
+     |// this is a comment
+     |// and so is this. same comment really
+     |
+     |//another comment
+     |""".stripMargin
+
+scan(text)
+  .tapEach(pprint.pprintln(_))
+
+val colors = List(
+  Console.RED,
+  Console.GREEN,
+  Console.YELLOW,
+  Console.BLUE,
+  Console.CYAN,
+  Console.WHITE,
+).to(LazyList)
+
+val colorsAll: LazyList[String] = colors #::: colorsAll
+
+println(
+  scan(text).zip(colorsAll).foldMap { case (tok, color) => s"$color${tok.text}${Console.RESET}" }
+)
+
+println(scan(text).foldMap(_.text) == text)
