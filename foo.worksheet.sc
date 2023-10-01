@@ -75,6 +75,14 @@ enum SyntaxKind {
 trait AstNode[Self] { self: Product =>
   def syntax: GreenNode
 
+  def firstChildToken(kind: TokenKind): Option[Token] = syntax.children.collectFirst {
+    case Right(tok @ Token(`kind`, text)) => tok
+  }
+
+  def allChildNodes[
+    N: AstNodeMirror
+  ]: List[N] = syntax.children.mapFilter(_.left.toOption.flatMap(_.cast[N]))
+
   def firstChildNode[
     N: AstNodeMirror
   ]: Option[N] = syntax.children.collectFirstSome(_.left.toOption.flatMap(_.cast[N]))
@@ -105,20 +113,11 @@ object AstNodeMirror {
 // concrete
 
 case class Identifier(syntax: GreenNode) extends AstNode[Identifier] derives AstNodeMirror {
-
-  def value: Option[String] = syntax
-    .children
-    .collectFirst { case Right(Token(TokenKind.Identifier, value)) => value }
-
+  def value: Option[Token] = firstChildToken(TokenKind.Identifier)
 }
 
 case class Namespace(syntax: GreenNode) extends AstNode[Namespace] derives AstNodeMirror {
-
-  def parts: List[Identifier] = syntax.children.flatMap {
-    case Left(ident) => ident.cast[Identifier]
-    case Right(_)    => None
-  }
-
+  def parts: List[Identifier] = allChildNodes[Identifier]
 }
 
 case class FQN(syntax: GreenNode) extends AstNode[FQN] derives AstNodeMirror {
