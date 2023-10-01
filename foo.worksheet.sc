@@ -67,7 +67,7 @@ trait AstNodeMirror[Self] {
 
 object AstNodeMirror {
 
-  def derived[T](
+  def derived[T <: AstNode[T]](
     using m: Mirror.ProductOf[T] { type MirroredElemTypes = Tuple1[GreenNode] },
     label: ValueOf[m.MirroredLabel],
   ): AstNodeMirror[T] = {
