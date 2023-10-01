@@ -18,7 +18,6 @@ case class GreenNode(
   kind: SyntaxKind,
   children: List[Either[GreenNode, Token]],
 ) {
-  def cast[A](using mirror: AstNodeMirror[A]): Option[A] = mirror.cast(this)
 
   def allTokens: List[Token] = children.flatMap {
     _.fold(_.allTokens, _.some)
@@ -75,6 +74,7 @@ case class SyntaxNode(
   parent: Eval[Option[SyntaxNode]],
   green: Either[GreenNode, Token],
 ) {
+  def cast[A](using mirror: AstNodeMirror[A]): Option[A] = mirror.cast(this)
 
   def children: List[SyntaxNode] = {
     def go(offset: Int, remaining: List[Either[GreenNode, Token]]): List[SyntaxNode] =
@@ -126,38 +126,33 @@ enum SyntaxKind {
 }
 
 trait AstNode[Self] { self: Product =>
-  def syntax: GreenNode
+  def syntax: SyntaxNode
 
   def firstChildToken(kind: TokenKind): Option[Token] = syntax.children.collectFirst {
-    case Right(tok @ Token(`kind`, text)) => tok
+    case SyntaxNode(_, _, Right(tok @ Token(`kind`, text))) => tok
   }
 
-  def allChildNodes[
-    N: AstNodeMirror
-  ]: List[N] = syntax.children.mapFilter(_.left.toOption.flatMap(_.cast[N]))
-
-  def firstChildNode[
-    N: AstNodeMirror
-  ]: Option[N] = syntax.children.collectFirstSome(_.left.toOption.flatMap(_.cast[N]))
+  def allChildNodes[N: AstNodeMirror]: List[N] = syntax.children.mapFilter(_.cast[N])
+  def firstChildNode[N: AstNodeMirror]: Option[N] = syntax.children.collectFirstSome(_.cast[N])
 
 }
 
 trait AstNodeMirror[Self] {
-  def cast(node: GreenNode): Option[Self]
+  def cast(node: SyntaxNode): Option[Self]
 }
 
 object AstNodeMirror {
 
   def derived[T <: AstNode[T]](
-    using m: Mirror.ProductOf[T] { type MirroredElemTypes = Tuple1[GreenNode] },
+    using m: Mirror.ProductOf[T] { type MirroredElemTypes = Tuple1[SyntaxNode] },
     label: ValueOf[m.MirroredLabel],
   ): AstNodeMirror[T] = {
     val matchingSyntaxKind = SyntaxKind.valueOf(label.value)
 
     node =>
-      node.kind match {
-        case `matchingSyntaxKind` => Some(m.fromProductTyped(Tuple1(node)))
-        case _                    => None
+      node.green.left.map(_.kind) match {
+        case Left(`matchingSyntaxKind`) => Some(m.fromProductTyped(Tuple1(node)))
+        case _                          => None
       }
   }
 
@@ -165,15 +160,15 @@ object AstNodeMirror {
 
 // concrete
 
-case class Identifier(syntax: GreenNode) extends AstNode[Identifier] derives AstNodeMirror {
+case class Identifier(syntax: SyntaxNode) extends AstNode[Identifier] derives AstNodeMirror {
   def value: Option[Token] = firstChildToken(TokenKind.IDENT)
 }
 
-case class Namespace(syntax: GreenNode) extends AstNode[Namespace] derives AstNodeMirror {
+case class Namespace(syntax: SyntaxNode) extends AstNode[Namespace] derives AstNodeMirror {
   def parts: List[Identifier] = allChildNodes[Identifier]
 }
 
-case class FQN(syntax: GreenNode) extends AstNode[FQN] derives AstNodeMirror {
+case class FQN(syntax: SyntaxNode) extends AstNode[FQN] derives AstNodeMirror {
   def namespace: Option[Namespace] = firstChildNode[Namespace]
   def name: Option[Identifier] = firstChildNode[Identifier]
 }
@@ -246,20 +241,21 @@ def parseFQN(tokens: Tokens): GreenNode = {
   builder.build()
 }
 
-parseIdent(Tokens(TokenKind.IDENT("hello") :: Nil)).cast[Identifier].get.value
+SyntaxNode.newRoot(parseIdent(Tokens(TokenKind.IDENT("hello") :: Nil))).cast[Identifier].get.value
 
 parseIdent(Tokens(TokenKind.IDENT("hello") :: TokenKind.IDENT("world") :: Nil))
 
 parseNamespace(Tokens(Nil))
 parseNamespace(Tokens(TokenKind.IDENT("hello") :: Nil))
 
-parseNamespace(Tokens(scan("com.kubukoz.world")))
+SyntaxNode
+  .newRoot(parseNamespace(Tokens(scan("com.kubukoz.world"))))
   .cast[Namespace]
   .get
   .parts
   .map(_.value)
 
-val fqn = parseFQN(Tokens(scan("com.kubukoz#foo"))).cast[FQN]
+val fqn = SyntaxNode.newRoot(parseFQN(Tokens(scan("com.kubukoz#foo")))).cast[FQN]
 fqn.get.namespace.get.parts.map(_.value.get)
 fqn.get.name.get.value.get
 
@@ -269,27 +265,9 @@ parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).allTokens.foldMap(_.
 parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r")))
 parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).print
 
-val text =
-  """|import com.kubukoz.foo#bar
-     |hello
-     |// this is a comment
-     |// and so is this. same comment really
-     |
-     |//another comment
-     |""".stripMargin
-
-// scan(text)
-//   .tapEach(pprint.pprintln(_))
-
-// println(
-//   scan(text)
-//     .map(t =>
-//       s"${Console.GREEN}${t.kind}:${Console.RESET}${t.text.replace(" ", "·").replace("\n", "⏎")}"
-//     )
-//     .mkString("\n")
-// )
-// println(scan(text).foldMap(_.text) == text)
-
-pprint.pprintln(scan("com.kubukoz#helloworld"))
-// pprint.pprintln(SyntaxNode.newRoot(parseFQN(Tokens(scan("com.kubukoz#helloworld")))).children)
-println(SyntaxNode.newRoot(parseFQN(Tokens(scan("com.kubukoz#helloworld")))).print)
+val text = "com.kubukoz#helloworld"
+pprint.pprintln(scan(text))
+pprint.pprintln(parseFQN(Tokens(scan(text))))
+pprint.pprintln(SyntaxNode.newRoot(parseFQN(Tokens(scan(text)))))
+// pprint.pprintln(SyntaxNode.newRoot(parseFQN(Tokens(scan(text)))).children)
+println(SyntaxNode.newRoot(parseFQN(Tokens(scan(text)))).print)
