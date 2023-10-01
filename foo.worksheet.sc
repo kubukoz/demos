@@ -14,6 +14,26 @@ case class GreenNode(
   children: List[Either[GreenNode, Token]],
 ) {
   def cast[A](using mirror: AstNodeMirror[A]): Option[A] = mirror.cast(this)
+
+  def allTokens: List[Token] = children.flatMap {
+    _.fold(_.allTokens, _.some)
+  }
+
+  def print: String = {
+    def go(depth: Int, self: GreenNode): String =
+      "  " * depth +
+        s"${self.kind}:${self.width}\n" +
+        self
+          .children
+          .map {
+            case Left(node)   => go(depth + 1, node)
+            case Right(token) => "  " * (depth + 1) + token.text
+          }
+          .mkString("\n")
+
+    go(0, this)
+  }
+
 }
 
 object GreenNode {
@@ -191,4 +211,9 @@ val fqn = parseFQN(Tokens(scan("com.kubukoz#foo"))).cast[FQN]
 fqn.get.namespace.get.parts.map(_.value.get)
 fqn.get.name.get.value.get
 
-parseFQN(Tokens(scan("co111m.kub1ukoz#ident_ifie---,_,r")))
+println("co111m.kub1ukoz#shrek_blob---,_,r")
+//todo: this should have all tokens, even extraneous ones. Should render to the string above.
+println(parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).allTokens.foldMap(_.text))
+
+println(parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))))
+println(parseFQN(Tokens(scan("co111m.kub1ukoz#shrek_blob---,_,r"))).print)
