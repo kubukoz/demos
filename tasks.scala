@@ -1,4 +1,5 @@
 //> using lib "org.typelevel::cats-core:2.10.0"
+//> using option "-Ykind-projector:underscores"
 // tuple instances /shrug
 import cats.Invariant._
 import cats.kernel.CommutativeMonoid
@@ -87,8 +88,7 @@ trait App {
 
   def custom[I]: (hf: HasFilter[I]) ?=> (hf.CustomFilter) => InputFilter[I]
 
-  type Challenge[I]
-  type Reward
+  type Challenge[I, R]
 
   type Clue
 
@@ -110,7 +110,7 @@ trait App {
   def never[I]: InputFilter[I]
 
   // todo: impossible signature. this has to be different than that
-  // def time[I]: Time => I
+  // def time[I, R]: Time => I
 
   // def isAfter: (
   //   Time,
@@ -126,10 +126,10 @@ trait App {
 
   //   })(isAfter(t, _))
 
-  // def timeout[I]: (
-  //   Challenge[I],
+  // def timeout[I, R]: (
+  //   Challenge[I, R],
   //   Time,
-  // ) => Challenge[I]
+  // ) => Challenge[I, R]
   // can be derived as
   //  =
   //   (
@@ -154,22 +154,22 @@ trait App {
     I,
   ) => Boolean
 
-  def completes[I]: (
-    Challenge[I],
+  def completes[I, R]: CommutativeMonoid[R] ?=> (
+    Challenge[I, R],
     List[I],
   ) => Option[List[I]]
 
-  def getRewards[I]: (
-    Challenge[I],
+  def getRewards[I, R]: CommutativeMonoid[R] ?=> (
+    Challenge[I, R],
     List[I],
-  ) => MultiSet[Reward]
+  ) => R
 
-  // def pointOfInterest[I]: (
+  // def pointOfInterest[I, R]: (
   //   Clue,
   //   Point,
   //   Distance,
   //   Reward,
-  // ) => Challenge[I]
+  // ) => Challenge[I, R]
 
   def hint: String => Clue
   def noClue: Clue
@@ -177,22 +177,22 @@ trait App {
 
   def toList: Clue => List[String]
 
-  def clue[I]: (
+  def clue[I, R]: (
     Clue,
-    Challenge[I],
-  ) => Challenge[I]
+    Challenge[I, R],
+  ) => Challenge[I, R]
 
   object Clue {
-    def unapply[I](c: Challenge[I]): Option[(Clue, Challenge[I])] = ???
+    def unapply[I, R](c: Challenge[I, R]): Option[(Clue, Challenge[I, R])] = ???
   }
 
   def seen: ClueState
   def completed: ClueState
   def failed: ClueState
 
-  def getClues[I]: Challenge[I] => List[I] => Map[Clue, ClueState]
+  def getClues[I, R]: Challenge[I, R] => List[I] => Map[Clue, ClueState]
 
-  // def photo[I]: (
+  // def photo[I, R]: (
   //   Point,
   //   Photo,
   // ) => I
@@ -203,57 +203,57 @@ trait App {
   //   Challenge,
   // ) => Challenge
 
-  // def photoWithin[I]: (
+  // def photoWithin[I, R]: (
   //   Point,
   //   Distance,
   // ) => InputFilter[I]
 
-  // def locWithin[I]: (
+  // def locWithin[I, R]: (
   //   Point,
   //   Distance,
   // ) => InputFilter[I]
 
-  def reward[I](
-    reward: Reward
-  ): Challenge[I]
+  def reward[I, R](
+    reward: R
+  ): Challenge[I, R]
 
   object Reward {
-    def unapply[I](c: Challenge[I]): Option[Reward] = ???
+    def unapply[I, R](c: Challenge[I, R]): Option[R] = ???
   }
 
-  def andThen[I]: (
-    Challenge[I],
-    Challenge[I],
-  ) => Challenge[I]
+  def andThen[I, R]: (
+    Challenge[I, R],
+    Challenge[I, R],
+  ) => Challenge[I, R]
 
   object AndThen {
-    def unapply[I](c: Challenge[I]): Option[(Challenge[I], Challenge[I])] = ???
+    def unapply[I, R](c: Challenge[I, R]): Option[(Challenge[I, R], Challenge[I, R])] = ???
   }
 
-  def empty[I]: Challenge[I]
+  def empty[I, R]: Challenge[I, R]
 
   object Empty {
-    def unapply[I](c: Challenge[I]): Boolean = ???
+    def unapply[I, R](c: Challenge[I, R]): Boolean = ???
   }
 
-  def bottom[I]: Challenge[I]
+  def bottom[I, R]: Challenge[I, R]
 
-  def both[I]: (
-    Challenge[I],
-    Challenge[I],
-  ) => Challenge[I]
+  def both[I, R]: (
+    Challenge[I, R],
+    Challenge[I, R],
+  ) => Challenge[I, R]
 
   object Both {
-    def unapply[I](c: Challenge[I]): Option[(Challenge[I], Challenge[I])] = ???
+    def unapply[I, R](c: Challenge[I, R]): Option[(Challenge[I, R], Challenge[I, R])] = ???
   }
 
-  def eitherC[I]: (
-    Challenge[I],
-    Challenge[I],
-  ) => Challenge[I]
+  def eitherC[I, R]: (
+    Challenge[I, R],
+    Challenge[I, R],
+  ) => Challenge[I, R]
 
   object EitherC {
-    def unapply[I](c: Challenge[I]): Option[(Challenge[I], Challenge[I])] = ???
+    def unapply[I, R](c: Challenge[I, R]): Option[(Challenge[I, R], Challenge[I, R])] = ???
   }
 
   // def within: (
@@ -271,51 +271,51 @@ trait App {
   //   Challenge,
   // ) => Challenge
 
-  def gate[I]: (
+  def gate[I, R]: (
     InputFilter[I],
-    Challenge[I],
-  ) => Challenge[I]
+    Challenge[I, R],
+  ) => Challenge[I, R]
 
   object Gate {
-    def unapply[I](c: Challenge[I]): Option[(InputFilter[I], Challenge[I])] = ???
+    def unapply[I, R](c: Challenge[I, R]): Option[(InputFilter[I], Challenge[I, R])] = ???
   }
 
-  // def photoAbove[I]: Altitude => InputFilter[I]
+  // def photoAbove[I, R]: Altitude => InputFilter[I]
 
-  def isEmpty[I]: Challenge[I] => Boolean
-  def isReward[I]: Challenge[I] => Boolean
-  // def isPhoto[I]: I => Boolean
+  def isEmpty[I, R]: Challenge[I, R] => Boolean
+  def isReward[I, R]: Challenge[I, R] => Boolean
+  // def isPhoto[I, R]: I => Boolean
 
   def shorterOf[A]: (
     List[A],
     List[A],
   ) => List[A]
 
-  type StepResult[A] =
+  type StepResult[R, A] =
     (
       (
-        MultiSet[Reward],
+        R,
         Map[Clue, ClueState],
       ),
       A,
     )
 
-  def step[I]: (
+  def step[I, R]: CommutativeMonoid[R] ?=> HasFilter[I] ?=> (
     Clue,
     Option[I],
-    Challenge[I],
-  ) => StepResult[Challenge[I]]
+    Challenge[I, R],
+  ) => StepResult[R, Challenge[I, R]]
 
-  def pumpChallenge[I](
-    c: Challenge[I]
+  def pumpChallenge[I, R: CommutativeMonoid](
+    c: Challenge[I, R]
   ): List[I] => (
-    (MultiSet[Reward], Map[Clue, ClueState]),
-    Challenge[I],
+    (R, Map[Clue, ClueState]),
+    Challenge[I, R],
   )
 
-  def tellClue: Map[Clue, ClueState] => StepResult[Unit]
+  def tellClue[R]: Map[Clue, ClueState] => StepResult[R, Unit]
 
-  def findClues[I]: (Clue, Challenge[I]) => Map[Clue, ClueState] = {
+  def findClues[I, R]: (Clue, Challenge[I, R]) => Map[Clue, ClueState] = {
     case (_, Empty)              => Map.empty
     case (kctx, Both(c1, c2))    => findClues(kctx, c1) |+| findClues(kctx, c2)
     case (kctx, EitherC(c1, c2)) => findClues(kctx, c1) |+| findClues(kctx, c2)
@@ -330,7 +330,13 @@ trait App {
 
   object laws {
 
-    // def `inside point of interest`[I](
+    def `reward/mempty`[R: Monoid]() = reward(Monoid[R].empty) == empty
+
+    def `reward/mappend`[R: Monoid](r1: R, r2: R) =
+      reward(r1 |+| r2) ==
+        andThen(reward(r1), reward(r2))
+
+    // def `inside point of interest`[I, R](
     //   c: Clue,
     //   poi: Point,
     //   d: Distance,
@@ -344,7 +350,7 @@ trait App {
     //       MultiSet.singleton(r)
     //   }
 
-    // def `outside point of interest`[I](
+    // def `outside point of interest`[I, R](
     //   c: Clue,
     //   poi: Point,
     //   d: Distance,
@@ -358,7 +364,7 @@ trait App {
     //       getRewards(pointOfInterest(c, poi, d, r), is)
     //   }
 
-    // // def `unmatching point of interest`[I](
+    // // def `unmatching point of interest`[I, R](
     // //   c: Clue,
     // //   poi: Point,
     // //   d: Distance,
@@ -371,17 +377,17 @@ trait App {
     // //       getRewards(pointOfInterest(c, poi, d, r), is)
     // //   }
 
-    def `getRewards/clue`[I](
+    def `getRewards/clue`[I, R: CommutativeMonoid](
       k: Clue,
-      c: Challenge[I],
+      c: Challenge[I, R],
     ) =
-      (getRewards[I](clue(k, c), _)) <->
-        (getRewards[I](c, _))
+      (getRewards[I, R](clue(k, c), _)) <->
+        (getRewards[I, R](c, _))
 
-    def `getRewards/reward`[I](
-      r: Reward,
+    def `getRewards/reward`[I, R: CommutativeMonoid](
+      r: R,
       is: List[I],
-    ) = getRewards(reward(r), is) == MultiSet.singleton(r)
+    ) = getRewards(reward(r), is) == r
 
     // def `matches/photoWithin`[I: HasFilter](
     //   p: Point,
@@ -392,7 +398,7 @@ trait App {
     //   matches(photoWithin(p, d), photo(poi, ph)) ==
     //     within(p, poi, d)
 
-    // def `matches/photoWithin doesn't match for non-photos`[I](
+    // def `matches/photoWithin doesn't match for non-photos`[I, R](
     //   p: Point,
     //   d: Distance,
     //   ph: Photo,
@@ -411,18 +417,18 @@ trait App {
     //   matches(photoAbove(alt), photo(poi, ph)) ==
     //     above(alt, poi)
 
-    // def `matches/photoAbove doesn't match for non-photos`[I](
+    // def `matches/photoAbove doesn't match for non-photos`[I, R](
     //   alt: Altitude,
     //   in: I,
     // ) =
     //   !isPhoto(in) ==>
     //     !matches(photoAbove(alt), in)
 
-    def `matches/always`[I](
+    def `matches/always`[I, R](
       i: I
     ) = matches(always, i) == true
 
-    def `matches/never`[I](
+    def `matches/never`[I, R](
       i: I
     ) = matches(never, i) == false
 
@@ -471,10 +477,10 @@ trait App {
     //   pointOfInterest(c, p, d, r) ==
     //     clue(c, photoWithin(p, d, reward(r)))
 
-    def `getRewards/gate`[I](
+    def `getRewards/gate`[I, R: CommutativeMonoid](
       f: InputFilter[I],
       i: I,
-      c: Challenge[I],
+      c: Challenge[I, R],
       is: List[I],
     ) =
       matches(f, i) ==> {
@@ -482,10 +488,10 @@ trait App {
           getRewards(c, is)
       }
 
-    def `getRewards/gate unmatched`[I](
+    def `getRewards/gate unmatched`[I, R: CommutativeMonoid](
       f: InputFilter[I],
       i: I,
-      c: Challenge[I],
+      c: Challenge[I, R],
       is: List[I],
     ) =
       !matches(f, i) ==> {
@@ -493,9 +499,9 @@ trait App {
           getRewards(gate(f, c), is)
       }
 
-    def `getRewards/gate empty`[I](
+    def `getRewards/gate empty`[I, R: CommutativeMonoid](
       f: InputFilter[I],
-      c: Challenge[I],
+      c: Challenge[I, R],
     ) =
       getRewards(gate(f, c), Nil) ==
         MultiSet.empty
@@ -509,15 +515,15 @@ trait App {
     //   pointOfInterest(c, p, d, r) ==
     //     clue(c, gate(photoWithin(p, d), reward(r)))
 
-    def `bothCommutative`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `bothCommutative`[I, R](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
     ) = both(c1, c2) == both(c2, c1)
 
-    def `bothAssociative`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
-      c3: Challenge[I],
+    def `bothAssociative`[I, R](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      c3: Challenge[I, R],
     ) = both(c1, both(c2, c3)) == both(both(c1, c2), c3)
 
     // def `bothIdempotent`(
@@ -525,33 +531,33 @@ trait App {
     // ) = both(c, c) == c
 
     // exercise 5
-    def `getRewards/both`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `getRewards/both`[I, R: CommutativeMonoid](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
       is: List[I],
     ) =
       // contradiction: order of rewards depends on the order of params to both?
       getRewards(both(c1, c2), is) ==
-        getRewards(c1, is) ++ getRewards(c2, is)
+        (getRewards(c1, is) |+| getRewards(c2, is))
 
-    def `getRewards/empty`[I](
+    def `getRewards/empty`[I, R: CommutativeMonoid](
       is: List[I]
-    ) = getRewards(empty, is) == MultiSet.empty
+    ) = getRewards(empty, is) == CommutativeMonoid[R].empty
 
-    def `getRewards/andThen`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `getRewards/andThen`[I, R: CommutativeMonoid](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
       is1: List[I],
       is2: List[I],
     ) =
       (completes(c1, is1) == Some(is2)) ==> {
         getRewards(andThen(c1, c2), is1) ==
-          getRewards(c1, is1) ++ getRewards(c2, is2)
+          (getRewards(c1, is1) |+| getRewards(c2, is2))
       }
 
-    def `getRewards/andThen incomplete`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `getRewards/andThen incomplete`[I, R: CommutativeMonoid](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
       is: List[I],
     ) =
       (completes(c1, is) == None) ==> {
@@ -559,44 +565,44 @@ trait App {
           getRewards(c1, is)
       }
 
-    def `bothIdentity`[I](
-      c: Challenge[I]
+    def `bothIdentity`[I, R](
+      c: Challenge[I, R]
     ) =
       (both(c, empty) == c) &&
         // commutativity implies this too
         (c == both(empty, c))
 
-    def `andThen/gate`[I](
+    def `andThen/gate`[I, R](
       f: InputFilter[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
     ) =
       andThen(gate(f, c1), c2) ==
         gate(f, andThen(c1, c2))
 
-    def `andThen/associative`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
-      c3: Challenge[I],
+    def `andThen/associative`[I, R](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      c3: Challenge[I, R],
     ) =
       andThen(c1, andThen(c2, c3)) ==
         andThen(andThen(c1, c2), c3)
 
-    def `andThen/identity`[I](
-      c: Challenge[I]
+    def `andThen/identity`[I, R](
+      c: Challenge[I, R]
     ) =
       andThen(empty, c) == c &&
         andThen(c, empty) == c
 
-    def `falsified - complete/andThen`[I](
+    def `falsified - complete/andThen`[I, R](
       f: InputFilter[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
       is1: List[I],
       is2: List[I],
     ) = {
       def completes: (
-        Challenge[I],
+        Challenge[I, R],
         List[I],
       ) => Boolean = ???
 
@@ -624,24 +630,24 @@ trait App {
       // is that sufficient proof?
     }
 
-    def `completes/empty`[I](
+    def `completes/empty`[I, R: CommutativeMonoid](
       is: List[I]
     ) = completes(empty, is) == Some(is)
 
-    def `completes/reward`[I](
-      r: Reward,
+    def `completes/reward`[I, R: CommutativeMonoid](
+      r: R,
       is: List[I],
     ) = completes(reward(r), is) == Some(is)
 
-    def `completes/clue`[I](
+    def `completes/clue`[I, R: CommutativeMonoid](
       k: Clue,
-      c: Challenge[I],
+      c: Challenge[I, R],
       is: List[I],
     ) = completes(clue(k, c), is) == completes(c, is)
 
-    def `completes/both`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `completes/both`[I, R: CommutativeMonoid](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
       is: List[I],
     ) =
       completes(both(c1, c2), is) == {
@@ -651,58 +657,58 @@ trait App {
         } yield shorterOf(i1, i2)
       }
 
-    def `step/both`[I](
+    def `step/both`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
     ) =
       step(kctx, i, both(c1, c2)) ==
         (step(kctx, i, c1), step(kctx, i, c2)).mapN(both)
 
-    def `step/empty`[I](
+    def `step/empty`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-    ) = step(kctx, i, empty) == Applicative[StepResult].pure(empty)
+    ) = step(kctx, i, empty) == Applicative[StepResult[R, _]].pure(empty)
 
-    def `step/reward`[I](
+    def `step/reward`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-      r: Reward,
-    ) = step(kctx, i, reward(r)) == Applicative[StepResult].pure(empty)
+      r: R,
+    ) = step(kctx, i, reward(r)) == Applicative[StepResult[R, _]].pure(empty)
 
-    def `step/gate`[I](
+    def `step/gate`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: I,
       f: InputFilter[I],
-      c: Challenge[I],
+      c: Challenge[I, R],
     ) =
       matches(f, i) ==> {
         step(kctx, Some(i), gate(f, c)) == step(kctx, None, c)
       }
 
-    def `step/gate unmatched`[I](
+    def `step/gate unmatched`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: I,
       f: InputFilter[I],
-      c: Challenge[I],
+      c: Challenge[I, R],
     ) =
       !matches(f, i) ==> {
-        step(kctx, Some(i), gate(f, c)) == Applicative[StepResult].pure(gate(f, c))
+        step(kctx, Some(i), gate(f, c)) == Applicative[StepResult[R, _]].pure(gate(f, c))
       }
 
-    def `step/gate nothing`[I](
+    def `step/gate nothing`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       f: InputFilter[I],
-      c: Challenge[I],
-    ) = step(kctx, None, gate(f, c)) == Applicative[StepResult].pure(gate(f, c))
+      c: Challenge[I, R],
+    ) = step(kctx, None, gate(f, c)) == Applicative[StepResult[R, _]].pure(gate(f, c))
 
-    def `step/andThen complete`[I](
+    def `step/andThen complete`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
-      r: (MultiSet[Reward], Map[Clue, ClueState]),
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      r: (R, Map[Clue, ClueState]),
     ) = // if this input completes the c1 challenge with rewards `r`
       step(kctx, i, c1) == (r, empty) ==> {
         // then stepping once through the composition is the same as...
@@ -711,12 +717,12 @@ trait App {
           (r, step(kctx, None, c2)).flatten
       }
 
-    def `step/andThen incomplete`[I](
+    def `step/andThen incomplete`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
-      r: MultiSet[Reward],
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      r: MultiSet[R],
     ) =
       // if this input completes with a non-empty challenge
       (!isEmpty(step(kctx, i, c1)._2)) ==> {
@@ -726,20 +732,20 @@ trait App {
           step(kctx, i, c1).fmap(andThen(_, c2))
       }
 
-    // def `step/timeout matched`[I](
+    // def `step/timeout matched`[I, R](
     //   kctx: Clue,
-    //   c: Challenge[I],
+    //   c: Challenge[I, R],
     //   t: Time,
     //   cutoff: Time,
     // ) =
     //   isAfter(cutoff, t) ==> {
-    //     step[I](kctx, Some(time(t)), timeout(c, cutoff)) ==
+    //     step[I, R](kctx, Some(time(t)), timeout(c, cutoff)) ==
     //       Applicative[StepResult].pure(empty)
     //   }
 
-    // def `step/timeout unmatched`[I](
+    // def `step/timeout unmatched`[I, R](
     //   kctx: Clue,
-    //   c: Challenge[I],
+    //   c: Challenge[I, R],
     //   t: Time,
     //   cutoff: Time,
     // ) =
@@ -747,31 +753,31 @@ trait App {
     //     step(kctx, Some(time(t)), timeout(c, cutoff)) == step(kctx, None, c)
     //   }
 
-    // def `step/timeout nothing`[I](
+    // def `step/timeout nothing`[I, R](
     //   kctx: Clue,
-    //   c: Challenge[I],
+    //   c: Challenge[I, R],
     //   t: Time,
     //   i: Option[I],
     // ) = step(kctx, None, timeout(c, t)) == step(kctx, None, c)
 
-    def `pumpChallenge law`[I](
-      c: Challenge[I]
+    def `pumpChallenge law`[I: HasFilter, R: CommutativeMonoid](
+      c: Challenge[I, R]
     ) =
       pumpChallenge(c) <->
         (_.map(_.some).prepended(None).foldM(c)((c, i) => step(noClue, i, c)))
 
-    def `getRewardsNew`[I](
-      c: Challenge[I]
-    ) = (getRewards[I](c, _)) <-> pumpChallenge(c).andThen(_._1)
+    def `getRewardsNew`[I, R: CommutativeMonoid](
+      c: Challenge[I, R]
+    ) = (getRewards[I, R](c, _)) <-> pumpChallenge(c).andThen(_._1)
 
-    def `completesNew`[I](
-      c: Challenge[I]
-    ) = (completes[I](c, _)) <-> pumpChallenge(c).andThen(_._2).andThen(isEmpty)
+    def `completesNew`[I, R: CommutativeMonoid](
+      c: Challenge[I, R]
+    ) = (completes[I, R](c, _)) <-> pumpChallenge(c).andThen(_._2).andThen(isEmpty)
 
-    def `completes/gate`[I](
+    def `completes/gate`[I, R: CommutativeMonoid](
       f: InputFilter[I],
       i: I,
-      c: Challenge[I],
+      c: Challenge[I, R],
       is: List[I],
     ) =
       matches(f, i) ==> {
@@ -779,10 +785,10 @@ trait App {
           Some(is)
       }
 
-    def `completes/gate unmatched`[I](
+    def `completes/gate unmatched`[I, R: CommutativeMonoid](
       f: InputFilter[I],
       i: I,
-      c: Challenge[I],
+      c: Challenge[I, R],
       is: List[I],
     ) =
       !matches(f, i) ==> {
@@ -790,14 +796,14 @@ trait App {
           completes(gate(f, c), is)
       }
 
-    def `completes/gate empty`[I](
+    def `completes/gate empty`[I, R: CommutativeMonoid](
       f: InputFilter[I],
-      c: Challenge[I],
+      c: Challenge[I, R],
     ) = completes(gate(f, c), Nil) == None
 
-    def `completes/andThen`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `completes/andThen`[I, R: CommutativeMonoid](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
       is: List[I],
     ) =
       completes(andThen(c1, c2), is) ==
@@ -824,47 +830,47 @@ trait App {
     //   l: List[A]
     // ) = shorterOf(l, Nil) == Nil
 
-    def `both/andThen/reward`[I](
-      r: Reward,
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `both/andThen/reward`[I, R](
+      r: R,
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
     ) =
       both(andThen(reward(r), c1), c2) ==
         andThen(reward(r), both(c1, c2))
 
-    def `eitherC:associative`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
-      c3: Challenge[I],
+    def `eitherC:associative`[I, R](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      c3: Challenge[I, R],
     ) = eitherC(eitherC(c1, c2), c3) == eitherC(c1, eitherC(c2, c3))
 
-    def `eitherC:commutative`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `eitherC:commutative`[I, R](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
     ) = eitherC(c1, c2) == eitherC(c2, c1)
 
     // todo: confirm?
-    def `eitherC:identity`[I](
-      c1: Challenge[I]
+    def `eitherC:identity`[I, R](
+      c1: Challenge[I, R]
     ) = eitherC(c1, bottom) == c1
 
-    def `eitherC/andThen/reward`[I](
-      r: Reward,
-      c1: Challenge[I],
-      c2: Challenge[I],
+    def `eitherC/andThen/reward`[I, R](
+      r: R,
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
     ) =
       eitherC(andThen(reward(r), c1), c2) ==
         andThen(reward(r), eitherC(c1, c2))
 
-    def `eitherC/empty`[I](
-      c: Challenge[I]
+    def `eitherC/empty`[I, R](
+      c: Challenge[I, R]
     ) =
       !isReward(c) ==> {
         eitherC(empty, c) == empty
       }
 
-    def `bottomLaw`[I](
-      c: Challenge[I]
+    def `bottomLaw`[I, R](
+      c: Challenge[I, R]
     ) = bottom == gate(never, c)
 
     def `sub:associative`(k1: Clue, k2: Clue, k3: Clue) =
@@ -876,25 +882,25 @@ trait App {
 
     def `sub/mempty`(k: Clue) = sub(k, noClue) == k && sub(noClue, k) == k
 
-    def `clue/noClue`[I](c: Challenge[I]) = clue(noClue, c) == c
+    def `clue/noClue`[I, R](c: Challenge[I, R]) = clue(noClue, c) == c
 
-    def `clue/sub`[I](k1: Clue, k2: Clue, c: Challenge[I]) =
+    def `clue/sub`[I, R](k1: Clue, k2: Clue, c: Challenge[I, R]) =
       clue(sub(k1, k2), c) == clue(k1, clue(k2, c))
 
-    def `step/clue/empty`[I](
+    def `step/clue/empty`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
       k: Clue,
     ) =
       step(kctx, i, clue(k, empty)) ==
         tellClue(Map(sub(kctx, k) -> completed)) *>
-        Applicative[StepResult].pure(empty)
+        Applicative[StepResult[R, _]].pure(empty)
 
-    def `step/clue non-empty`[I](
+    def `step/clue non-empty`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
       k: Clue,
-      c: Challenge[I],
+      c: Challenge[I, R],
     ) =
       !isEmpty(c) ==> {
         step(kctx, i, clue(k, c)) ==
@@ -902,12 +908,12 @@ trait App {
           step(sub(kctx, k), i, c).map(clue(k, _))
       }
 
-    def `step/eitherC empty`[I](
+    def `step/eitherC empty`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
-      `c2'`: Challenge[I],
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      `c2'`: Challenge[I, R],
     ) = {
       step(kctx, i, c1)._2 == empty &&
       step(kctx, i, c2)._2 == `c2'`
@@ -918,12 +924,12 @@ trait App {
         step(kctx, i, c1)
     }
 
-    def `step/eitherC non-empty`[I](
+    def `step/eitherC non-empty`[I: HasFilter, R: CommutativeMonoid](
       kctx: Clue,
       i: Option[I],
-      c1: Challenge[I],
-      c2: Challenge[I],
-      `c2'`: Challenge[I],
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      `c2'`: Challenge[I, R],
     ) = {
       !isEmpty(step(kctx, i, c1)._2) &&
       !isEmpty(step(kctx, i, c2)._2)
@@ -941,15 +947,17 @@ trait App {
 
   object exercises {
 
-    def `reduce getRewards(clue (c (reward r))) to its simplest form via algebraic manipulation`(
+    def `reduce getRewards(clue (c (reward r))) to its simplest form via algebraic manipulation`[
+      R: CommutativeMonoid
+    ](
       c: Clue,
-      r: Reward,
+      r: R,
     ) = {
       getRewards(clue(c, reward(r)), ???)
       //  via `getRewards/clue`
       getRewards(reward(r), ???)
       // via `getRewards/reward`
-      MultiSet.singleton(r)
+      CommutativeMonoid[R].empty
     }
 
     // def `e2: what's the intuitive understanding + do stated semantics agree with you`(
@@ -981,7 +989,7 @@ trait App {
 
     // }
 
-    // def `e3: encode challenge to walk around the block twice, clockwise`[I](
+    // def `e3: encode challenge to walk around the block twice, clockwise`[I, R](
     //   p1: Point,
     //   p2: Point,
     //   p3: Point,
@@ -989,19 +997,19 @@ trait App {
     //   d2: Distance,
     //   d3: Distance,
     //   r: Reward,
-    // ): Challenge[I] = {
-    //   val oneRound: Challenge[I] => Challenge[I] = (gate[I](locWithin(p1, d1), _))
-    //     .compose(gate[I](locWithin(p2, d2), _))
-    //     .compose(gate[I](locWithin(p3, d3), _))
+    // ): Challenge[I, R] = {
+    //   val oneRound: Challenge[I, R] => Challenge[I, R] = (gate[I, R](locWithin(p1, d1), _))
+    //     .compose(gate[I, R](locWithin(p2, d2), _))
+    //     .compose(gate[I, R](locWithin(p3, d3), _))
 
     //   oneRound.compose(oneRound).apply(reward(r))
     // }
 
-    def `e4: prove`[I](
-      c1: Challenge[I],
-      c2: Challenge[I],
-      c3: Challenge[I],
-      c4: Challenge[I],
+    def `e4: prove`[I, R](
+      c1: Challenge[I, R],
+      c2: Challenge[I, R],
+      c3: Challenge[I, R],
+      c4: Challenge[I, R],
     ) = {
       val desired = both(c1, both(c2, both(c3, c4)))
       both(both(c1, c2), both(c3, c4))
@@ -1009,8 +1017,8 @@ trait App {
       both(c1, both(c2, both(c3, c4)))
     }
 
-    def `e: reduce eitherC(reward r1) empty to its simplest form`(
-      r: Reward
+    def `e: reduce eitherC(reward r1) empty to its simplest form`[R](
+      r: R
     ) = {
       eitherC(reward(r), empty)
       // via andThen identity: andThen(c, empty) == c (c == reward(r))
