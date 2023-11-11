@@ -3,6 +3,10 @@
 import cats.Invariant._
 import cats.kernel.CommutativeMonoid
 import cats.syntax.all.*
+import cats.kernel.Semilattice
+import cats.Applicative
+import cats.syntax.nonEmptyTraverse
+import cats.kernel.Monoid
 
 case class MultiSet[A] private (
   impl: Map[A, Int]
@@ -42,6 +46,9 @@ trait App {
   type Input
 
   type Clue
+
+  given clueMonoid: Monoid[Clue]
+
   type Point
   type Distance
   type Photo
@@ -49,6 +56,10 @@ trait App {
   type Time
 
   type InputFilter
+
+  type ClueState
+
+  given clueStateMonoid: Semilattice[ClueState]
 
   def always: InputFilter
   def never: InputFilter
@@ -107,10 +118,26 @@ trait App {
     Reward,
   ) => Challenge
 
+  def hint: String => Clue
+  def noClue: Clue
+  def sub: (Clue, Clue) => Clue
+
+  def toList: Clue => List[String]
+
   def clue: (
     Clue,
     Challenge,
   ) => Challenge
+
+  object Clue {
+    def unapply(c: Challenge): Option[(Clue, Challenge)] = ???
+  }
+
+  def seen: ClueState
+  def completed: ClueState
+  def failed: ClueState
+
+  def getClues: Challenge => List[Input] => Map[Clue, ClueState]
 
   def photo: (
     Point,
@@ -137,12 +164,24 @@ trait App {
     reward: Reward
   ): Challenge
 
+  object Reward {
+    def unapply(c: Challenge): Option[Reward] = ???
+  }
+
   def andThen: (
     Challenge,
     Challenge,
   ) => Challenge
 
+  object AndThen {
+    def unapply(c: Challenge): Option[(Challenge, Challenge)] = ???
+  }
+
   def empty: Challenge
+
+  object Empty {
+    def unapply(c: Challenge): Boolean = ???
+  }
 
   def bottom: Challenge
 
@@ -151,10 +190,18 @@ trait App {
     Challenge,
   ) => Challenge
 
+  object Both {
+    def unapply(c: Challenge): Option[(Challenge, Challenge)] = ???
+  }
+
   def eitherC: (
     Challenge,
     Challenge,
   ) => Challenge
+
+  object EitherC {
+    def unapply(c: Challenge): Option[(Challenge, Challenge)] = ???
+  }
 
   def within: (
     Point,
@@ -176,6 +223,10 @@ trait App {
     Challenge,
   ) => Challenge
 
+  object Gate {
+    def unapply(c: Challenge): Option[(InputFilter, Challenge)] = ???
+  }
+
   def photoAbove: Altitude => InputFilter
 
   def isEmpty: Challenge => Boolean
@@ -187,32 +238,42 @@ trait App {
     List[A],
   ) => List[A]
 
-  def step: (
-    Option[Input],
-    Challenge,
-  ) => (
-    MultiSet[Reward],
-    Challenge,
-  )
-
-  def stepSwapped: (
-    Challenge,
-    Option[Input],
-  ) => (
-    MultiSet[Reward],
-    Challenge,
-  ) =
+  type StepResult[A] =
     (
-      ch,
-      i,
-    ) => step(i, ch)
+      (
+        MultiSet[Reward],
+        Map[Clue, ClueState],
+      ),
+      A,
+    )
+
+  def step: (
+    Clue,
+    Option[Input],
+    Challenge,
+  ) => StepResult[Challenge]
 
   def pumpChallenge(
     c: Challenge
   ): List[Input] => (
-    MultiSet[Reward],
+    (MultiSet[Reward], Map[Clue, ClueState]),
     Challenge,
   )
+
+  def tellClue: Map[Clue, ClueState] => StepResult[Unit]
+
+  def findClues: (Clue, Challenge) => Map[Clue, ClueState] = {
+    case (_, Empty)              => Map.empty
+    case (kctx, Both(c1, c2))    => findClues(kctx, c1) |+| findClues(kctx, c2)
+    case (kctx, EitherC(c1, c2)) => findClues(kctx, c1) |+| findClues(kctx, c2)
+    case (_, Gate(_, _))         => Map.empty
+    case (kctx, AndThen(c, _))   => findClues(kctx, c)
+    case (_, Reward(_))          => Map.empty
+    case (kctx, Clue(k, Empty))  => Map((kctx |+| k) -> completed)
+    case (kctx, Clue(k, c)) =>
+      Map((kctx |+| k) -> seen) |+|
+        findClues(kctx |+| k, c)
+  }
 
   object laws {
 
@@ -538,108 +599,112 @@ trait App {
       }
 
     def `step/both`(
+      kctx: Clue,
       i: Option[Input],
       c1: Challenge,
       c2: Challenge,
-    ) = step(i, both(c1, c2)) == (step(i, c1), step(i, c2)).mapN(both)
-
-    def `step/either`(
-      i: Option[Input],
-      c1: Challenge,
-      c2: Challenge,
-    ) = step(i, eitherC(c1, c2)) == (step(i, c1), step(i, c2)).mapN(eitherC)
+    ) =
+      step(kctx, i, both(c1, c2)) ==
+        (step(kctx, i, c1), step(kctx, i, c2)).mapN(both)
 
     def `step/empty`(
-      i: Option[Input]
-    ) = step(i, empty) == (MultiSet.empty, empty) // pure empty
+      kctx: Clue,
+      i: Option[Input],
+    ) = step(kctx, i, empty) == Applicative[StepResult].pure(empty)
 
     def `step/reward`(
+      kctx: Clue,
       i: Option[Input],
       r: Reward,
-    ) = step(i, reward(r)) == (MultiSet.singleton(r), empty)
+    ) = step(kctx, i, reward(r)) == Applicative[StepResult].pure(empty)
 
     def `step/gate`(
+      kctx: Clue,
       i: Input,
       f: InputFilter,
       c: Challenge,
     ) =
       matches(f, i) ==> {
-        step(Some(i), gate(f, c)) == step(None, c)
+        step(kctx, Some(i), gate(f, c)) == step(kctx, None, c)
       }
 
     def `step/gate unmatched`(
+      kctx: Clue,
       i: Input,
       f: InputFilter,
       c: Challenge,
     ) =
       !matches(f, i) ==> {
-        step(Some(i), gate(f, c)) == (MultiSet.empty, gate(f, c)) // pure (gate f c)
+        step(kctx, Some(i), gate(f, c)) == Applicative[StepResult].pure(gate(f, c))
       }
 
     def `step/gate nothing`(
+      kctx: Clue,
       f: InputFilter,
       c: Challenge,
-    ) = step(None, gate(f, c)) == (MultiSet.empty, gate(f, c)) // pure (gate f c)
+    ) = step(kctx, None, gate(f, c)) == Applicative[StepResult].pure(gate(f, c))
 
     def `step/andThen complete`(
+      kctx: Clue,
       i: Option[Input],
       c1: Challenge,
       c2: Challenge,
-      r: MultiSet[Reward],
-    ) =
-      // if this input completes the c1 challenge with rewards `r`
-      step(i, c1) == (r, empty) ==> {
+      r: (MultiSet[Reward], Map[Clue, ClueState]),
+    ) = // if this input completes the c1 challenge with rewards `r`
+      step(kctx, i, c1) == (r, empty) ==> {
         // then stepping once through the composition is the same as...
-        step(i, andThen(c1, c2)) ==
+        step(kctx, i, andThen(c1, c2)) ==
           // getting that reward and whatever the reward is for no input of c2
-          (r, step(None, c2)).flatten
-        // step(None, c2).leftMap(r ++ _)
+          (r, step(kctx, None, c2)).flatten
       }
 
     def `step/andThen incomplete`(
+      kctx: Clue,
       i: Option[Input],
       c1: Challenge,
       c2: Challenge,
       r: MultiSet[Reward],
     ) =
       // if this input completes with a non-empty challenge
-      (!isEmpty(step(i, c1)._2)) ==> {
+      (!isEmpty(step(kctx, i, c1)._2)) ==> {
         // then stepping once through the composition is the same as...
-        step(i, andThen(c1, c2)) ==
+        step(kctx, i, andThen(c1, c2)) ==
           // stepping once through c1, keeping the rest and passing that to an andThen
-          (step(i, c1), (MultiSet.empty, c2)).mapN(andThen)
-        // step(i, c1).fmap(andThen(_, c2))
+          step(kctx, i, c1).fmap(andThen(_, c2))
       }
 
     def `step/timeout matched`(
+      kctx: Clue,
       c: Challenge,
       t: Time,
       cutoff: Time,
     ) =
       isAfter(cutoff, t) ==> {
-        step(Some(time(t)), timeout(c, cutoff)) == (MultiSet.empty, empty) // pure empty
+        step(kctx, Some(time(t)), timeout(c, cutoff)) ==
+          Applicative[StepResult].pure(empty)
       }
 
     def `step/timeout unmatched`(
+      kctx: Clue,
       c: Challenge,
       t: Time,
       cutoff: Time,
     ) =
       !isAfter(t, cutoff) ==> {
-        step(Some(time(t)), timeout(c, cutoff)) == step(None, c)
+        step(kctx, Some(time(t)), timeout(c, cutoff)) == step(kctx, None, c)
       }
 
     def `step/timeout nothing`(
+      kctx: Clue,
       c: Challenge,
       t: Time,
       i: Option[Input],
-    ) = step(None, timeout(c, t)) == step(None, c)
+    ) = step(kctx, None, timeout(c, t)) == step(kctx, None, c)
 
     def `pumpChallenge law`(
       c: Challenge
-    ) =
-      pumpChallenge(c) <->
-        (_.map(_.some).prepended(None).foldM(c)(stepSwapped))
+    ) = ??? // pumpChallenge(c) <->
+    //   (_.map(_.some).prepended(None).foldM(c)(stepSwapped))
 
     def `getRewardsNew`(
       c: Challenge
@@ -748,7 +813,76 @@ trait App {
       c: Challenge
     ) = bottom == gate(never, c)
 
+    def `sub:associative`(k1: Clue, k2: Clue, k3: Clue) =
+      sub(k1, sub(k2, k3)) == sub(sub(k1, k2), k3)
+
+    def `toList/hint`(s: String) = toList(hint(s)) == List(s)
+
+    def `toList/sub`(k1: Clue, k2: Clue) = toList(sub(k1, k2)) == toList(k1) ++ toList(k2)
+
+    def `sub/mempty`(k: Clue) = sub(k, noClue) == k && sub(noClue, k) == k
+
+    def `clue/noClue`(c: Challenge) = clue(noClue, c) == c
+
+    def `clue/sub`(k1: Clue, k2: Clue, c: Challenge) = clue(sub(k1, k2), c) == clue(k1, clue(k2, c))
+
+    def `step/clue/empty`(
+      kctx: Clue,
+      i: Option[Input],
+      k: Clue,
+    ) =
+      step(kctx, i, clue(k, empty)) ==
+        tellClue(Map(sub(kctx, k) -> completed)) *>
+        Applicative[StepResult].pure(empty)
+
+    def `step/clue non-empty`(
+      kctx: Clue,
+      i: Option[Input],
+      k: Clue,
+      c: Challenge,
+    ) =
+      !isEmpty(c) ==> {
+        step(kctx, i, clue(k, c)) ==
+          tellClue(Map(sub(kctx, k) -> seen)) *>
+          step(sub(kctx, k), i, c).map(clue(k, _))
+      }
+
+    def `step/eitherC empty`(
+      kctx: Clue,
+      i: Option[Input],
+      c1: Challenge,
+      c2: Challenge,
+      `c2'`: Challenge,
+    ) = {
+      step(kctx, i, c1)._2 == empty &&
+      step(kctx, i, c2)._2 == `c2'`
+    } ==> {
+      step(kctx, i, eitherC(c1, c2)) ==
+        tellClue(findClues(kctx, `c2'`).fmap(seenToFailed)) *>
+        step(kctx, i, c2) *>
+        step(kctx, i, c1)
+    }
+
+    def `step/eitherC non-empty`(
+      kctx: Clue,
+      i: Option[Input],
+      c1: Challenge,
+      c2: Challenge,
+      `c2'`: Challenge,
+    ) = {
+      !isEmpty(step(kctx, i, c1)._2) &&
+      !isEmpty(step(kctx, i, c2)._2)
+    } ==> {
+      step(kctx, i, eitherC(c1, c2)) ==
+        (
+          step(kctx, i, c1),
+          step(kctx, i, c2),
+        ).mapN(eitherC)
+    }
+
   }
+
+  def seenToFailed: ClueState => ClueState
 
   object exercises {
 
