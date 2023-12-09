@@ -22,7 +22,7 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ which clang ];
+          buildInputs = with pkgs; [ which clang sbt ];
           nativeBuildInputs = with pkgs; [ sqlite.dev ];
           inherit BINDGEN_PATH SQLITE_PATH;
         };
