@@ -22,7 +22,8 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ sqlite.dev sn-bindgen which clang ];
+          buildInputs = with pkgs; [ which clang ];
+          nativeBuildInputs = with pkgs; [ sqlite.dev ];
           inherit BINDGEN_PATH SQLITE_PATH;
         };
         packages.default = pkgs.callPackage ./derivation.nix { inherit (inputs) gitignore-source; inherit BINDGEN_PATH SQLITE_PATH; };
