@@ -33,16 +33,16 @@ val app = crossProject(JVMPlatform, NativePlatform)
     _.settings(
       libraryDependencies ++= Seq(
         "com.armanbilge" %%% "epollcat" % "0.1.6"
-      ),
-      bindgenBinary := file(sys.env("BINDGEN_PATH")),
-      bindgenBindings := Seq(
-        Binding
-          .builder(file(sys.env("SQLITE_PATH")), "libsqlite")
-          .withLinkName("sqlite3")
-          .build
-      ),
+      )
+      // bindgenBinary := file(sys.env("BINDGEN_PATH")),
+      // bindgenBindings := Seq(
+      //   Binding
+      //     .builder(file(sys.env("SQLITE_PATH")), "libsqlite")
+      //     .withLinkName("sqlite3")
+      //     .build
+      // ),
     )
-      .enablePlugins(BindgenPlugin)
+    // .enablePlugins(BindgenPlugin)
   )
 
 val root = project
