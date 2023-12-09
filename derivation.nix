@@ -15,7 +15,7 @@ mkSbtDerivation {
   '';
 
   overrideDepsAttrs = final: prev: {
-    buildInputs = [ which ];
+    buildInputs = [ which clang ];
     inherit BINDGEN_PATH SQLITE_PATH;
   };
 
