@@ -17,8 +17,8 @@
             sn-bindgen.overlays.default
           ];
         };
-        BINDGEN_PATH = pkgs.sn-bindgen + "/bin/bindgen";
-        SQLITE_PATH = pkgs.sqlite.dev + "/include/sqlite3.h";
+        BINDGEN_PATH = builtins.toPath pkgs.sn-bindgen + "/bin/bindgen";
+        SQLITE_PATH = builtins.toPath pkgs.sqlite.dev + "/include/sqlite3.h";
       in
       {
         devShells.default = pkgs.mkShell {
