@@ -172,16 +172,18 @@
         "systems": "systems_2"
       },
       "locked": {
-        "dirtyRev": "c4210693865090095ad52fab11a753992bf486b4-dirty",
-        "dirtyShortRev": "c421069-dirty",
-        "lastModified": 1700919886,
+        "lastModified": 1702152224,
         "narHash": "sha256-TZdfhX3clHYo7Obafhp6PmdiNbTQ+1IJXeT0HawL4v0=",
-        "type": "git",
-        "url": "file:///Users/kubukoz/projects/sn-bindgen"
+        "owner": "kubukoz",
+        "repo": "sn-bindgen",
+        "rev": "18cef71befc3084b94233ebf74a58c0ade30d556",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///Users/kubukoz/projects/sn-bindgen"
+        "owner": "kubukoz",
+        "ref": "add-overlay",
+        "repo": "sn-bindgen",
+        "type": "github"
       }
     },
     "systems": {

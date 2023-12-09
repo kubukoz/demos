@@ -4,7 +4,7 @@
   inputs.sbt-derivation.url = "github:zaninime/sbt-derivation";
   inputs.gitignore-source.url = "github:hercules-ci/gitignore.nix";
   inputs.gitignore-source.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.sn-bindgen.url = "/Users/kubukoz/projects/sn-bindgen";
+  inputs.sn-bindgen.url = "github:kubukoz/sn-bindgen/add-overlay";
 
   outputs = { self, nixpkgs, flake-utils, sbt-derivation, sn-bindgen, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (
