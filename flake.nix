@@ -10,7 +10,7 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          nativeBuildInputs = [ pkgs.llvm pkgs.wasmtime ];
+          nativeBuildInputs = [ ];
         };
       }
     );

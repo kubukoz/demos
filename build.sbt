@@ -7,4 +7,4 @@ val root = crossProject(JVMPlatform, NativePlatform)
   .settings(
     scalaVersion := "3.2.2"
   )
-  .nativeSettings(nativeConfig ~= (_.withTargetTriple("wasm32-unknown-unknown-wasm")))
+  .nativeSettings(nativeConfig ~= (_.withBuildTarget(BuildTarget.libraryDynamic)))
