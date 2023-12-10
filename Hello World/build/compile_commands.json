@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/kubukoz/projects/demos/Hello World/build",
+  "command": "/usr/bin/cc -DTARGET_EXTENSION=1 -DTARGET_SIMULATOR=1 -Dhello_world_EXPORTS -I/Users/kubukoz/Developer/PlaydateSDK/C_API -g -std=gnu11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fPIC -Wall -Wstrict-prototypes -Wno-unknown-pragmas -Wdouble-promotion -ggdb -O0 -o CMakeFiles/hello_world.dir/src/main.c.o -c \"/Users/kubukoz/projects/demos/Hello World/src/main.c\"",
+  "file": "/Users/kubukoz/projects/demos/Hello World/src/main.c",
+  "output": "CMakeFiles/hello_world.dir/src/main.c.o"
+}
+]

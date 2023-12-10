@@ -1,0 +1,1 @@
+/usr/bin/cc -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -dynamiclib -Wl,-headerpad_max_install_names -o libhello_world.dylib -install_name @rpath/libhello_world.dylib CMakeFiles/hello_world.dir/src/main.c.o 

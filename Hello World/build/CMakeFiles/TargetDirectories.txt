@@ -1,0 +1,3 @@
+/Users/kubukoz/projects/demos/Hello World/build/CMakeFiles/hello_world.dir
+/Users/kubukoz/projects/demos/Hello World/build/CMakeFiles/edit_cache.dir
+/Users/kubukoz/projects/demos/Hello World/build/CMakeFiles/rebuild_cache.dir

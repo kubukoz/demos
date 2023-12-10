@@ -1,0 +1,346 @@
+
+Discarded input sections
+
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .group         0x0000000000000000        0xc build/src/main.o
+ .text          0x0000000000000000        0x0 build/src/main.o
+ .data          0x0000000000000000        0x0 build/src/main.o
+ .bss           0x0000000000000000        0x0 build/src/main.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .group         0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .text          0x0000000000000000        0x0 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .data          0x0000000000000000        0x0 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .bss           0x0000000000000000        0x0 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .text._malloc_r
+                0x0000000000000000        0xc build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .text._realloc_r
+                0x0000000000000000       0x10 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .text._free_r  0x0000000000000000       0x14 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000      0xaa8 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x22 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0xef build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x6a build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000      0x1df build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x18 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x35 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x34 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x16 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x58 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x1f build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x43 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x20 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000      0x18e build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000      0x339 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x16 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x29 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x2e build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x16 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x35 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000       0x22 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000000000      0x1e1 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/src/main.o
+LOAD build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+START GROUP
+LOAD /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/libgcc.a
+LOAD /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libg.a
+LOAD /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc.a
+END GROUP
+START GROUP
+LOAD /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/thumb/v7e-m+fp/hard/libgcc.a
+LOAD /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc.a
+LOAD /usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/bin/../lib/gcc/arm-none-eabi/9.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a
+END GROUP
+
+.text           0x0000000000000000      0x1e5
+ *(.text)
+ *(.text.*)
+ .text.update   0x0000000000000000       0xfc build/src/main.o
+ *fill*         0x00000000000000fc        0x4 
+ .text.eventHandler
+                0x0000000000000100       0x58 build/src/main.o
+                0x0000000000000100                eventHandler
+ *fill*         0x0000000000000158        0x8 
+ .text.eventHandlerShim
+                0x0000000000000160       0x1c build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+                0x0000000000000160                eventHandlerShim
+ *(.init)
+ *(.fini)
+ *crtbegin.o(.ctors)
+ *crtbegin?.o(.ctors)
+ *(EXCLUDE_FILE(*crtend.o *crtend?.o) .ctors)
+ *(SORT_BY_NAME(.ctors.*))
+ *(.ctors)
+ *crtbegin.o(.dtors)
+ *crtbegin?.o(.dtors)
+ *(EXCLUDE_FILE(*crtend.o *crtend?.o) .dtors)
+ *(SORT_BY_NAME(.dtors.*))
+ *(.dtors)
+ *(.rodata*)
+ .rodata.update.str1.4
+                0x000000000000017c       0x13 build/src/main.o
+ *fill*         0x000000000000018f        0x1 
+ .rodata.eventHandler.str1.4
+                0x0000000000000190       0x2c build/src/main.o
+ .rodata.str1.4
+                0x00000000000001bc       0x29 build/src/main.o
+ *(.eh_frame*)
+
+.glue_7         0x00000000000001e8        0x0
+ .glue_7        0x00000000000001e8        0x0 linker stubs
+
+.glue_7t        0x00000000000001e8        0x0
+ .glue_7t       0x00000000000001e8        0x0 linker stubs
+
+.vfp11_veneer   0x00000000000001e8        0x0
+ .vfp11_veneer  0x00000000000001e8        0x0 linker stubs
+
+.v4_bx          0x00000000000001e8        0x0
+ .v4_bx         0x00000000000001e8        0x0 linker stubs
+
+.iplt           0x00000000000001e8        0x0
+ .iplt          0x00000000000001e8        0x0 build/src/main.o
+
+.rel.dyn        0x00000000000001e8        0x0
+ .rel.iplt      0x00000000000001e8        0x0 build/src/main.o
+
+.data           0x00000000000001e8       0x14
+                0x00000000000001e8                __etext = .
+                0x00000000000001e8                __data_start__ = .
+ *(vtable)
+ *(.data*)
+ .data.dx       0x00000000000001e8        0x4 build/src/main.o
+                0x00000000000001e8                dx
+ .data.dy       0x00000000000001ec        0x4 build/src/main.o
+                0x00000000000001ec                dy
+ .data.fontpath
+                0x00000000000001f0        0x4 build/src/main.o
+                0x00000000000001f0                fontpath
+ .data.x        0x00000000000001f4        0x4 build/src/main.o
+                0x00000000000001f4                x
+ .data.y        0x00000000000001f8        0x4 build/src/main.o
+                0x00000000000001f8                y
+                0x00000000000001fc                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (__preinit_array_start = .)
+ *(.preinit_array)
+                [!provide]                        PROVIDE (__preinit_array_end = .)
+                0x00000000000001fc                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (__init_array_start = .)
+ *(SORT_BY_NAME(.init_array.*))
+ *(.init_array)
+                [!provide]                        PROVIDE (__init_array_end = .)
+                0x00000000000001fc                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (__fini_array_start = .)
+ *(SORT_BY_NAME(.fini_array.*))
+ *(.fini_array)
+                [!provide]                        PROVIDE (__fini_array_end = .)
+                0x00000000000001fc                . = ALIGN (0x4)
+                0x00000000000001fc                __data_end__ = .
+
+.igot.plt       0x00000000000001fc        0x0
+ .igot.plt      0x00000000000001fc        0x0 build/src/main.o
+
+.bss            0x00000000000001fc        0xc
+                0x00000000000001fc                . = ALIGN (0x4)
+                0x00000000000001fc                __bss_start__ = .
+ *(.bss*)
+ .bss.color     0x00000000000001fc        0x4 build/src/main.o
+                0x00000000000001fc                color
+ .bss.font      0x0000000000000200        0x4 build/src/main.o
+                0x0000000000000200                font
+ .bss.pdrealloc
+                0x0000000000000204        0x4 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ *(COMMON)
+ *(COM)
+                0x0000000000000208                . = ALIGN (0x4)
+                0x0000000000000208                __bss_end__ = .
+
+/DISCARD/
+ *(.ARM.exidx)
+OUTPUT(build/pdex.elf elf32-littlearm)
+
+.debug_info     0x0000000000000000     0xc82b
+ .debug_info    0x0000000000000000     0x6451 build/src/main.o
+ .debug_info    0x0000000000006451     0x63da build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_abbrev   0x0000000000000000      0x665
+ .debug_abbrev  0x0000000000000000      0x33f build/src/main.o
+ .debug_abbrev  0x000000000000033f      0x326 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_loc      0x0000000000000000      0x3b7
+ .debug_loc     0x0000000000000000      0x19b build/src/main.o
+ .debug_loc     0x000000000000019b      0x21c build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_aranges  0x0000000000000000       0x60
+ .debug_aranges
+                0x0000000000000000       0x28 build/src/main.o
+ .debug_aranges
+                0x0000000000000028       0x38 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_ranges   0x0000000000000000       0x68
+ .debug_ranges  0x0000000000000000       0x40 build/src/main.o
+ .debug_ranges  0x0000000000000040       0x28 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_macro    0x0000000000000000     0x2507
+ .debug_macro   0x0000000000000000      0x298 build/src/main.o
+ .debug_macro   0x0000000000000298      0xaa8 build/src/main.o
+ .debug_macro   0x0000000000000d40       0x22 build/src/main.o
+ .debug_macro   0x0000000000000d62       0x58 build/src/main.o
+ .debug_macro   0x0000000000000dba       0x18 build/src/main.o
+ .debug_macro   0x0000000000000dd2       0x94 build/src/main.o
+ .debug_macro   0x0000000000000e66       0x35 build/src/main.o
+ .debug_macro   0x0000000000000e9b       0x34 build/src/main.o
+ .debug_macro   0x0000000000000ecf       0x16 build/src/main.o
+ .debug_macro   0x0000000000000ee5       0x57 build/src/main.o
+ .debug_macro   0x0000000000000f3c       0x97 build/src/main.o
+ .debug_macro   0x0000000000000fd3      0x339 build/src/main.o
+ .debug_macro   0x000000000000130c       0xfd build/src/main.o
+ .debug_macro   0x0000000000001409       0x10 build/src/main.o
+ .debug_macro   0x0000000000001419       0x58 build/src/main.o
+ .debug_macro   0x0000000000001471       0x1f build/src/main.o
+ .debug_macro   0x0000000000001490       0x43 build/src/main.o
+ .debug_macro   0x00000000000014d3       0x20 build/src/main.o
+ .debug_macro   0x00000000000014f3      0x18e build/src/main.o
+ .debug_macro   0x0000000000001681       0x10 build/src/main.o
+ .debug_macro   0x0000000000001691       0x6a build/src/main.o
+ .debug_macro   0x00000000000016fb       0x1c build/src/main.o
+ .debug_macro   0x0000000000001717       0x52 build/src/main.o
+ .debug_macro   0x0000000000001769       0x40 build/src/main.o
+ .debug_macro   0x00000000000017a9       0x10 build/src/main.o
+ .debug_macro   0x00000000000017b9       0x40 build/src/main.o
+ .debug_macro   0x00000000000017f9       0xd7 build/src/main.o
+ .debug_macro   0x00000000000018d0       0x1c build/src/main.o
+ .debug_macro   0x00000000000018ec       0x3d build/src/main.o
+ .debug_macro   0x0000000000001929       0x16 build/src/main.o
+ .debug_macro   0x000000000000193f      0x16f build/src/main.o
+ .debug_macro   0x0000000000001aae       0x16 build/src/main.o
+ .debug_macro   0x0000000000001ac4       0x35 build/src/main.o
+ .debug_macro   0x0000000000001af9       0x16 build/src/main.o
+ .debug_macro   0x0000000000001b0f       0x29 build/src/main.o
+ .debug_macro   0x0000000000001b38       0xef build/src/main.o
+ .debug_macro   0x0000000000001c27      0x1df build/src/main.o
+ .debug_macro   0x0000000000001e06       0x2e build/src/main.o
+ .debug_macro   0x0000000000001e34       0x16 build/src/main.o
+ .debug_macro   0x0000000000001e4a       0x22 build/src/main.o
+ .debug_macro   0x0000000000001e6c      0x1e1 build/src/main.o
+ .debug_macro   0x000000000000204d      0x1c6 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000002213       0x8e build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x00000000000022a1       0x51 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x00000000000022f2       0x5e build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x0000000000002350      0x10e build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x000000000000245e       0x8d build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+ .debug_macro   0x00000000000024eb       0x1c build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_line     0x0000000000000000      0xa29
+ .debug_line    0x0000000000000000      0x59b build/src/main.o
+ .debug_line    0x000000000000059b      0x48e build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_str      0x0000000000000000     0xaed7
+ .debug_str     0x0000000000000000     0xae4f build/src/main.o
+                                       0xb2c8 (size before relaxing)
+ .debug_str     0x000000000000ae4f       0x88 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+                                       0xa0c0 (size before relaxing)
+
+.comment        0x0000000000000000       0x79
+ .comment       0x0000000000000000       0x79 build/src/main.o
+                                         0x7a (size before relaxing)
+ .comment       0x0000000000000079       0x7a build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.ARM.attributes
+                0x0000000000000000       0x34
+ .ARM.attributes
+                0x0000000000000000       0x34 build/src/main.o
+ .ARM.attributes
+                0x0000000000000034       0x34 build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+.debug_frame    0x0000000000000000       0xd8
+ .debug_frame   0x0000000000000000       0x7c build/src/main.o
+ .debug_frame   0x000000000000007c       0x5c build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+
+Cross Reference Table
+
+Symbol                                            File
+_free_r                                           build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+_malloc_r                                         build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+_realloc_r                                        build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+color                                             build/src/main.o
+dx                                                build/src/main.o
+dy                                                build/src/main.o
+eventHandler                                      build/src/main.o
+                                                  build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+eventHandlerShim                                  build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o
+font                                              build/src/main.o
+fontpath                                          build/src/main.o
+x                                                 build/src/main.o
+y                                                 build/src/main.o
