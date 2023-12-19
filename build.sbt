@@ -10,6 +10,12 @@ val root = project
   .settings(
     scalaVersion := "3.3.1",
     nativeConfig ~= (
-      _.withBuildTarget(BuildTarget.libraryStatic)
+      _.withBuildTarget(BuildTarget.libraryDynamic)
+        .withTargetTriple("arm-none-eabi")
+        // .withTargetTriple("x86_64-unknown-linux-gnu")
+        .withCompileOptions(Seq("-v"))
+        // .withClang(file("/usr/bin/clang").toPath())
     ),
   )
+
+// resolvers ++= Resolver.sonatypeOssRepos("snapshots")

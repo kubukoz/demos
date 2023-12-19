@@ -9,8 +9,10 @@
         pkgs = import nixpkgs { inherit system; };
       in
       {
-        devShells.default = pkgs.mkShell {
+        devShells.default = pkgs.mkShell { };
+        devShells.arm = pkgs.pkgsCross.arm-embedded.mkShell {
           nativeBuildInputs = [
+            pkgs.clang
           ];
         };
       }

@@ -1,8 +1,8 @@
-import scala.scalanative.unsigned._
-
 import scala.scalanative.unsafe._
 
 @exported("foo")
-def scalaApi(): Unit = {
-  val z = 42
-}
+def scalaApi(): Int = 42
+
+// object Main {
+//   def main(args: Array[String]): Unit = println("Hello, world!")
+// }
