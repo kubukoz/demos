@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # SDK_PATH with a default of /Users/kubukoz/Developer/PlaydateSDK
 SDK_PATH=${SDK_PATH:-/Users/kubukoz/Developer/PlaydateSDK/C_API}
 
@@ -17,9 +19,10 @@ SIM_FLAGS=(
 # SIM_CC=/usr/bin/clang
 # $SIM_CC ${SIM_FLAGS[@]}
 
-CC=clang
+CC=/usr/bin/clang
 
 FLAGS=(
+  -target arm-none-eabi
   -g3
   -c
   -mthumb
@@ -60,6 +63,7 @@ mkdir -p dep
 $CC ${FLAGS[@]}
 
 FLAGS=(
+  -target arm-none-eabi
   -g3
   -c
   -mthumb
@@ -99,6 +103,7 @@ FLAGS=(
 $CC ${FLAGS[@]}
 
 FLAGS=(
+  -target arm-none-eabi
   -g3
   main.o
   setup.o
