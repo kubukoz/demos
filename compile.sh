@@ -112,7 +112,7 @@ FLAGS=(
   -Wl,-Map=pdex.map,--cref,--gc-sections,--no-warn-mismatch,--emit-relocs
   -o
   pdex.elf
-  -I "/root/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/arm-none-eabi/lib"
+  -L"/root/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi/arm-none-eabi/lib"
 )
 
 $CC ${FLAGS[@]}
