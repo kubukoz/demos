@@ -11,9 +11,18 @@ val root = project
     scalaVersion := "3.3.1",
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryDynamic)
+        .withClang(file("/Applications/LLVMEmbeddedToolchainForArm-17.0.1-Darwin/bin/clang").toPath)
         .withTargetTriple("arm-none-eabi")
         // .withTargetTriple("x86_64-unknown-linux-gnu")
-        .withCompileOptions(Seq("-v"))
+        .withCompileOptions(
+          Seq(
+            "-nostdlib",
+            "-march=armv6m",
+            "-mcpu=cortex-m7",
+            // "-nodefaultlibs",
+            // "-v",
+          )
+        )
         // .withClang(file("/usr/bin/clang").toPath())
     ),
   )
