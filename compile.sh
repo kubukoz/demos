@@ -19,7 +19,7 @@ SIM_FLAGS=(
 # SIM_CC=/usr/bin/clang
 # $SIM_CC ${SIM_FLAGS[@]}
 
-CC=/usr/bin/clang
+CC=clang
 
 FLAGS=(
   -target arm-none-eabi
