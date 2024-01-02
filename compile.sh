@@ -37,11 +37,11 @@ FLAGS=(
   -Wno-unknown-pragmas
   -fverbose-asm
   -Wdouble-promotion
-  -mword-relocations
+  # -mword-relocations
   -fno-common
   -ffunction-sections
   -fdata-sections
-  '-Wa,-ahlms=build/main.lst'
+  # '-Wa,-ahlms=build/main.lst'
   -DTARGET_PLAYDATE=1
   -DTARGET_EXTENSION=1
   -MD
@@ -77,11 +77,11 @@ FLAGS=(
   -Wno-unknown-pragmas
   -fverbose-asm
   -Wdouble-promotion
-  -mword-relocations
+  # -mword-relocations
   -fno-common
   -ffunction-sections
   -fdata-sections
-  '-Wa,-ahlms=build/setup.lst'
+  # '-Wa,-ahlms=build/setup.lst'
   -DTARGET_PLAYDATE=1
   -DTARGET_EXTENSION=1
   -MD
@@ -91,7 +91,7 @@ FLAGS=(
   -I .
   -I .
   -I "$SDK_PATH"
-  build/setup.c
+  "$SDK_PATH/buildsupport/setup.c"
   -o
   main.o
 )
