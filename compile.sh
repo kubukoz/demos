@@ -49,7 +49,7 @@ FLAGS=(
   dep/main.o.d
   -I .
   -I .
-  -I /Users/kubukoz/Developer/PlaydateSDK/C_API
+  # -I /Users/kubukoz/Developer/PlaydateSDK/C_API
   main.c
   -o
   main.o
