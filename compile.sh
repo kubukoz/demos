@@ -98,7 +98,6 @@ FLAGS=(
 
 $CC ${FLAGS[@]}
 
-# -g3 build/src/main.o build//Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.o -nostartfiles -mthumb -mcpu=cortex-m7 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -D__FPU_USED=1 -T/Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/link_map.ld -Wl,-Map=build/pdex.map,--cref,--gc-sections,--no-warn-mismatch,--emit-relocs    -o build/pdex.elf
 FLAGS=(
   -g3
   main.o
@@ -110,7 +109,7 @@ FLAGS=(
   -mfpu=fpv5-sp-d16
   -D__FPU_USED=1
   -T$SDK_PATH/buildsupport/link_map.ld
-  -Wl,-Map=build/pdex.map,--cref,--gc-sections,--no-warn-mismatch,--emit-relocs
+  -Wl,-Map=pdex.map,--cref,--gc-sections,--no-warn-mismatch,--emit-relocs
   -o
   pdex.elf
 )
