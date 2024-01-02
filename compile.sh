@@ -1,13 +1,16 @@
 #!/bin/bash
 
+# SDK_PATH with a default of /Users/kubukoz/Developer/PlaydateSDK
+SDK_PATH=${SDK_PATH:-/Users/kubukoz/Developer/PlaydateSDK/C_API}
+
 SIM_FLAGS=(
   -dynamiclib
   -rdynamic
   -lm
   -DTARGET_SIMULATOR=1 -DTARGET_EXTENSION=1
-  -I /Users/kubukoz/Developer/PlaydateSDK/C_API
+  -I "$SDK_PATH"
   main.c
-  /Users/kubukoz/Developer/PlaydateSDK/C_API/buildsupport/setup.c
+  "$SDK_PATH/buildsupport/setup.c"
   -o pdex.dylib
 )
 
@@ -49,7 +52,7 @@ FLAGS=(
   dep/main.o.d
   -I .
   -I .
-  -I /Users/kubukoz/Developer/PlaydateSDK/C_API
+  -I "$SDK_PATH"
   main.c
   -o
   main.o
