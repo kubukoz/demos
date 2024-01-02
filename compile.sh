@@ -4,6 +4,7 @@ set -euo pipefail
 
 # SDK_PATH with a default of /Users/kubukoz/Developer/PlaydateSDK
 SDK_PATH=${SDK_PATH:-/Users/kubukoz/Developer/PlaydateSDK/C_API}
+TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-/usr/local/playdate/gcc-arm-none-eabi-9-2019-q4-major/arm-none-eabi}
 
 SIM_FLAGS=(
   -dynamiclib
@@ -57,6 +58,7 @@ FLAGS=(
   main.c
   -o
   main.o
+  -I$TOOLCHAIN_PATH/include
 )
 
 mkdir -p dep
@@ -98,6 +100,7 @@ FLAGS=(
   "$SDK_PATH/buildsupport/setup.c"
   -o
   setup.o
+  -I$TOOLCHAIN_PATH/include
 )
 
 $CC ${FLAGS[@]}
