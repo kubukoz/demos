@@ -1,5 +1,3 @@
-import bindgen.interface.Binding
-
 import scala.scalanative.build.BuildTarget
 
 def crossPlugin(
@@ -24,30 +22,14 @@ val app = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(commonSettings)
   .settings(
-    libraryDependencies ++= Seq(
-      "io.chrisdavenport" %%% "crossplatformioapp" % "0.1.0"
-    ) ++ compilerPlugins
-  )
-  .jvmConfigure(
-    _.enablePlugins(JavaAppPackaging)
+    libraryDependencies ++= compilerPlugins
   )
   .nativeConfigure(
     _.settings(
-      libraryDependencies ++= Seq(
-        "com.armanbilge" %%% "epollcat" % "0.1.6"
-      ),
       nativeConfig ~= (
         _.withBuildTarget(BuildTarget.libraryDynamic)
-      ),
-      // bindgenBinary := file(sys.env("BINDGEN_PATH")),
-      // bindgenBindings := Seq(
-      //   Binding
-      //     .builder(file("app") / ".native" / "src" / "main" / "resources" / "pd_api.h", "pdapi")
-      //     .addClangFlag(Seq("-DTARGET_SIMULATOR=1", "-DTARGET_EXTENSION=1"))
-      //     .build
-      // ),
+      )
     )
-    // .enablePlugins(BindgenPlugin)
   )
 
 val root = project
