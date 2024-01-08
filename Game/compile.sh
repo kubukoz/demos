@@ -15,15 +15,15 @@ clang -g -g -dynamiclib -rdynamic \
   -I . \
   -I $PLAYDATE_SDK/C_API \
   -I "$BASEDIR/../lib" \
-  -ldemo-out \
-  -L "$BASEDIR/../app/.native/target/scala-3.3.1" \
+  "$BASEDIR/../app/.native/target/scala-3.3.1/libdemo-out.a" \
   -Wl,--no-demangle \
+  -l c++ \
   -o "$BASEDIR/build/pdex.dylib" \
   "$BASEDIR/src/main.c" \
   "$PLAYDATE_SDK/C_API/buildsupport/setup.c"
 
 cp "$BASEDIR/build/pdex.dylib" Source
 $PLAYDATE_SDK/bin/pdc "$BASEDIR/Source" "$BASEDIR/HelloWorld.pdx"
-cp "$BASEDIR/../app/.native/target/scala-3.3.1/libdemo-out.dylib" /usr/local/lib
+
 open "$BASEDIR/HelloWorld.pdx"
 

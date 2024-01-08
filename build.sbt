@@ -27,7 +27,7 @@ val app = crossProject(JVMPlatform, NativePlatform)
   .nativeConfigure(
     _.settings(
       nativeConfig ~= (
-        _.withBuildTarget(BuildTarget.libraryDynamic)
+        _.withBuildTarget(BuildTarget.libraryStatic)
       )
     )
   )

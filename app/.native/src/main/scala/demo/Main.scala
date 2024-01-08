@@ -35,10 +35,6 @@ object Main {
 
   var state = false
 
-  val current = stackalloc[PDButtons](1)
-  val pressed = stackalloc[PDButtons](1)
-  val released = stackalloc[PDButtons](1)
-
   extension [A](
     inline ptr: Ptr[A]
   ) {
@@ -69,9 +65,13 @@ object Main {
   ): Int = {
     val pd = arg.asInstanceOf[Ptr[PlaydateAPI]]
 
+    val current = stackalloc[PDButtons](1)
+    val pressed = stackalloc[PDButtons](1)
+    val released = stackalloc[PDButtons](1)
+
     pd.!.system.!.getButtonState(current, pressed, released)
 
-    if ((pressed.! & kButtonA) == kButtonA) {
+    if (pressed.!.is(kButtonA)) {
       pd.!.system.!.logToConsole(c"Button A is pressed")
       state = !state
     }
