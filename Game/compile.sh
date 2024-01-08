@@ -8,7 +8,12 @@ mkdir -p build/dep
 PLAYDATE_SDK="/Users/kubukoz/Developer/PlaydateSDK"
 
 BASEDIR=$(dirname "$0")
-clang -g -g -dynamiclib -rdynamic    -lm -DTARGET_SIMULATOR=1 -DTARGET_EXTENSION=1 -I . -I $PLAYDATE_SDK/C_API \
+clang -g -g -dynamiclib -rdynamic \
+  -lm \
+  -DTARGET_SIMULATOR=1 \
+  -DTARGET_EXTENSION=1 \
+  -I . \
+  -I $PLAYDATE_SDK/C_API \
   -I "$BASEDIR/../lib" \
   -ldemo-out \
   -L "$BASEDIR/../app/.native/target/scala-3.3.1" \
