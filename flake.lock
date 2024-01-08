@@ -172,16 +172,15 @@
         "systems": "systems_2"
       },
       "locked": {
-        "lastModified": 1702152224,
-        "narHash": "sha256-TZdfhX3clHYo7Obafhp6PmdiNbTQ+1IJXeT0HawL4v0=",
-        "owner": "kubukoz",
+        "lastModified": 1704542117,
+        "narHash": "sha256-soGRR5Sn2aD52jNHc+wxSnwoG0Smeha2YvZq3oGlQiE=",
+        "owner": "indoorvivants",
         "repo": "sn-bindgen",
-        "rev": "18cef71befc3084b94233ebf74a58c0ade30d556",
+        "rev": "15574ba97f8033ee054742da87b9ab5eff50f501",
         "type": "github"
       },
       "original": {
-        "owner": "kubukoz",
-        "ref": "add-overlay",
+        "owner": "indoorvivants",
         "repo": "sn-bindgen",
         "type": "github"
       }

@@ -1,4 +1,4 @@
-{ mkSbtDerivation, gitignore-source, which, clang, sqlite, sn-bindgen, BINDGEN_PATH, SQLITE_PATH }:
+{ mkSbtDerivation, gitignore-source, which, clang, sn-bindgen, BINDGEN_PATH, PDAPI_PATH }:
 
 let pname = "demo"; in
 
@@ -8,7 +8,6 @@ mkSbtDerivation {
   depsSha256 = "sha256-OaLOr6MbxSkiVr2cBy/BdqZFICEeuSXocQ9WYKCGntw=";
 
   buildInputs = [ which clang ];
-  nativeBuildInputs = [ sqlite.dev ];
 
   depsWarmupCommand = ''
     sbt appNative/compile
@@ -16,10 +15,10 @@ mkSbtDerivation {
 
   overrideDepsAttrs = final: prev: {
     buildInputs = [ which clang ];
-    inherit BINDGEN_PATH SQLITE_PATH;
+    inherit BINDGEN_PATH PDAPI_PATH;
   };
 
-  inherit BINDGEN_PATH SQLITE_PATH;
+  inherit BINDGEN_PATH PDAPI_PATH;
 
   src = gitignore-source.lib.gitignoreSource ./.;
 

@@ -1,0 +1,6 @@
+*.pdx
+build
+*.dylib
+*.elf
+.clangd
+src/map.c
