@@ -17,6 +17,7 @@ class DottyPlugin extends Plugin {
     )
 
     println(Document.decoderFromSchema[Greeting].decode(doc))
+    println(doc.getClass().getResource("/smithy4s/Document.class"))
 
     java
       .util

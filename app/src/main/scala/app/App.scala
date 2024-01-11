@@ -7,6 +7,7 @@ import java.net.URLClassLoader
 import java.nio.file.Paths
 import smithy4s.Document
 import scala.jdk.CollectionConverters._
+import java.lang
 
 trait Plugin {
   def generate(data: Map[String, String]): List[Path]
@@ -15,6 +16,26 @@ trait Plugin {
 object Plugin {
   def fromJava(javaPlugin: plugin.Plugin): Plugin =
     data => javaPlugin.generate(data.asJava).asScala.toList
+
+  // this could be handwritten but it's using a Proxy for convenience.
+  // We basically have to call the object's method with the same name and signature dynamically.
+  def fromForeignJava[T](obj: T, clazz: Class[T]): plugin.Plugin = lang
+    .reflect
+    .Proxy
+    .newProxyInstance(
+      classOf[plugin.Plugin].getClassLoader(),
+      Array(classOf[plugin.Plugin]),
+      new lang.reflect.InvocationHandler {
+
+        def invoke(proxy: Object, method: lang.reflect.Method, args: Array[Object]): Object = {
+          val targetMethod = clazz.getMethod(method.getName(), method.getParameterTypes(): _*)
+          targetMethod.invoke(obj, args: _*)
+        }
+
+      },
+    )
+    .asInstanceOf[plugin.Plugin]
+
 }
 
 object App {
@@ -57,6 +78,19 @@ object App {
 
     }
 
+    val root =
+      new URLClassLoader(
+        BuildInfo
+          .pluginClassPath
+          .map { path =>
+            Paths.get(path).toUri().toURL()
+          }
+          .toArray,
+        null,
+      )
+
+    val foreignPluginClass = root.loadClass(classOf[plugin.Plugin].getName())
+
     BuildInfo.classpaths.zipWithIndex.map { case (cp, i) =>
       println(s"Classpath ${i + 1}/${BuildInfo.classpaths.size}: ${cp.head}...")
 
@@ -65,13 +99,17 @@ object App {
           cp.map { path =>
             Paths.get(path).toUri().toURL()
           }.toArray,
-          getClass().getClassLoader(),
+          root,
         )
 
       val plugins = ServiceLoader
-        .load(classOf[plugin.Plugin], cl)
+        .load(foreignPluginClass, cl)
         .asScala
         .toList
+        .map { foreignPlugin =>
+          Plugin
+            .fromForeignJava(foreignPlugin, foreignPluginClass.asInstanceOf[Class[Any]])
+        }
         .map(Plugin.fromJava)
 
       plugins.flatMap(_.generate(data)).foreach(println)

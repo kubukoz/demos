@@ -25,7 +25,7 @@ lazy val dottyImpl = project
 lazy val app = project
   .dependsOn(pluginInterface)
   .settings(
-    scalaVersion := "2.13.12",
+    // scalaVersion := "2.13.12",
     buildInfoKeys ++=
       Seq[BuildInfoKey.Entry[_]](
         Def
@@ -36,7 +36,13 @@ lazy val app = project
             )
           )
           .taskValue
-          .named("classpaths")
+          .named("classpaths"),
+        Def
+          .task(
+            (pluginInterface / Compile / fullClasspath).value.map(_.data).map(_.toString)
+          )
+          .taskValue
+          .named("pluginClassPath"),
       ),
     libraryDependencies ++= Seq(
       "com.disneystreaming.smithy4s" %% "smithy4s-core" % "0.18.5"
