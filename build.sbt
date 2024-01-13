@@ -10,6 +10,15 @@ import scala.scalanative.build.BuildTarget
 
 import scala.scalanative.build.Mode
 
+val playdateSdk = file(
+  sys
+    .env
+    .getOrElse(
+      "PLAYDATE_SDK_PATH",
+      sys.error("PLAYDATE_SDK_PATH not set! If you're on mac, consider ~/Developer/PlaydateSDK."),
+    )
+)
+
 def runOnPlaydate(devicePath: File, pdutilPath: File, buildPdxPath: File) = {
   import scala.annotation.tailrec
   import sys.process._
@@ -77,8 +86,15 @@ val playdateRunImpl =
     )
 
     runOnPlaydate(
-      devicePath = file("/dev/cu.usbmodemPDU1_Y0669441"),
-      pdutilPath = file("/Users/kubukoz/Developer/PlaydateSDK/bin/pdutil"),
+      devicePath = file(
+        sys
+          .env
+          .getOrElse(
+            "PLAYDATE_DEVICE_PATH",
+            sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
+          )
+      ),
+      pdutilPath = playdateSdk / "bin" / "pdutil",
       buildPdxPath = buildBase / "HelloWorld.pdx",
     )
   }
@@ -90,10 +106,8 @@ val root = project
     scalaVersion := "3.3.1",
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
-        // .withClang(file("/Applications/LLVMEmbeddedToolchainForArm-17.0.1-Darwin/bin/clang").toPath)
         .withTargetTriple("arm-none-eabi")
         .withGC(GC.none)
-        // .withTargetTriple("x86_64-unknown-linux-gnu")
         .withCompileOptions(
           Seq(
             "-g3",
@@ -116,11 +130,10 @@ val root = project
             "-D_LIBCPP_HAS_THREAD_API_PTHREAD=1",
             "-MD",
             "-MP",
-            "-I/Users/kubukoz/Developer/PlaydateSDK/C_API",
+            s"-I${playdateSdk / "C_API"}",
             "-march=armv7-m",
           )
         )
-        .withGC(GC.none)
         .withMultithreadingSupport(false)
     ),
     playdateRunImpl,

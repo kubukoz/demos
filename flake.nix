@@ -11,6 +11,12 @@
       {
         devShells.default = pkgs.clangStdenv.mkDerivation {
           name = "clang-nix-shell";
+          shellHook = ''
+            # Works on Mac
+            export PLAYDATE_SDK_PATH=~/Developer/PlaydateSDK
+            # Works for me.
+            export PLAYDATE_DEVICE_PATH=/dev/cu.usbmodemPDU1_Y0669441
+          '';
         };
         devShells.arm = pkgs.pkgsCross.arm-embedded.mkShell {
           nativeBuildInputs = [
@@ -20,3 +26,4 @@
       }
     );
 }
+
