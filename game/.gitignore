@@ -1,0 +1,7 @@
+CMakeFiles/
+*.pdx
+*.elf
+*.a
+*.map
+CMakeCache.txt
+Makefile

@@ -16,12 +16,10 @@
             export PLAYDATE_SDK_PATH=~/Developer/PlaydateSDK
             # Works for me.
             export PLAYDATE_DEVICE_PATH=/dev/cu.usbmodemPDU1_Y0669441
+
+            export CMAKE_TOOLCHAIN_FILE=$PLAYDATE_SDK_PATH/C_API/buildsupport/arm.cmake
           '';
-        };
-        devShells.arm = pkgs.pkgsCross.arm-embedded.mkShell {
-          nativeBuildInputs = [
-            pkgs.clang
-          ];
+          buildInputs = [ pkgs.cmake ];
         };
       }
     );

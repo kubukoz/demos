@@ -1,0 +1,3 @@
+[submodule "game/submodules/playdate-cpp"]
+	path = game/submodules/playdate-cpp
+	url = git@github.com:nstbayless/playdate-cpp.git

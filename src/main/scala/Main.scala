@@ -36,15 +36,16 @@ object Main {
 
   // var state = false
 
-  // extension [A](
-  //   inline ptr: Ptr[A]
-  // ) {
+  extension [A](
+    inline ptr: Ptr[A]
+  ) {
 
-  //   inline def !(
-  //     using inline tag: Tag[A]
-  //   ): A = !ptr
+    inline def !(
+      using inline tag: Tag[A]
+    ): A = !ptr
 
-  // }
+  }
+
   @exported("foo") def foo(i: Int): Int =
     // val x = Math.pow(i, 2).toInt + 1
     // x + i * 2
@@ -58,7 +59,14 @@ object Main {
     pd: Ptr[PlaydateAPI],
     event: PDSystemEvent,
     arg: UInt,
-  ): Int = (!pd).system.toInt
+  ): Int = {
+    pd_log(c"hello world from scala native!")
+
+    (!pd).system.toInt
+  }
+
+  @extern
+  def pd_log(msg: CString): Unit = extern
   // val f: CFuncPtr1[Ptr[Byte], CInt] = update
 
   // val ptr: Ptr[PDCallbackFunction] = CFuncPtr.toPtr(f).asInstanceOf[Ptr[PDCallbackFunction]]

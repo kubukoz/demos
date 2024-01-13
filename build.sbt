@@ -73,7 +73,7 @@ val playdateRunImpl =
 
     val staticLib = (Compile / nativeLink).value
 
-    val buildBase = file("/Users/kubukoz/projects/playdate-cpp/examples/hello_world")
+    val buildBase = baseDirectory.value / "game"
 
     IO.copyFile(
       staticLib,
