@@ -9,8 +9,8 @@
         pkgs = import nixpkgs { inherit system; };
       in
       {
-        devShells.default = pkgs.mkShell {
-          packages = [ pkgs.clang ];
+        devShells.default = pkgs.clangStdenv.mkDerivation {
+          name = "clang-nix-shell";
         };
         devShells.arm = pkgs.pkgsCross.arm-embedded.mkShell {
           nativeBuildInputs = [
