@@ -5,30 +5,23 @@
 #include <pdcpp/pdnewlib.h>
 #include "mylib.h"
 #include <stdarg.h>
+#include <time.h>
+
+#ifndef PLAYDATE_HOLDER
+#define PLAYDATE_HOLDER
+PlaydateAPI *_pd;
+#endif
 
 LCDFont *font;
 
-/**
- * The Playdate API requires a C-style, or static function to be called as the
- * main update function. Here we use such a function to delegate execution to
- * our class.
- */
+void pd_scalanative_init(PlaydateAPI *pd)
+{
+    _pd = pd;
+}
+
 static int gameTick(void *userdata)
 {
-    PlaydateAPI *pd = (PlaydateAPI *)userdata;
-
-    pd->graphics->clear(kColorWhite);
-    pd->graphics->setFont(font);
-
-    char *text = (char *)malloc(sizeof(char) * 50);
-    sprintf(text, "Hello Scala %s: %d", __TIMESTAMP__, foo(42));
-
-    pd->graphics->drawText(text, strlen(text), kASCIIEncoding, 25, 120);
-    free(text);
-
-    pd->system->drawFPS(0, 0);
-
-    return 1;
+    return sn_update((PlaydateAPI *)userdata);
 };
 
 int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
@@ -40,19 +33,9 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
     if (event == kEventInit)
     {
 
-        ScalaNativeInit();
         pd_scalanative_init(pd);
+        ScalaNativeInit();
 
-        const char *err;
-        font = pd->graphics->loadFont("/System/Fonts/Asheville-Sans-14-Bold.pft", &err);
-
-        if (font == NULL)
-            pd->system->error("%s:%i Couldn't load font: %s", __FILE__, __LINE__, err);
-
-        pd->display->setRefreshRate(50);
-
-        // and sets the tick function to be called on update to turn off the
-        // typical 'Lua'-ness.
         pd->system->setUpdateCallback(gameTick, pd);
     }
 
@@ -61,20 +44,54 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
         pd->system->logToConsole("Tearing down...");
     }
 
-    pd->system->logToConsole("SN Event: %d", sn_event(pd, event, arg));
-    return 0;
+    return sn_event(pd, event, arg);
 }
 
-#ifndef PLAYDATE_HOLDER
-#define PLAYDATE_HOLDER
-PlaydateAPI *_pd;
-#endif
+// polyfills
 
-void pd_scalanative_init(PlaydateAPI *pd)
+void __error(char *str)
 {
-    _pd = pd;
+    _pd->system->logToConsole("Error! %s", str);
 }
-void pd_log(const char *fmt)
+
+// PD API forwarders
+
+void pd_system_drawFPS(int x, int y)
+{
+    _pd->system->drawFPS(x, y);
+}
+
+void pd_display_setRefreshRate(float rate)
+{
+    _pd->display->setRefreshRate(rate);
+}
+
+void pd_system_getButtonState(PDButtons *current, PDButtons *pressed, PDButtons *released)
+{
+    _pd->system->getButtonState(current, pressed, released);
+}
+
+void pd_graphics_clear(LCDColor color)
+{
+    _pd->graphics->clear(color);
+}
+
+void pd_graphics_fillRect(int x, int y, int w, int h /* , LCDColor color */)
+{
+    _pd->graphics->fillRect(x, y, w, h, kColorBlack);
+}
+
+void pd_graphics_drawRect(int x, int y, int w, int h /* , LCDColor color */)
+{
+    _pd->graphics->drawRect(x, y, w, h, kColorBlack);
+}
+
+float pd_system_getCrankChange()
+{
+    return _pd->system->getCrankChange();
+}
+
+void pd_system_logToConsole(const char *fmt)
 {
     _pd->system->logToConsole(fmt);
 }

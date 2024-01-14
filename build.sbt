@@ -23,9 +23,12 @@ def runOnPlaydate(devicePath: File, pdutilPath: File, buildPdxPath: File) = {
   import scala.annotation.tailrec
   import sys.process._
 
-  def pdutil(args: String*) = println(
-    (pdutilPath.toString :: devicePath.toString :: args.toList).!!
-  )
+  def pdutil(args: String*) = {
+
+    val cmd = pdutilPath.toString :: devicePath.toString :: args.toList
+    println("running " + cmd.mkString(" "))
+    println(cmd.!!)
+  }
 
   @tailrec
   def waitUntil(b: => Boolean): Unit =
@@ -65,10 +68,10 @@ def runOnPlaydate(devicePath: File, pdutilPath: File, buildPdxPath: File) = {
 
 }
 
-val playdateRun = taskKey[Unit]("Copy the game to the connected Playdate device and run it")
+val playdateBuild = taskKey[File]("Build the game for Playdate")
 
-val playdateRunImpl =
-  playdateRun := {
+val playdateBuildImpl =
+  playdateBuild := {
     import sys.process._
 
     val staticLib = (Compile / nativeLink).value
@@ -85,6 +88,15 @@ val playdateRunImpl =
       "make failed",
     )
 
+    buildBase / "HelloWorld.pdx"
+  }
+
+val playdateRun = taskKey[Unit]("Copy the game to the connected Playdate device and run it")
+
+val playdateRunImpl =
+  playdateRun := {
+    val pdx = playdateBuild.value
+
     runOnPlaydate(
       devicePath = file(
         sys
@@ -95,7 +107,7 @@ val playdateRunImpl =
           )
       ),
       pdutilPath = playdateSdk / "bin" / "pdutil",
-      buildPdxPath = buildBase / "HelloWorld.pdx",
+      buildPdxPath = pdx,
     )
   }
 
@@ -136,6 +148,7 @@ val root = project
         )
         .withMultithreadingSupport(false)
     ),
+    playdateBuildImpl,
     playdateRunImpl,
   )
 

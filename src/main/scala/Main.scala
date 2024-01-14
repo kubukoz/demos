@@ -8,33 +8,35 @@ import scalanative.unsafe._
 
 import scala.scalanative.unsigned.UInt
 import pdapi.aliases.signalDeallocFunc.toPtr
+import scala.scalanative.unsigned.ULong
+import scala.util.Random
 
 object Main {
 
-  // var x = 50
-  // var y = 50
+  var x = 50
+  var y = 50
 
-  // val VelocityX = 5
-  // val VelocityY = 2
+  val VelocityX = 5
+  val VelocityY = 2
 
-  // enum DirectionX {
-  //   case Left, Right
-  // }
+  enum DirectionX {
+    case Left, Right
+  }
 
-  // enum DirectionY {
-  //   case Up, Down
-  // }
+  enum DirectionY {
+    case Up, Down
+  }
 
-  // var dirX = DirectionX.Left
-  // var dirY = DirectionY.Down
+  var dirX = DirectionX.Left
+  var dirY = DirectionY.Down
 
-  // val LCD_COLUMNS = 400
-  // val LCD_ROWS = 240
+  val LCD_COLUMNS = 400
+  val LCD_ROWS = 240
 
-  // var w = 100.0f
-  // val h = 100.0f
+  var w = 100.0f
+  val h = 100.0f
 
-  // var state = false
+  var state = false
 
   extension [A](
     inline ptr: Ptr[A]
@@ -54,106 +56,139 @@ object Main {
     // ("a" * i).map(_.toInt).sum
     (1 to i).sum
 
+  class Foo(a: Int, b: Int) {
+    def y = a + b
+  }
+
   @exported("sn_event")
   def event(
     pd: Ptr[PlaydateAPI],
     event: PDSystemEvent,
     arg: UInt,
   ): Int = {
-    pd_log(c"hello world from scala native!")
-
-    (!pd).system.toInt
+    if (event == kEventInit)
+      pd_display_setRefreshRate(50.0f)
+    0
   }
 
   @extern
-  def pd_log(msg: CString): Unit = extern
-  // val f: CFuncPtr1[Ptr[Byte], CInt] = update
+  def pd_system_logToConsole(msg: CString): Unit = extern
 
-  // val ptr: Ptr[PDCallbackFunction] = CFuncPtr.toPtr(f).asInstanceOf[Ptr[PDCallbackFunction]]
+  @extern def pd_system_drawFPS(
+    x: Int,
+    y: Int,
+  ): Unit = extern
 
-  // pd.!.system.!.logToConsole(c"Event!")
-  // (!(!pd).system).logToConsole(c"Event!")
-  // if (event == kEventInit)
-  //   pd.!.system.!.setUpdateCallback(ptr, pd.asInstanceOf[Ptr[Byte]])
-  // def update(
-  //   arg: Ptr[Byte]
-  // ): Int = {
-  //   val pd = arg.asInstanceOf[Ptr[PlaydateAPI]]
+  @extern def pd_system_getButtonState(
+    current: Ptr[PDButtons],
+    pressed: Ptr[PDButtons],
+    released: Ptr[PDButtons],
+  ): Unit = extern
 
-  //   val current = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
-  //   val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
-  //   val released = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
+  @extern def pd_graphics_clear(color: LCDColor): Unit = extern
 
-  //   pd.!.system.!.getButtonState(current, pressed, released)
+  @extern def pd_graphics_drawRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    // color: LCDColor,
+  ): Unit = extern
 
-  //   if (pressed.!.is(kButtonA)) {
-  //     pd.!.system.!.logToConsole(c"Button A is pressed")
-  //     state = !state
-  //   }
+  @extern def pd_graphics_fillRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    // color: LCDColor,
+  ): Unit = extern
 
-  //   if (dirX == DirectionX.Left) {
-  //     x -= VelocityX
-  //     if (x < 0) {
-  //       dirX = DirectionX.Right
-  //     }
-  //   } else {
-  //     x += VelocityX
-  //     if (x > LCD_COLUMNS - w) {
-  //       dirX = DirectionX.Left
-  //     }
-  //   }
-  //   x = 0 max ((LCD_COLUMNS - w.toInt) min x.toInt)
+  @extern def pd_display_setRefreshRate(
+    rate: Float
+  ): Unit = extern
 
-  //   if (dirY == DirectionY.Up) {
-  //     y -= VelocityY
-  //     if (y < 0) {
-  //       dirY = DirectionY.Down
-  //     }
-  //   } else {
-  //     y += VelocityY
-  //     if (y > (LCD_ROWS - h)) {
-  //       dirY = DirectionY.Up
-  //     }
-  //   }
-  //   y = 0 max ((LCD_ROWS - h.toInt) min y.toInt)
+  @extern def pd_system_getCrankChange(): Float = extern
 
-  //   val crankDelta = pd.!.system.!.getCrankChange()
+  @exported("sn_update")
+  def update(
+    pd: Ptr[PlaydateAPI]
+  ): Int = {
+    pd_system_drawFPS(0, 0)
 
-  //   if (crankDelta != 0) {
-  //     w += crankDelta.toInt
-  //   }
+    val current = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
+    val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
+    val released = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
 
-  //   pd.!
-  //     .graphics
-  //     .!
-  //     .clear(
-  //       LCDColor(uintptr_t(LCDSolidColor.kColorWhite.value))
-  //     )
+    pd_system_getButtonState(current, pressed, released)
 
-  //   if (state)
-  //     pd.!
-  //       .graphics
-  //       .!
-  //       .fillRect(
-  //         x,
-  //         y,
-  //         w.toInt,
-  //         h.toInt,
-  //         LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
-  //       )
-  //   else
-  //     pd.!
-  //       .graphics
-  //       .!
-  //       .drawRect(
-  //         x,
-  //         y,
-  //         w.toInt,
-  //         h.toInt,
-  //         LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
-  //       )
+    if (pressed.!.is(kButtonA)) {
+      pd_system_logToConsole(c"Button A is pressed")
 
-  //   1
-  // }
+      if (Random.nextBoolean())
+        pd_system_logToConsole(c"RANDOM EVENT ON BUTTONS!")
+
+        // crashes for reasons unbeknownst to mankind
+        // Zone { implicit zone =>
+        //   pd_system_logToConsole(toCString("Button A is pressed"))
+        // }
+
+        state = !state
+    }
+
+    if (dirX == DirectionX.Left) {
+      x -= VelocityX
+      if (x < 0) {
+        dirX = DirectionX.Right
+      }
+    } else {
+      x += VelocityX
+      if (x > LCD_COLUMNS - w) {
+        dirX = DirectionX.Left
+      }
+    }
+    x = 0 max ((LCD_COLUMNS - w.toInt) min x.toInt)
+
+    if (dirY == DirectionY.Up) {
+      y -= VelocityY
+      if (y < 0) {
+        dirY = DirectionY.Down
+      }
+    } else {
+      y += VelocityY
+      if (y > (LCD_ROWS - h)) {
+        dirY = DirectionY.Up
+      }
+    }
+    y = 0 max ((LCD_ROWS - h.toInt) min y.toInt)
+
+    val crankDelta = pd_system_getCrankChange()
+
+    if (crankDelta != 0) {
+      w += crankDelta.toInt
+    }
+
+    pd_graphics_clear(
+      LCDColor(uintptr_t(LCDSolidColor.kColorWhite.value))
+    )
+
+    if (state)
+      pd_graphics_fillRect(
+        x,
+        y,
+        w.toInt,
+        h.toInt,
+        // LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+      )
+    else
+      pd_graphics_drawRect(
+        x,
+        y,
+        w.toInt,
+        h.toInt,
+        // LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+      )
+
+    1
+  }
 
 }
