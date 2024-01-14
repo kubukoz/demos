@@ -19,16 +19,30 @@ val playdateSdk = file(
     )
 )
 
-def runOnPlaydate(devicePath: File, pdutilPath: File, buildPdxPath: File) = {
-  import scala.annotation.tailrec
+val devicePath = file(
+  sys
+    .env
+    .getOrElse(
+      "PLAYDATE_DEVICE_PATH",
+      sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
+    )
+)
+
+val pdutilPath = playdateSdk / "bin" / "pdutil"
+
+def pdutil(
+  args: String*
+) = {
   import sys.process._
 
-  def pdutil(args: String*) = {
+  val cmd = pdutilPath.toString :: devicePath.toString :: args.toList
+  println("running " + cmd.mkString(" "))
+  println(cmd.!!)
+}
 
-    val cmd = pdutilPath.toString :: devicePath.toString :: args.toList
-    println("running " + cmd.mkString(" "))
-    println(cmd.!!)
-  }
+def runOnPlaydate(buildPdxPath: File) = {
+  import scala.annotation.tailrec
+  import sys.process._
 
   @tailrec
   def waitUntil(b: => Boolean): Unit =
@@ -98,17 +112,15 @@ val playdateRunImpl =
     val pdx = playdateBuild.value
 
     runOnPlaydate(
-      devicePath = file(
-        sys
-          .env
-          .getOrElse(
-            "PLAYDATE_DEVICE_PATH",
-            sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
-          )
-      ),
-      pdutilPath = playdateSdk / "bin" / "pdutil",
-      buildPdxPath = pdx,
+      buildPdxPath = pdx
     )
+  }
+
+val pdutilDatadisk = taskKey[Unit]("Boot into datadisk mode")
+
+val pdutilDatadiskImpl =
+  pdutilDatadisk := {
+    pdutil("datadisk")
   }
 
 val root = project
@@ -144,12 +156,14 @@ val root = project
             "-MP",
             s"-I${playdateSdk / "C_API"}",
             "-march=armv7-m",
+            // "-v",
           )
         )
         .withMultithreadingSupport(false)
     ),
     playdateBuildImpl,
     playdateRunImpl,
+    pdutilDatadiskImpl,
   )
 
 // resolvers ++= Resolver.sonatypeOssRepos("snapshots")

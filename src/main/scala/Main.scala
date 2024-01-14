@@ -2,14 +2,15 @@ package demo
 
 import pdapi.all._
 import pdapi.enumerations.PDButtons.kButtonA
-import pdapi.enumerations.PDSystemEvent
 import pdapi.enumerations.PDSystemEvent.kEventInit
 import scalanative.unsafe._
 
-import scala.scalanative.unsigned.UInt
-import pdapi.aliases.signalDeallocFunc.toPtr
-import scala.scalanative.unsigned.ULong
 import scala.util.Random
+import pdapi.enumerations.PDButtons.kButtonB
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import java.nio.CharBuffer
+import scala.scalanative.unsigned.UInt
 
 object Main {
 
@@ -36,7 +37,7 @@ object Main {
   var w = 100.0f
   val h = 100.0f
 
-  var state = false
+  var state = true
 
   extension [A](
     inline ptr: Ptr[A]
@@ -46,6 +47,12 @@ object Main {
       using inline tag: Tag[A]
     ): A = !ptr
 
+  }
+
+  inline def zoned[T](f: Zone ?=> T): T = Zone { implicit z =>
+    f(
+      using z
+    )
   }
 
   @exported("foo") def foo(i: Int): Int =
@@ -74,6 +81,9 @@ object Main {
   @extern
   def pd_system_logToConsole(msg: CString): Unit = extern
 
+  @extern
+  def pd_log_error(msg: CString): Unit = extern
+
   @extern def pd_system_drawFPS(
     x: Int,
     y: Int,
@@ -92,7 +102,7 @@ object Main {
     y: Int,
     w: Int,
     h: Int,
-    // color: LCDColor,
+    color: LCDColor,
   ): Unit = extern
 
   @extern def pd_graphics_fillRect(
@@ -100,7 +110,7 @@ object Main {
     y: Int,
     w: Int,
     h: Int,
-    // color: LCDColor,
+    color: LCDColor,
   ): Unit = extern
 
   @extern def pd_display_setRefreshRate(
@@ -124,15 +134,32 @@ object Main {
     if (pressed.!.is(kButtonA)) {
       pd_system_logToConsole(c"Button A is pressed")
 
-      if (Random.nextBoolean())
+      if (Random.nextInt(10) > 8)
         pd_system_logToConsole(c"RANDOM EVENT ON BUTTONS!")
 
-        // crashes for reasons unbeknownst to mankind
-        // Zone { implicit zone =>
-        //   pd_system_logToConsole(toCString("Button A is pressed"))
-        // }
+      state = !state
+    }
 
-        state = !state
+    if (pressed.!.is(kButtonB)) {
+      Zone { implicit z =>
+        pd_system_logToConsole(
+          toCString(
+            s"State dump: w=$w, h=$h, x=$x, y=$y, state=$state, dirX=$dirX, dirY=$dirY"
+          )
+        )
+
+        pd_system_logToConsole(
+          toCString(
+            s"Also, just to flex, here's a random int: ${Random.nextInt()}"
+          )
+        )
+
+        pd_system_logToConsole(
+          toCString(
+            s"So what is pd->system->logToConsole? ${pd.!.system.!.logToConsole}"
+          )
+        )
+      }
     }
 
     if (dirX == DirectionX.Left) {
@@ -177,17 +204,24 @@ object Main {
         y,
         w.toInt,
         h.toInt,
-        // LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+        LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
       )
-    else
+    else {
+
+      // zoned {
+      //   pd_log_error(
+      //     toCString(s"real kBlack is: ${LCDSolidColor.kColorBlack}")
+      //   )
+      // }
+
       pd_graphics_drawRect(
         x,
         y,
         w.toInt,
         h.toInt,
-        // LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+        LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
       )
-
+    }
     1
   }
 
