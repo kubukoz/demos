@@ -147,18 +147,6 @@ object Main {
             s"State dump: w=$w, h=$h, x=$x, y=$y, state=$state, dirX=$dirX, dirY=$dirY"
           )
         )
-
-        pd_system_logToConsole(
-          toCString(
-            s"Also, just to flex, here's a random int: ${Random.nextInt()}"
-          )
-        )
-
-        pd_system_logToConsole(
-          toCString(
-            s"So what is pd->system->logToConsole? ${pd.!.system.!.logToConsole}"
-          )
-        )
       }
     }
 
@@ -221,6 +209,10 @@ object Main {
         h.toInt,
         LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
       )
+    }
+
+    if (!state) {
+      pd.!.graphics.!.fillRect(0, 0, 50, 50, LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)))
     }
     1
   }
