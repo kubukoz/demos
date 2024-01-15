@@ -142,11 +142,15 @@ object Main {
       w += crankDelta.toInt
     }
 
+    // Not using colors from generated bindings because there's something wrong about their types
+    val kColorWhite = 1.toUInt
+    val kColorBlack = 0.toUInt
+
     pd.!
       .graphics
       .!
       .clear(
-        LCDSolidColor.kColorWhite.value
+        kColorWhite
       )
 
     // zoned {
@@ -164,7 +168,7 @@ object Main {
           y,
           w.toInt,
           h.toInt,
-          LCDSolidColor.kColorBlack.value,
+          kColorBlack,
         )
     else {
       pd.!
@@ -175,12 +179,22 @@ object Main {
           y,
           w.toInt,
           h.toInt,
-          LCDSolidColor.kColorBlack.value,
+          kColorWhite,
         )
     }
 
     if (!state) {
-      pd.!.graphics.!.fillRect(0, LCD_ROWS - 50, 50, 50, LCDSolidColor.kColorBlack.value)
+      pd.!
+        .graphics
+        .!
+        .fillRect(
+          0,
+          LCD_ROWS - 50,
+          50,
+          50,
+          // LCDSolidColor.kColorBlack.value,
+          0.toUInt,
+        )
     }
     1
   }
