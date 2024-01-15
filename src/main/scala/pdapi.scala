@@ -3689,31 +3689,31 @@ object unions:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
-  opaque type lua_val_v = CArray[Byte, Nat._4]
-  object lua_val_v:
-    given _tag: Tag[lua_val_v] = Tag.CArray[CChar, Nat._4](Tag.Byte, Tag.Nat4)
-    def apply()(using Zone): Ptr[lua_val_v] =
-      val ___ptr = alloc[lua_val_v](1)
+  opaque type lua_value_v = CArray[Byte, Nat._4]
+  object lua_value_v:
+    given _tag: Tag[lua_value_v] = Tag.CArray[CChar, Nat._4](Tag.Byte, Tag.Nat4)
+    def apply()(using Zone): Ptr[lua_value_v] =
+      val ___ptr = alloc[lua_value_v](1)
       ___ptr
     @scala.annotation.targetName("apply_intval")
-    def apply(intval: CUnsignedInt)(using Zone): Ptr[lua_val_v] =
-      val ___ptr = alloc[lua_val_v](1)
+    def apply(intval: CUnsignedInt)(using Zone): Ptr[lua_value_v] =
+      val ___ptr = alloc[lua_value_v](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[CUnsignedInt]].update(0, intval)
       ___ptr
     @scala.annotation.targetName("apply_floatval")
-    def apply(floatval: Float)(using Zone): Ptr[lua_val_v] =
-      val ___ptr = alloc[lua_val_v](1)
+    def apply(floatval: Float)(using Zone): Ptr[lua_value_v] =
+      val ___ptr = alloc[lua_value_v](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[Float]].update(0, floatval)
       ___ptr
     @scala.annotation.targetName("apply_strval")
-    def apply(strval: Ptr[CUnsignedChar])(using Zone): Ptr[lua_val_v] =
-      val ___ptr = alloc[lua_val_v](1)
+    def apply(strval: Ptr[CUnsignedChar])(using Zone): Ptr[lua_value_v] =
+      val ___ptr = alloc[lua_value_v](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]].update(0, strval)
       ___ptr
-    extension (struct: lua_val_v)
+    extension (struct: lua_value_v)
       def intval : CUnsignedInt = !struct.at(0).asInstanceOf[Ptr[CUnsignedInt]]
       def intval_=(value: CUnsignedInt): Unit = !struct.at(0).asInstanceOf[Ptr[CUnsignedInt]] = value
       def floatval : Float = !struct.at(0).asInstanceOf[Ptr[Float]]
@@ -3800,11 +3800,8 @@ object functions:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
-  def LCDRect_translate(r : LCDRect, dx : CInt, dy : CInt)(using Zone): LCDRect =
-    val __ptr_0: Ptr[LCDRect] = alloc[LCDRect](2)
-    !(__ptr_0 + 0) = r
-    __sn_wrap_pdapi_LCDRect_translate((__ptr_0 + 0), dx, dy, (__ptr_0 + 1))
-    !(__ptr_0 + 1)
+  def LCDRect_translate(r : Ptr[LCDRect], dx : CInt, dy : CInt)(__return : Ptr[LCDRect]): Unit =
+    __sn_wrap_pdapi_LCDRect_translate(r, dx, dy, __return)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
@@ -3817,8 +3814,11 @@ object functions:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
-  def LCDRect_translate(r : Ptr[LCDRect], dx : CInt, dy : CInt)(__return : Ptr[LCDRect]): Unit =
-    __sn_wrap_pdapi_LCDRect_translate(r, dx, dy, __return)
+  def LCDRect_translate(r : LCDRect, dx : CInt, dy : CInt)(using Zone): LCDRect =
+    val __ptr_0: Ptr[LCDRect] = alloc[LCDRect](2)
+    !(__ptr_0 + 0) = r
+    __sn_wrap_pdapi_LCDRect_translate((__ptr_0 + 0), dx, dy, (__ptr_0 + 1))
+    !(__ptr_0 + 1)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
@@ -3879,16 +3879,16 @@ object functions:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_stringValue(value : json_value)(using Zone): Ptr[CUnsignedChar] =
-    val __ptr_0: Ptr[json_value] = alloc[json_value](1)
-    !(__ptr_0 + 0) = value
-    __sn_wrap_pdapi_json_stringValue((__ptr_0 + 0))
+  def json_stringValue(value : Ptr[json_value]): Ptr[CUnsignedChar] =
+    __sn_wrap_pdapi_json_stringValue(value)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_stringValue(value : Ptr[json_value]): Ptr[CUnsignedChar] =
-    __sn_wrap_pdapi_json_stringValue(value)
+  def json_stringValue(value : json_value)(using Zone): Ptr[CUnsignedChar] =
+    val __ptr_0: Ptr[json_value] = alloc[json_value](1)
+    !(__ptr_0 + 0) = value
+    __sn_wrap_pdapi_json_stringValue((__ptr_0 + 0))
 
 object types:
   export _root_.pdapi.structs.*
@@ -4038,7 +4038,7 @@ object all:
   export _root_.pdapi.structs.playdate_sys
   export _root_.pdapi.structs.playdate_video
   export _root_.pdapi.unions.json_value_data
-  export _root_.pdapi.unions.lua_val_v
+  export _root_.pdapi.unions.lua_value_v
   export _root_.pdapi.functions.SoundFormat_bytesPerFrame
   export _root_.pdapi.functions.eventHandler
   export _root_.pdapi.functions.json_setArrayDecode
