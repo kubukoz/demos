@@ -160,16 +160,17 @@ object Main {
     pd.!.system.!.drawFPS(0, 0)
 
     if (state)
-      pd.!
-        .graphics
-        .!
-        .fillRect(
-          x,
-          y,
-          w.toInt,
-          h.toInt,
-          kColorBlack,
-        )
+      ()
+    // pd.!
+    //   .graphics
+    //   .!
+    //   .fillRect(
+    //     x,
+    //     y,
+    //     w.toInt,
+    //     h.toInt,
+    //     kColorBlack,
+    //   )
     else {
       pd.!
         .graphics
