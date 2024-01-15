@@ -17,7 +17,7 @@ object predef:
 object enumerations:
   import predef.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_file.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_file.h
   */
   opaque type FileOptions = CUnsignedInt
   object FileOptions extends CEnumU[FileOptions]:
@@ -40,7 +40,7 @@ object enumerations:
       inline def is(b: FileOptions): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDBitmapDrawMode = CUnsignedInt
   object LCDBitmapDrawMode extends CEnumU[LCDBitmapDrawMode]:
@@ -71,7 +71,7 @@ object enumerations:
       inline def is(b: LCDBitmapDrawMode): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDBitmapFlip = CUnsignedInt
   object LCDBitmapFlip extends CEnumU[LCDBitmapFlip]:
@@ -94,7 +94,7 @@ object enumerations:
       inline def is(b: LCDBitmapFlip): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDFontLanguage = CUnsignedInt
   object LCDFontLanguage extends CEnumU[LCDFontLanguage]:
@@ -115,7 +115,7 @@ object enumerations:
       inline def is(b: LCDFontLanguage): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDLineCapStyle = CUnsignedInt
   object LCDLineCapStyle extends CEnumU[LCDLineCapStyle]:
@@ -136,7 +136,7 @@ object enumerations:
       inline def is(b: LCDLineCapStyle): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDPolygonFillRule = CUnsignedInt
   object LCDPolygonFillRule extends CEnumU[LCDPolygonFillRule]:
@@ -155,7 +155,7 @@ object enumerations:
       inline def is(b: LCDPolygonFillRule): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDSolidColor = CUnsignedInt
   object LCDSolidColor extends CEnumU[LCDSolidColor]:
@@ -178,7 +178,7 @@ object enumerations:
       inline def is(b: LCDSolidColor): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type LFOType = CUnsignedInt
   object LFOType extends CEnumU[LFOType]:
@@ -209,7 +209,7 @@ object enumerations:
       inline def is(b: LFOType): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
   opaque type LuaType = CUnsignedInt
   object LuaType extends CEnumU[LuaType]:
@@ -242,7 +242,7 @@ object enumerations:
       inline def is(b: LuaType): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   opaque type PDButtons = CUnsignedInt
   object PDButtons extends CEnumU[PDButtons]:
@@ -269,7 +269,7 @@ object enumerations:
       inline def is(b: PDButtons): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   opaque type PDLanguage = CUnsignedInt
   object PDLanguage extends CEnumU[PDLanguage]:
@@ -290,7 +290,7 @@ object enumerations:
       inline def is(b: PDLanguage): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   opaque type PDPeripherals = CUnsignedInt
   object PDPeripherals extends CEnumU[PDPeripherals]:
@@ -311,7 +311,7 @@ object enumerations:
       inline def is(b: PDPeripherals): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type PDStringEncoding = CUnsignedInt
   object PDStringEncoding extends CEnumU[PDStringEncoding]:
@@ -332,7 +332,7 @@ object enumerations:
       inline def is(b: PDStringEncoding): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api.h
   */
   opaque type PDSystemEvent = CUnsignedInt
   object PDSystemEvent extends CEnumU[PDSystemEvent]:
@@ -367,7 +367,7 @@ object enumerations:
       inline def is(b: PDSystemEvent): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SoundFormat = CUnsignedInt
   object SoundFormat extends CEnumU[SoundFormat]:
@@ -394,7 +394,7 @@ object enumerations:
       inline def is(b: SoundFormat): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SoundWaveform = CUnsignedInt
   object SoundWaveform extends CEnumU[SoundWaveform]:
@@ -425,7 +425,7 @@ object enumerations:
       inline def is(b: SoundWaveform): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type SpriteCollisionResponseType = CUnsignedInt
   object SpriteCollisionResponseType extends CEnumU[SpriteCollisionResponseType]:
@@ -448,7 +448,7 @@ object enumerations:
       inline def is(b: SpriteCollisionResponseType): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type TwoPoleFilterType = CUnsignedInt
   object TwoPoleFilterType extends CEnumU[TwoPoleFilterType]:
@@ -477,7 +477,7 @@ object enumerations:
       inline def is(b: TwoPoleFilterType): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
   opaque type json_value_type = CUnsignedInt
   object json_value_type extends CEnumU[json_value_type]:
@@ -508,7 +508,7 @@ object enumerations:
       inline def is(b: json_value_type): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
   opaque type l_valtype = CUnsignedInt
   object l_valtype extends CEnumU[l_valtype]:
@@ -535,19 +535,19 @@ object aliases:
   import _root_.pdapi.structs.*
   import _root_.pdapi.unions.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type AddScoreCallback = CFuncPtr2[Ptr[PDScore], CString, Unit]
+  opaque type AddScoreCallback = CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]
   object AddScoreCallback:
-    given _tag: Tag[AddScoreCallback] = Tag.materializeCFuncPtr2[Ptr[PDScore], CString, Unit]
+    given _tag: Tag[AddScoreCallback] = Tag.materializeCFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]
     inline def fromPtr(ptr: Ptr[Byte]): AddScoreCallback = CFuncPtr.fromPtr(ptr)
-    inline def apply(inline o: CFuncPtr2[Ptr[PDScore], CString, Unit]): AddScoreCallback = o
+    inline def apply(inline o: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]): AddScoreCallback = o
     extension (v: AddScoreCallback)
-      inline def value: CFuncPtr2[Ptr[PDScore], CString, Unit] = v
+      inline def value: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit] = v
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   type AudioSourceFunction = CFuncPtr4[Ptr[Byte], Ptr[int16_t], Ptr[int16_t], CInt, CInt]
   object AudioSourceFunction:
@@ -557,19 +557,19 @@ object aliases:
       inline def value: CFuncPtr4[Ptr[Byte], Ptr[int16_t], Ptr[int16_t], CInt, CInt] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type BoardsListCallback = CFuncPtr2[Ptr[PDBoardsList], CString, Unit]
+  opaque type BoardsListCallback = CFuncPtr2[Ptr[PDBoardsList], Ptr[CUnsignedChar], Unit]
   object BoardsListCallback:
-    given _tag: Tag[BoardsListCallback] = Tag.materializeCFuncPtr2[Ptr[PDBoardsList], CString, Unit]
+    given _tag: Tag[BoardsListCallback] = Tag.materializeCFuncPtr2[Ptr[PDBoardsList], Ptr[CUnsignedChar], Unit]
     inline def fromPtr(ptr: Ptr[Byte]): BoardsListCallback = CFuncPtr.fromPtr(ptr)
-    inline def apply(inline o: CFuncPtr2[Ptr[PDBoardsList], CString, Unit]): BoardsListCallback = o
+    inline def apply(inline o: CFuncPtr2[Ptr[PDBoardsList], Ptr[CUnsignedChar], Unit]): BoardsListCallback = o
     extension (v: BoardsListCallback)
-      inline def value: CFuncPtr2[Ptr[PDBoardsList], CString, Unit] = v
+      inline def value: CFuncPtr2[Ptr[PDBoardsList], Ptr[CUnsignedChar], Unit] = v
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   type LCDColor = uintptr_t
   object LCDColor:
@@ -579,7 +579,7 @@ object aliases:
       inline def value: uintptr_t = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDPattern = CArray[uint8_t, Nat.Digit2[Nat._1, Nat._6]]
   object LCDPattern:
@@ -589,7 +589,7 @@ object aliases:
       inline def value: CArray[uint8_t, Nat.Digit2[Nat._1, Nat._6]] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   type LCDSpriteCollisionFilterProc = CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSprite], SpriteCollisionResponseType]
   object LCDSpriteCollisionFilterProc:
@@ -599,7 +599,7 @@ object aliases:
       inline def value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSprite], SpriteCollisionResponseType] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   type LCDSpriteDrawFunction = CFuncPtr3[Ptr[LCDSprite], PDRect, PDRect, Unit]
   object LCDSpriteDrawFunction:
@@ -609,7 +609,7 @@ object aliases:
       inline def value: CFuncPtr3[Ptr[LCDSprite], PDRect, PDRect, Unit] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   type LCDSpriteUpdateFunction = CFuncPtr1[Ptr[LCDSprite], Unit]
   object LCDSpriteUpdateFunction:
@@ -619,7 +619,7 @@ object aliases:
       inline def value: CFuncPtr1[Ptr[LCDSprite], Unit] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type MIDINote = Float
   object MIDINote:
@@ -629,7 +629,7 @@ object aliases:
       inline def value: Float = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   type PDCallbackFunction = CFuncPtr1[Ptr[Byte], CInt]
   object PDCallbackFunction:
@@ -639,7 +639,7 @@ object aliases:
       inline def value: CFuncPtr1[Ptr[Byte], CInt] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   type PDMenuItemCallbackFunction = CFuncPtr1[Ptr[Byte], Unit]
   object PDMenuItemCallbackFunction:
@@ -649,19 +649,19 @@ object aliases:
       inline def value: CFuncPtr1[Ptr[Byte], Unit] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type PersonalBestCallback = CFuncPtr2[Ptr[PDScore], CString, Unit]
+  opaque type PersonalBestCallback = CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]
   object PersonalBestCallback:
-    given _tag: Tag[PersonalBestCallback] = Tag.materializeCFuncPtr2[Ptr[PDScore], CString, Unit]
+    given _tag: Tag[PersonalBestCallback] = Tag.materializeCFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]
     inline def fromPtr(ptr: Ptr[Byte]): PersonalBestCallback = CFuncPtr.fromPtr(ptr)
-    inline def apply(inline o: CFuncPtr2[Ptr[PDScore], CString, Unit]): PersonalBestCallback = o
+    inline def apply(inline o: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]): PersonalBestCallback = o
     extension (v: PersonalBestCallback)
-      inline def value: CFuncPtr2[Ptr[PDScore], CString, Unit] = v
+      inline def value: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit] = v
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   type RecordCallback = CFuncPtr3[Ptr[Byte], Ptr[int16_t], CInt, CInt]
   object RecordCallback:
@@ -671,7 +671,7 @@ object aliases:
       inline def value: CFuncPtr3[Ptr[Byte], Ptr[int16_t], CInt, CInt] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_file.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_file.h
   */
   type SDFile = Unit
   object SDFile:
@@ -681,19 +681,19 @@ object aliases:
       inline def value: Unit = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type ScoresCallback = CFuncPtr2[Ptr[PDScoresList], CString, Unit]
+  opaque type ScoresCallback = CFuncPtr2[Ptr[PDScoresList], Ptr[CUnsignedChar], Unit]
   object ScoresCallback:
-    given _tag: Tag[ScoresCallback] = Tag.materializeCFuncPtr2[Ptr[PDScoresList], CString, Unit]
+    given _tag: Tag[ScoresCallback] = Tag.materializeCFuncPtr2[Ptr[PDScoresList], Ptr[CUnsignedChar], Unit]
     inline def fromPtr(ptr: Ptr[Byte]): ScoresCallback = CFuncPtr.fromPtr(ptr)
-    inline def apply(inline o: CFuncPtr2[Ptr[PDScoresList], CString, Unit]): ScoresCallback = o
+    inline def apply(inline o: CFuncPtr2[Ptr[PDScoresList], Ptr[CUnsignedChar], Unit]): ScoresCallback = o
     extension (v: ScoresCallback)
-      inline def value: CFuncPtr2[Ptr[PDScoresList], CString, Unit] = v
+      inline def value: CFuncPtr2[Ptr[PDScoresList], Ptr[CUnsignedChar], Unit] = v
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SequenceFinishedCallback = CFuncPtr2[Ptr[SoundSequence], Ptr[Byte], Unit]
   object SequenceFinishedCallback:
@@ -705,7 +705,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   type effectProc = CFuncPtr5[Ptr[SoundEffect], Ptr[int32_t], Ptr[int32_t], CInt, CInt, CInt]
   object effectProc:
@@ -729,7 +729,7 @@ object aliases:
       inline def value: scala.scalanative.unsafe.CInt = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
   opaque type lua_CFunction = CFuncPtr1[Ptr[lua_State], CInt]
   object lua_CFunction:
@@ -741,7 +741,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
   opaque type lua_State = Ptr[Byte]
   object lua_State:
@@ -751,7 +751,7 @@ object aliases:
       inline def value: Ptr[Byte] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type signalDeallocFunc = CFuncPtr1[Ptr[Byte], Unit]
   object signalDeallocFunc:
@@ -763,7 +763,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type signalNoteOffFunc = CFuncPtr3[Ptr[Byte], CInt, CInt, Unit]
   object signalNoteOffFunc:
@@ -775,7 +775,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type signalNoteOnFunc = CFuncPtr4[Ptr[Byte], MIDINote, Float, Float, Unit]
   object signalNoteOnFunc:
@@ -787,7 +787,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type signalStepFunc = CFuncPtr3[Ptr[Byte], Ptr[CInt], Ptr[Float], Float]
   object signalStepFunc:
@@ -806,7 +806,7 @@ object aliases:
       inline def value: libc.stddef.size_t = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   type sndCallbackProc = CFuncPtr1[Ptr[SoundSource], Unit]
   object sndCallbackProc:
@@ -816,7 +816,7 @@ object aliases:
       inline def value: CFuncPtr1[Ptr[SoundSource], Unit] = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type synthDeallocFunc = CFuncPtr1[Ptr[Byte], Unit]
   object synthDeallocFunc:
@@ -828,7 +828,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type synthNoteOnFunc = CFuncPtr4[Ptr[Byte], MIDINote, Float, Float, Unit]
   object synthNoteOnFunc:
@@ -840,7 +840,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type synthReleaseFunc = CFuncPtr2[Ptr[Byte], CInt, Unit]
   object synthReleaseFunc:
@@ -852,7 +852,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type synthRenderFunc = CFuncPtr6[Ptr[Byte], Ptr[int32_t], Ptr[int32_t], CInt, uint32_t, int32_t, CInt]
   object synthRenderFunc:
@@ -864,7 +864,7 @@ object aliases:
       inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type synthSetParameterFunc = CFuncPtr3[Ptr[Byte], CInt, Float, CInt]
   object synthSetParameterFunc:
@@ -897,24 +897,24 @@ object aliases:
       inline def value: scala.scalanative.unsigned.UByte = v
 
   /**
-   * [bindgen] header: /nix/store/g1w6cr7w95mpny3pg0j4jwwlmwqbmdzm-libSystem-11.0.0/include/sys/_types/_uintptr_t.h
+   * [bindgen] header: /nix/store/wkn9s7f1r35c789hqcs84hpgqg3p3q15-libSystem-11.0.0/include/sys/_types/_uintptr_t.h
   */
-  opaque type uintptr_t = CUnsignedLongInt
+  opaque type uintptr_t = CUnsignedInt
   object uintptr_t:
-    given _tag: Tag[uintptr_t] = Tag.ULong
-    inline def apply(inline o: CUnsignedLongInt): uintptr_t = o
+    given _tag: Tag[uintptr_t] = Tag.UInt
+    inline def apply(inline o: CUnsignedInt): uintptr_t = o
     extension (v: uintptr_t)
-      inline def value: CUnsignedLongInt = v
+      inline def value: CUnsignedInt = v
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  type writeFunc = CFuncPtr3[Ptr[Byte], CString, CInt, Unit]
+  type writeFunc = CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]
   object writeFunc:
-    given _tag: Tag[writeFunc] = Tag.materializeCFuncPtr3[Ptr[Byte], CString, CInt, Unit]
-    inline def apply(inline o: CFuncPtr3[Ptr[Byte], CString, CInt, Unit]): writeFunc = o
+    given _tag: Tag[writeFunc] = Tag.materializeCFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]
+    inline def apply(inline o: CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]): writeFunc = o
     extension (v: writeFunc)
-      inline def value: CFuncPtr3[Ptr[Byte], CString, CInt, Unit] = v
+      inline def value: CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit] = v
 
 object structs:
   import _root_.pdapi.enumerations.*
@@ -923,35 +923,35 @@ object structs:
   import _root_.pdapi.structs.*
   import _root_.pdapi.unions.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type AudioSample = CStruct0
   object AudioSample:
     given _tag: Tag[AudioSample] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type BitCrusher = CStruct0
   object BitCrusher:
     given _tag: Tag[BitCrusher] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type CWCollisionInfo = CStruct0
   object CWCollisionInfo:
     given _tag: Tag[CWCollisionInfo] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type CWItemInfo = CStruct0
   object CWItemInfo:
     given _tag: Tag[CWItemInfo] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type CollisionPoint = CStruct2[Float, Float]
   object CollisionPoint:
@@ -969,7 +969,7 @@ object structs:
       def y_=(value: Float): Unit = !struct.at2 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type CollisionVector = CStruct2[CInt, CInt]
   object CollisionVector:
@@ -987,35 +987,35 @@ object structs:
       def y_=(value: CInt): Unit = !struct.at2 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type ControlSignal = CStruct0
   object ControlSignal:
     given _tag: Tag[ControlSignal] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type DelayLine = CStruct0
   object DelayLine:
     given _tag: Tag[DelayLine] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type DelayLineTap = CStruct0
   object DelayLineTap:
     given _tag: Tag[DelayLineTap] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type FilePlayer = CStruct0
   object FilePlayer:
     given _tag: Tag[FilePlayer] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_file.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_file.h
   */
   opaque type FileStat = CStruct8[CInt, CUnsignedInt, CInt, CInt, CInt, CInt, CInt, CInt]
   object FileStat:
@@ -1051,49 +1051,49 @@ object structs:
       def m_second_=(value: CInt): Unit = !struct.at8 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDBitmap = CStruct0
   object LCDBitmap:
     given _tag: Tag[LCDBitmap] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDBitmapTable = CStruct0
   object LCDBitmapTable:
     given _tag: Tag[LCDBitmapTable] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDFont = CStruct0
   object LCDFont:
     given _tag: Tag[LCDFont] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDFontData = CStruct0
   object LCDFontData:
     given _tag: Tag[LCDFontData] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDFontGlyph = CStruct0
   object LCDFontGlyph:
     given _tag: Tag[LCDFontGlyph] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDFontPage = CStruct0
   object LCDFontPage:
     given _tag: Tag[LCDFontPage] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDRect = CStruct4[CInt, CInt, CInt, CInt]
   object LCDRect:
@@ -1117,60 +1117,60 @@ object structs:
       def bottom_=(value: CInt): Unit = !struct.at4 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
   opaque type LCDSprite = CStruct0
   object LCDSprite:
     given _tag: Tag[LCDSprite] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   opaque type LCDVideoPlayer = CStruct0
   object LCDVideoPlayer:
     given _tag: Tag[LCDVideoPlayer] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
   opaque type LuaUDObject = CStruct0
   object LuaUDObject:
     given _tag: Tag[LuaUDObject] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type OnePoleFilter = CStruct0
   object OnePoleFilter:
     given _tag: Tag[OnePoleFilter] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type Overdrive = CStruct0
   object Overdrive:
     given _tag: Tag[Overdrive] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type PDBoard = CStruct2[CString, CString]
+  opaque type PDBoard = CStruct2[Ptr[CUnsignedChar], Ptr[CUnsignedChar]]
   object PDBoard:
-    given _tag: Tag[PDBoard] = Tag.materializeCStruct2Tag[CString, CString]
+    given _tag: Tag[PDBoard] = Tag.materializeCStruct2Tag[Ptr[CUnsignedChar], Ptr[CUnsignedChar]]
     def apply()(using Zone): Ptr[PDBoard] = scala.scalanative.unsafe.alloc[PDBoard](1)
-    def apply(boardID : CString, name : CString)(using Zone): Ptr[PDBoard] =
+    def apply(boardID : Ptr[CUnsignedChar], name : Ptr[CUnsignedChar])(using Zone): Ptr[PDBoard] =
       val ____ptr = apply()
       (!____ptr).boardID = boardID
       (!____ptr).name = name
       ____ptr
     extension (struct: PDBoard)
-      def boardID : CString = struct._1
-      def boardID_=(value: CString): Unit = !struct.at1 = value
-      def name : CString = struct._2
-      def name_=(value: CString): Unit = !struct.at2 = value
+      def boardID : Ptr[CUnsignedChar] = struct._1
+      def boardID_=(value: Ptr[CUnsignedChar]): Unit = !struct.at1 = value
+      def name : Ptr[CUnsignedChar] = struct._2
+      def name_=(value: Ptr[CUnsignedChar]): Unit = !struct.at2 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
   opaque type PDBoardsList = CStruct3[CUnsignedInt, uint32_t, Ptr[PDBoard]]
   object PDBoardsList:
@@ -1191,7 +1191,7 @@ object structs:
       def boards_=(value: Ptr[PDBoard]): Unit = !struct.at3 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   opaque type PDDateTime = CStruct7[uint16_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t, uint8_t]
   object PDDateTime:
@@ -1224,14 +1224,14 @@ object structs:
       def second_=(value: uint8_t): Unit = !struct.at7 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
   opaque type PDMenuItem = CStruct0
   object PDMenuItem:
     given _tag: Tag[PDMenuItem] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type PDRect = CStruct4[Float, Float, Float, Float]
   object PDRect:
@@ -1255,13 +1255,13 @@ object structs:
       def height_=(value: Float): Unit = !struct.at4 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type PDScore = CStruct3[uint32_t, uint32_t, CString]
+  opaque type PDScore = CStruct3[uint32_t, uint32_t, Ptr[CUnsignedChar]]
   object PDScore:
-    given _tag: Tag[PDScore] = Tag.materializeCStruct3Tag[uint32_t, uint32_t, CString]
+    given _tag: Tag[PDScore] = Tag.materializeCStruct3Tag[uint32_t, uint32_t, Ptr[CUnsignedChar]]
     def apply()(using Zone): Ptr[PDScore] = scala.scalanative.unsafe.alloc[PDScore](1)
-    def apply(rank : uint32_t, value : uint32_t, player : CString)(using Zone): Ptr[PDScore] =
+    def apply(rank : uint32_t, value : uint32_t, player : Ptr[CUnsignedChar])(using Zone): Ptr[PDScore] =
       val ____ptr = apply()
       (!____ptr).rank = rank
       (!____ptr).value = value
@@ -1272,17 +1272,17 @@ object structs:
       def rank_=(value: uint32_t): Unit = !struct.at1 = value
       def value : uint32_t = struct._2
       def value_=(value: uint32_t): Unit = !struct.at2 = value
-      def player : CString = struct._3
-      def player_=(value: CString): Unit = !struct.at3 = value
+      def player : Ptr[CUnsignedChar] = struct._3
+      def player_=(value: Ptr[CUnsignedChar]): Unit = !struct.at3 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type PDScoresList = CStruct6[CString, CUnsignedInt, uint32_t, CInt, CUnsignedInt, Ptr[PDScore]]
+  opaque type PDScoresList = CStruct6[Ptr[CUnsignedChar], CUnsignedInt, uint32_t, CInt, CUnsignedInt, Ptr[PDScore]]
   object PDScoresList:
-    given _tag: Tag[PDScoresList] = Tag.materializeCStruct6Tag[CString, CUnsignedInt, uint32_t, CInt, CUnsignedInt, Ptr[PDScore]]
+    given _tag: Tag[PDScoresList] = Tag.materializeCStruct6Tag[Ptr[CUnsignedChar], CUnsignedInt, uint32_t, CInt, CUnsignedInt, Ptr[PDScore]]
     def apply()(using Zone): Ptr[PDScoresList] = scala.scalanative.unsafe.alloc[PDScoresList](1)
-    def apply(boardID : CString, count : CUnsignedInt, lastUpdated : uint32_t, playerIncluded : CInt, limit : CUnsignedInt, scores : Ptr[PDScore])(using Zone): Ptr[PDScoresList] =
+    def apply(boardID : Ptr[CUnsignedChar], count : CUnsignedInt, lastUpdated : uint32_t, playerIncluded : CInt, limit : CUnsignedInt, scores : Ptr[PDScore])(using Zone): Ptr[PDScoresList] =
       val ____ptr = apply()
       (!____ptr).boardID = boardID
       (!____ptr).count = count
@@ -1292,8 +1292,8 @@ object structs:
       (!____ptr).scores = scores
       ____ptr
     extension (struct: PDScoresList)
-      def boardID : CString = struct._1
-      def boardID_=(value: CString): Unit = !struct.at1 = value
+      def boardID : Ptr[CUnsignedChar] = struct._1
+      def boardID_=(value: Ptr[CUnsignedChar]): Unit = !struct.at1 = value
       def count : CUnsignedInt = struct._2
       def count_=(value: CUnsignedInt): Unit = !struct.at2 = value
       def lastUpdated : uint32_t = struct._3
@@ -1306,49 +1306,49 @@ object structs:
       def scores_=(value: Ptr[PDScore]): Unit = !struct.at6 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type PDSynth = CStruct0
   object PDSynth:
     given _tag: Tag[PDSynth] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type PDSynthEnvelope = CStruct0
   object PDSynthEnvelope:
     given _tag: Tag[PDSynthEnvelope] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type PDSynthInstrument = CStruct0
   object PDSynthInstrument:
     given _tag: Tag[PDSynthInstrument] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type PDSynthLFO = CStruct0
   object PDSynthLFO:
     given _tag: Tag[PDSynthLFO] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type PDSynthSignal = CStruct0
   object PDSynthSignal:
     given _tag: Tag[PDSynthSignal] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type PDSynthSignalValue = CStruct0
   object PDSynthSignalValue:
     given _tag: Tag[PDSynthSignalValue] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api.h
   */
   opaque type PlaydateAPI = CStruct9[Ptr[playdate_sys], Ptr[playdate_file], Ptr[playdate_graphics], Ptr[playdate_sprite], Ptr[playdate_display], Ptr[playdate_sound], Ptr[playdate_lua], Ptr[Byte], Ptr[playdate_scoreboards]]
   object PlaydateAPI:
@@ -1387,56 +1387,56 @@ object structs:
       def scoreboards_=(value: Ptr[playdate_scoreboards]): Unit = !struct.at9 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type RingModulator = CStruct0
   object RingModulator:
     given _tag: Tag[RingModulator] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SamplePlayer = CStruct0
   object SamplePlayer:
     given _tag: Tag[SamplePlayer] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SequenceTrack = CStruct0
   object SequenceTrack:
     given _tag: Tag[SequenceTrack] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SoundChannel = CStruct0
   object SoundChannel:
     given _tag: Tag[SoundChannel] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SoundEffect = CStruct0
   object SoundEffect:
     given _tag: Tag[SoundEffect] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SoundSequence = CStruct0
   object SoundSequence:
     given _tag: Tag[SoundSequence] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type SoundSource = CStruct0
   object SoundSource:
     given _tag: Tag[SoundSource] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type SpriteCollisionInfo = CStruct10[Ptr[LCDSprite], Ptr[LCDSprite], SpriteCollisionResponseType, uint8_t, Float, CollisionPoint, CollisionVector, CollisionPoint, PDRect, PDRect]
   object SpriteCollisionInfo:
@@ -1478,7 +1478,7 @@ object structs:
       def otherRect_=(value: PDRect): Unit = !struct.at10 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   opaque type SpriteQueryInfo = CStruct5[Ptr[LCDSprite], Float, Float, CollisionPoint, CollisionPoint]
   object SpriteQueryInfo:
@@ -1505,20 +1505,20 @@ object structs:
       def exitPoint_=(value: CollisionPoint): Unit = !struct.at5 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type TwoPoleFilter = CStruct0
   object TwoPoleFilter:
     given _tag: Tag[TwoPoleFilter] = Tag.materializeCStruct0Tag
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  opaque type json_decoder = CStruct10[CFuncPtr3[Ptr[Byte], CString, CInt, Unit], CFuncPtr3[Ptr[Byte], CString, json_value_type, Unit], CFuncPtr2[Ptr[Byte], CString, CInt], CFuncPtr3[Ptr[Byte], CString, json_value, Unit], CFuncPtr2[Ptr[Byte], CInt, CInt], CFuncPtr3[Ptr[Byte], CInt, json_value, Unit], CFuncPtr3[Ptr[Byte], CString, json_value_type, Ptr[Byte]], Ptr[Byte], CInt, CString]
+  opaque type json_decoder = CStruct10[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value_type, Unit], CFuncPtr2[Ptr[Byte], Ptr[CUnsignedChar], CInt], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value, Unit], CFuncPtr2[Ptr[Byte], CInt, CInt], CFuncPtr3[Ptr[Byte], CInt, json_value, Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]], Ptr[Byte], CInt, Ptr[CUnsignedChar]]
   object json_decoder:
-    given _tag: Tag[json_decoder] = Tag.materializeCStruct10Tag[CFuncPtr3[Ptr[Byte], CString, CInt, Unit], CFuncPtr3[Ptr[Byte], CString, json_value_type, Unit], CFuncPtr2[Ptr[Byte], CString, CInt], CFuncPtr3[Ptr[Byte], CString, json_value, Unit], CFuncPtr2[Ptr[Byte], CInt, CInt], CFuncPtr3[Ptr[Byte], CInt, json_value, Unit], CFuncPtr3[Ptr[Byte], CString, json_value_type, Ptr[Byte]], Ptr[Byte], CInt, CString]
+    given _tag: Tag[json_decoder] = Tag.materializeCStruct10Tag[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value_type, Unit], CFuncPtr2[Ptr[Byte], Ptr[CUnsignedChar], CInt], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value, Unit], CFuncPtr2[Ptr[Byte], CInt, CInt], CFuncPtr3[Ptr[Byte], CInt, json_value, Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]], Ptr[Byte], CInt, Ptr[CUnsignedChar]]
     def apply()(using Zone): Ptr[json_decoder] = scala.scalanative.unsafe.alloc[json_decoder](1)
-    def apply(decodeError : CFuncPtr3[Ptr[json_decoder], CString, CInt, Unit], willDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Unit], shouldDecodeTableValueForKey : CFuncPtr2[Ptr[json_decoder], CString, CInt], didDecodeTableValue : CFuncPtr3[Ptr[json_decoder], CString, json_value, Unit], shouldDecodeArrayValueAtIndex : CFuncPtr2[Ptr[json_decoder], CInt, CInt], didDecodeArrayValue : CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit], didDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Ptr[Byte]], userdata : Ptr[Byte], returnString : CInt, path : CString)(using Zone): Ptr[json_decoder] =
+    def apply(decodeError : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], CInt, Unit], willDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Unit], shouldDecodeTableValueForKey : CFuncPtr2[Ptr[json_decoder], Ptr[CUnsignedChar], CInt], didDecodeTableValue : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value, Unit], shouldDecodeArrayValueAtIndex : CFuncPtr2[Ptr[json_decoder], CInt, CInt], didDecodeArrayValue : CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit], didDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]], userdata : Ptr[Byte], returnString : CInt, path : Ptr[CUnsignedChar])(using Zone): Ptr[json_decoder] =
       val ____ptr = apply()
       (!____ptr).decodeError = decodeError
       (!____ptr).willDecodeSublist = willDecodeSublist
@@ -1532,35 +1532,35 @@ object structs:
       (!____ptr).path = path
       ____ptr
     extension (struct: json_decoder)
-      def decodeError : CFuncPtr3[Ptr[json_decoder], CString, CInt, Unit] = struct._1.asInstanceOf[CFuncPtr3[Ptr[json_decoder], CString, CInt, Unit]]
-      def decodeError_=(value: CFuncPtr3[Ptr[json_decoder], CString, CInt, Unit]): Unit = !struct.at1 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, CInt, Unit]]
-      def willDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Unit] = struct._2.asInstanceOf[CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Unit]]
-      def willDecodeSublist_=(value: CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Unit]): Unit = !struct.at2 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, json_value_type, Unit]]
-      def shouldDecodeTableValueForKey : CFuncPtr2[Ptr[json_decoder], CString, CInt] = struct._3.asInstanceOf[CFuncPtr2[Ptr[json_decoder], CString, CInt]]
-      def shouldDecodeTableValueForKey_=(value: CFuncPtr2[Ptr[json_decoder], CString, CInt]): Unit = !struct.at3 = value.asInstanceOf[CFuncPtr2[Ptr[Byte], CString, CInt]]
-      def didDecodeTableValue : CFuncPtr3[Ptr[json_decoder], CString, json_value, Unit] = struct._4.asInstanceOf[CFuncPtr3[Ptr[json_decoder], CString, json_value, Unit]]
-      def didDecodeTableValue_=(value: CFuncPtr3[Ptr[json_decoder], CString, json_value, Unit]): Unit = !struct.at4 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, json_value, Unit]]
+      def decodeError : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], CInt, Unit] = struct._1.asInstanceOf[CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], CInt, Unit]]
+      def decodeError_=(value: CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], CInt, Unit]): Unit = !struct.at1 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]]
+      def willDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Unit] = struct._2.asInstanceOf[CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Unit]]
+      def willDecodeSublist_=(value: CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Unit]): Unit = !struct.at2 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value_type, Unit]]
+      def shouldDecodeTableValueForKey : CFuncPtr2[Ptr[json_decoder], Ptr[CUnsignedChar], CInt] = struct._3.asInstanceOf[CFuncPtr2[Ptr[json_decoder], Ptr[CUnsignedChar], CInt]]
+      def shouldDecodeTableValueForKey_=(value: CFuncPtr2[Ptr[json_decoder], Ptr[CUnsignedChar], CInt]): Unit = !struct.at3 = value.asInstanceOf[CFuncPtr2[Ptr[Byte], Ptr[CUnsignedChar], CInt]]
+      def didDecodeTableValue : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value, Unit] = struct._4.asInstanceOf[CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value, Unit]]
+      def didDecodeTableValue_=(value: CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value, Unit]): Unit = !struct.at4 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value, Unit]]
       def shouldDecodeArrayValueAtIndex : CFuncPtr2[Ptr[json_decoder], CInt, CInt] = struct._5.asInstanceOf[CFuncPtr2[Ptr[json_decoder], CInt, CInt]]
       def shouldDecodeArrayValueAtIndex_=(value: CFuncPtr2[Ptr[json_decoder], CInt, CInt]): Unit = !struct.at5 = value.asInstanceOf[CFuncPtr2[Ptr[Byte], CInt, CInt]]
       def didDecodeArrayValue : CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit] = struct._6.asInstanceOf[CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit]]
       def didDecodeArrayValue_=(value: CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit]): Unit = !struct.at6 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CInt, json_value, Unit]]
-      def didDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Ptr[Byte]] = struct._7.asInstanceOf[CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Ptr[Byte]]]
-      def didDecodeSublist_=(value: CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Ptr[Byte]]): Unit = !struct.at7 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, json_value_type, Ptr[Byte]]]
+      def didDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]] = struct._7.asInstanceOf[CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]]]
+      def didDecodeSublist_=(value: CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]]): Unit = !struct.at7 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]]]
       def userdata : Ptr[Byte] = struct._8
       def userdata_=(value: Ptr[Byte]): Unit = !struct.at8 = value
       def returnString : CInt = struct._9
       def returnString_=(value: CInt): Unit = !struct.at9 = value
-      def path : CString = struct._10
-      def path_=(value: CString): Unit = !struct.at10 = value
+      def path : Ptr[CUnsignedChar] = struct._10
+      def path_=(value: Ptr[CUnsignedChar]): Unit = !struct.at10 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  opaque type json_encoder = CStruct18[Ptr[writeFunc], Ptr[Byte], CInt, CInt, CInt, CInt, CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr3[Ptr[Byte], CString, CInt, Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr2[Ptr[Byte], CInt, Unit], CFuncPtr2[Ptr[Byte], Double, Unit], CFuncPtr3[Ptr[Byte], CString, CInt, Unit]]
+  opaque type json_encoder = CStruct18[Ptr[writeFunc], Ptr[Byte], CInt, CInt, CInt, CInt, CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr2[Ptr[Byte], CInt, Unit], CFuncPtr2[Ptr[Byte], Double, Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]]
   object json_encoder:
-    given _tag: Tag[json_encoder] = Tag.materializeCStruct18Tag[Ptr[writeFunc], Ptr[Byte], CInt, CInt, CInt, CInt, CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr3[Ptr[Byte], CString, CInt, Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr2[Ptr[Byte], CInt, Unit], CFuncPtr2[Ptr[Byte], Double, Unit], CFuncPtr3[Ptr[Byte], CString, CInt, Unit]]
+    given _tag: Tag[json_encoder] = Tag.materializeCStruct18Tag[Ptr[writeFunc], Ptr[Byte], CInt, CInt, CInt, CInt, CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr1[Ptr[Byte], Unit], CFuncPtr2[Ptr[Byte], CInt, Unit], CFuncPtr2[Ptr[Byte], Double, Unit], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]]
     def apply()(using Zone): Ptr[json_encoder] = scala.scalanative.unsafe.alloc[json_encoder](1)
-    def apply(writeStringFunc : Ptr[writeFunc], userdata : Ptr[Byte], pretty : CInt, startedTable : CInt, startedArray : CInt, depth : CInt, startArray : CFuncPtr1[Ptr[json_encoder], Unit], addArrayMember : CFuncPtr1[Ptr[json_encoder], Unit], endArray : CFuncPtr1[Ptr[json_encoder], Unit], startTable : CFuncPtr1[Ptr[json_encoder], Unit], addTableMember : CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit], endTable : CFuncPtr1[Ptr[json_encoder], Unit], writeNull : CFuncPtr1[Ptr[json_encoder], Unit], writeFalse : CFuncPtr1[Ptr[json_encoder], Unit], writeTrue : CFuncPtr1[Ptr[json_encoder], Unit], writeInt : CFuncPtr2[Ptr[json_encoder], CInt, Unit], writeDouble : CFuncPtr2[Ptr[json_encoder], Double, Unit], writeString : CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit])(using Zone): Ptr[json_encoder] =
+    def apply(writeStringFunc : Ptr[writeFunc], userdata : Ptr[Byte], pretty : CInt, startedTable : CInt, startedArray : CInt, depth : CInt, startArray : CFuncPtr1[Ptr[json_encoder], Unit], addArrayMember : CFuncPtr1[Ptr[json_encoder], Unit], endArray : CFuncPtr1[Ptr[json_encoder], Unit], startTable : CFuncPtr1[Ptr[json_encoder], Unit], addTableMember : CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit], endTable : CFuncPtr1[Ptr[json_encoder], Unit], writeNull : CFuncPtr1[Ptr[json_encoder], Unit], writeFalse : CFuncPtr1[Ptr[json_encoder], Unit], writeTrue : CFuncPtr1[Ptr[json_encoder], Unit], writeInt : CFuncPtr2[Ptr[json_encoder], CInt, Unit], writeDouble : CFuncPtr2[Ptr[json_encoder], Double, Unit], writeString : CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit])(using Zone): Ptr[json_encoder] =
       val ____ptr = apply()
       (!____ptr).writeStringFunc = writeStringFunc
       (!____ptr).userdata = userdata
@@ -1602,8 +1602,8 @@ object structs:
       def endArray_=(value: CFuncPtr1[Ptr[json_encoder], Unit]): Unit = !struct.at9 = value.asInstanceOf[CFuncPtr1[Ptr[Byte], Unit]]
       def startTable : CFuncPtr1[Ptr[json_encoder], Unit] = struct._10.asInstanceOf[CFuncPtr1[Ptr[json_encoder], Unit]]
       def startTable_=(value: CFuncPtr1[Ptr[json_encoder], Unit]): Unit = !struct.at10 = value.asInstanceOf[CFuncPtr1[Ptr[Byte], Unit]]
-      def addTableMember : CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit] = struct._11.asInstanceOf[CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit]]
-      def addTableMember_=(value: CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit]): Unit = !struct.at11 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, CInt, Unit]]
+      def addTableMember : CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit] = struct._11.asInstanceOf[CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit]]
+      def addTableMember_=(value: CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit]): Unit = !struct.at11 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]]
       def endTable : CFuncPtr1[Ptr[json_encoder], Unit] = struct._12.asInstanceOf[CFuncPtr1[Ptr[json_encoder], Unit]]
       def endTable_=(value: CFuncPtr1[Ptr[json_encoder], Unit]): Unit = !struct.at12 = value.asInstanceOf[CFuncPtr1[Ptr[Byte], Unit]]
       def writeNull : CFuncPtr1[Ptr[json_encoder], Unit] = struct._13.asInstanceOf[CFuncPtr1[Ptr[json_encoder], Unit]]
@@ -1616,11 +1616,11 @@ object structs:
       def writeInt_=(value: CFuncPtr2[Ptr[json_encoder], CInt, Unit]): Unit = !struct.at16 = value.asInstanceOf[CFuncPtr2[Ptr[Byte], CInt, Unit]]
       def writeDouble : CFuncPtr2[Ptr[json_encoder], Double, Unit] = struct._17.asInstanceOf[CFuncPtr2[Ptr[json_encoder], Double, Unit]]
       def writeDouble_=(value: CFuncPtr2[Ptr[json_encoder], Double, Unit]): Unit = !struct.at17 = value.asInstanceOf[CFuncPtr2[Ptr[Byte], Double, Unit]]
-      def writeString : CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit] = struct._18.asInstanceOf[CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit]]
-      def writeString_=(value: CFuncPtr3[Ptr[json_encoder], CString, CInt, Unit]): Unit = !struct.at18 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, CInt, Unit]]
+      def writeString : CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit] = struct._18.asInstanceOf[CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit]]
+      def writeString_=(value: CFuncPtr3[Ptr[json_encoder], Ptr[CUnsignedChar], CInt, Unit]): Unit = !struct.at18 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Unit]]
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
   opaque type json_reader = CStruct2[CFuncPtr3[Ptr[Byte], Ptr[uint8_t], CInt, CInt], Ptr[Byte]]
   object json_reader:
@@ -1638,16 +1638,16 @@ object structs:
       def userdata_=(value: Ptr[Byte]): Unit = !struct.at2 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  opaque type json_value = CStruct2[CChar, json_value.Union0]
+  opaque type json_value = CStruct2[CUnsignedChar, json_value.Union0]
   object json_value:
     /**
-     * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+     * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
     */
-    opaque type Union0 = CArray[Byte, Nat._8]
+    opaque type Union0 = CArray[Byte, Nat._4]
     object Union0:
-      given _tag: Tag[Union0] = Tag.CArray[CChar, Nat._8](Tag.Byte, Tag.Nat8)
+      given _tag: Tag[Union0] = Tag.CArray[CChar, Nat._4](Tag.Byte, Tag.Nat4)
       def apply()(using Zone): Ptr[Union0] =
         val ___ptr = alloc[Union0](1)
         ___ptr
@@ -1664,10 +1664,10 @@ object structs:
         un.at(0).asInstanceOf[Ptr[Float]].update(0, floatval)
         ___ptr
       @scala.annotation.targetName("apply_stringval")
-      def apply(stringval: CString)(using Zone): Ptr[Union0] =
+      def apply(stringval: Ptr[CUnsignedChar])(using Zone): Ptr[Union0] =
         val ___ptr = alloc[Union0](1)
         val un = !___ptr
-        un.at(0).asInstanceOf[Ptr[CString]].update(0, stringval)
+        un.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]].update(0, stringval)
         ___ptr
       @scala.annotation.targetName("apply_arrayval")
       def apply(arrayval: Ptr[Byte])(using Zone): Ptr[Union0] =
@@ -1686,54 +1686,54 @@ object structs:
         def intval_=(value: CInt): Unit = !struct.at(0).asInstanceOf[Ptr[CInt]] = value
         def floatval : Float = !struct.at(0).asInstanceOf[Ptr[Float]]
         def floatval_=(value: Float): Unit = !struct.at(0).asInstanceOf[Ptr[Float]] = value
-        def stringval : CString = !struct.at(0).asInstanceOf[Ptr[CString]]
-        def stringval_=(value: CString): Unit = !struct.at(0).asInstanceOf[Ptr[CString]] = value
+        def stringval : Ptr[CUnsignedChar] = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]]
+        def stringval_=(value: Ptr[CUnsignedChar]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]] = value
         def arrayval : Ptr[Byte] = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]]
         def arrayval_=(value: Ptr[Byte]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]] = value
         def tableval : Ptr[Byte] = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]]
         def tableval_=(value: Ptr[Byte]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]] = value
-    given _tag: Tag[json_value] = Tag.materializeCStruct2Tag[CChar, json_value.Union0]
+    given _tag: Tag[json_value] = Tag.materializeCStruct2Tag[CUnsignedChar, json_value.Union0]
     def apply()(using Zone): Ptr[json_value] = scala.scalanative.unsafe.alloc[json_value](1)
-    def apply(`type` : CChar, data : json_value.Union0)(using Zone): Ptr[json_value] =
+    def apply(`type` : CUnsignedChar, data : json_value.Union0)(using Zone): Ptr[json_value] =
       val ____ptr = apply()
       (!____ptr).`type` = `type`
       (!____ptr).data = data
       ____ptr
     extension (struct: json_value)
-      def `type` : CChar = struct._1
-      def type_=(value: CChar): Unit = !struct.at1 = value
+      def `type` : CUnsignedChar = struct._1
+      def type_=(value: CUnsignedChar): Unit = !struct.at1 = value
       def data : json_value.Union0 = struct._2
       def data_=(value: json_value.Union0): Unit = !struct.at2 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
-  opaque type lua_reg = CStruct2[CString, lua_CFunction]
+  opaque type lua_reg = CStruct2[Ptr[CUnsignedChar], lua_CFunction]
   object lua_reg:
-    given _tag: Tag[lua_reg] = Tag.materializeCStruct2Tag[CString, lua_CFunction]
+    given _tag: Tag[lua_reg] = Tag.materializeCStruct2Tag[Ptr[CUnsignedChar], lua_CFunction]
     def apply()(using Zone): Ptr[lua_reg] = scala.scalanative.unsafe.alloc[lua_reg](1)
-    def apply(name : CString, func : lua_CFunction)(using Zone): Ptr[lua_reg] =
+    def apply(name : Ptr[CUnsignedChar], func : lua_CFunction)(using Zone): Ptr[lua_reg] =
       val ____ptr = apply()
       (!____ptr).name = name
       (!____ptr).func = func
       ____ptr
     extension (struct: lua_reg)
-      def name : CString = struct._1
-      def name_=(value: CString): Unit = !struct.at1 = value
+      def name : Ptr[CUnsignedChar] = struct._1
+      def name_=(value: Ptr[CUnsignedChar]): Unit = !struct.at1 = value
       def func : lua_CFunction = struct._2
       def func_=(value: lua_CFunction): Unit = !struct.at2 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
-  opaque type lua_val = CStruct3[CString, l_valtype, lua_val.Union0]
+  opaque type lua_val = CStruct3[Ptr[CUnsignedChar], l_valtype, lua_val.Union0]
   object lua_val:
     /**
-     * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+     * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
     */
-    opaque type Union0 = CArray[Byte, Nat._8]
+    opaque type Union0 = CArray[Byte, Nat._4]
     object Union0:
-      given _tag: Tag[Union0] = Tag.CArray[CChar, Nat._8](Tag.Byte, Tag.Nat8)
+      given _tag: Tag[Union0] = Tag.CArray[CChar, Nat._4](Tag.Byte, Tag.Nat4)
       def apply()(using Zone): Ptr[Union0] =
         val ___ptr = alloc[Union0](1)
         ___ptr
@@ -1750,36 +1750,36 @@ object structs:
         un.at(0).asInstanceOf[Ptr[Float]].update(0, floatval)
         ___ptr
       @scala.annotation.targetName("apply_strval")
-      def apply(strval: CString)(using Zone): Ptr[Union0] =
+      def apply(strval: Ptr[CUnsignedChar])(using Zone): Ptr[Union0] =
         val ___ptr = alloc[Union0](1)
         val un = !___ptr
-        un.at(0).asInstanceOf[Ptr[CString]].update(0, strval)
+        un.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]].update(0, strval)
         ___ptr
       extension (struct: Union0)
         def intval : CUnsignedInt = !struct.at(0).asInstanceOf[Ptr[CUnsignedInt]]
         def intval_=(value: CUnsignedInt): Unit = !struct.at(0).asInstanceOf[Ptr[CUnsignedInt]] = value
         def floatval : Float = !struct.at(0).asInstanceOf[Ptr[Float]]
         def floatval_=(value: Float): Unit = !struct.at(0).asInstanceOf[Ptr[Float]] = value
-        def strval : CString = !struct.at(0).asInstanceOf[Ptr[CString]]
-        def strval_=(value: CString): Unit = !struct.at(0).asInstanceOf[Ptr[CString]] = value
-    given _tag: Tag[lua_val] = Tag.materializeCStruct3Tag[CString, l_valtype, lua_val.Union0]
+        def strval : Ptr[CUnsignedChar] = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]]
+        def strval_=(value: Ptr[CUnsignedChar]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]] = value
+    given _tag: Tag[lua_val] = Tag.materializeCStruct3Tag[Ptr[CUnsignedChar], l_valtype, lua_val.Union0]
     def apply()(using Zone): Ptr[lua_val] = scala.scalanative.unsafe.alloc[lua_val](1)
-    def apply(name : CString, `type` : l_valtype, v : lua_val.Union0)(using Zone): Ptr[lua_val] =
+    def apply(name : Ptr[CUnsignedChar], `type` : l_valtype, v : lua_val.Union0)(using Zone): Ptr[lua_val] =
       val ____ptr = apply()
       (!____ptr).name = name
       (!____ptr).`type` = `type`
       (!____ptr).v = v
       ____ptr
     extension (struct: lua_val)
-      def name : CString = struct._1
-      def name_=(value: CString): Unit = !struct.at1 = value
+      def name : Ptr[CUnsignedChar] = struct._1
+      def name_=(value: Ptr[CUnsignedChar]): Unit = !struct.at1 = value
       def `type` : l_valtype = struct._2
       def type_=(value: l_valtype): Unit = !struct.at2 = value
       def v : lua_val.Union0 = struct._3
       def v_=(value: lua_val.Union0): Unit = !struct.at3 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_control_signal = CStruct6[CFuncPtr0[Ptr[ControlSignal]], CFuncPtr1[Ptr[ControlSignal], Unit], CFuncPtr1[Ptr[ControlSignal], Unit], CFuncPtr4[Ptr[ControlSignal], CInt, Float, CInt, Unit], CFuncPtr2[Ptr[ControlSignal], CInt, Unit], CFuncPtr1[Ptr[ControlSignal], CInt]]
   object playdate_control_signal:
@@ -1809,7 +1809,7 @@ object structs:
       def getMIDIControllerNumber_=(value: CFuncPtr1[Ptr[ControlSignal], CInt]): Unit = !struct.at6 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_display.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_display.h
   */
   opaque type playdate_display = CStruct8[CFuncPtr0[CInt], CFuncPtr0[CInt], CFuncPtr1[Float, Unit], CFuncPtr1[CInt, Unit], CFuncPtr1[CUnsignedInt, Unit], CFuncPtr2[CUnsignedInt, CUnsignedInt, Unit], CFuncPtr2[CInt, CInt, Unit], CFuncPtr2[CInt, CInt, Unit]]
   object playdate_display:
@@ -1845,13 +1845,13 @@ object structs:
       def setOffset_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at8 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_file.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_file.h
   */
-  opaque type playdate_file = CStruct13[CFuncPtr0[CString], CFuncPtr4[CString, CFuncPtr2[CString, Ptr[Byte], Unit], Ptr[Byte], CInt, CInt], CFuncPtr2[CString, Ptr[FileStat], CInt], CFuncPtr1[CString, CInt], CFuncPtr2[CString, CInt, CInt], CFuncPtr2[CString, CString, CInt], CFuncPtr2[CString, FileOptions, Ptr[SDFile]], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt]]
+  opaque type playdate_file = CStruct13[CFuncPtr0[Ptr[CUnsignedChar]], CFuncPtr4[Ptr[CUnsignedChar], CFuncPtr2[Ptr[CUnsignedChar], Ptr[Byte], Unit], Ptr[Byte], CInt, CInt], CFuncPtr2[Ptr[CUnsignedChar], Ptr[FileStat], CInt], CFuncPtr1[Ptr[CUnsignedChar], CInt], CFuncPtr2[Ptr[CUnsignedChar], CInt, CInt], CFuncPtr2[Ptr[CUnsignedChar], Ptr[CUnsignedChar], CInt], CFuncPtr2[Ptr[CUnsignedChar], FileOptions, Ptr[SDFile]], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt]]
   object playdate_file:
-    given _tag: Tag[playdate_file] = Tag.materializeCStruct13Tag[CFuncPtr0[CString], CFuncPtr4[CString, CFuncPtr2[CString, Ptr[Byte], Unit], Ptr[Byte], CInt, CInt], CFuncPtr2[CString, Ptr[FileStat], CInt], CFuncPtr1[CString, CInt], CFuncPtr2[CString, CInt, CInt], CFuncPtr2[CString, CString, CInt], CFuncPtr2[CString, FileOptions, Ptr[SDFile]], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt]]
+    given _tag: Tag[playdate_file] = Tag.materializeCStruct13Tag[CFuncPtr0[Ptr[CUnsignedChar]], CFuncPtr4[Ptr[CUnsignedChar], CFuncPtr2[Ptr[CUnsignedChar], Ptr[Byte], Unit], Ptr[Byte], CInt, CInt], CFuncPtr2[Ptr[CUnsignedChar], Ptr[FileStat], CInt], CFuncPtr1[Ptr[CUnsignedChar], CInt], CFuncPtr2[Ptr[CUnsignedChar], CInt, CInt], CFuncPtr2[Ptr[CUnsignedChar], Ptr[CUnsignedChar], CInt], CFuncPtr2[Ptr[CUnsignedChar], FileOptions, Ptr[SDFile]], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr1[Ptr[SDFile], CInt], CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt]]
     def apply()(using Zone): Ptr[playdate_file] = scala.scalanative.unsafe.alloc[playdate_file](1)
-    def apply(geterr : CFuncPtr0[CString], listfiles : CFuncPtr4[CString, CFuncPtr2[CString, Ptr[Byte], Unit], Ptr[Byte], CInt, CInt], stat : CFuncPtr2[CString, Ptr[FileStat], CInt], mkdir : CFuncPtr1[CString, CInt], unlink : CFuncPtr2[CString, CInt, CInt], rename : CFuncPtr2[CString, CString, CInt], open : CFuncPtr2[CString, FileOptions, Ptr[SDFile]], close : CFuncPtr1[Ptr[SDFile], CInt], read : CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], write : CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], flush : CFuncPtr1[Ptr[SDFile], CInt], tell : CFuncPtr1[Ptr[SDFile], CInt], seek : CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt])(using Zone): Ptr[playdate_file] =
+    def apply(geterr : CFuncPtr0[Ptr[CUnsignedChar]], listfiles : CFuncPtr4[Ptr[CUnsignedChar], CFuncPtr2[Ptr[CUnsignedChar], Ptr[Byte], Unit], Ptr[Byte], CInt, CInt], stat : CFuncPtr2[Ptr[CUnsignedChar], Ptr[FileStat], CInt], mkdir : CFuncPtr1[Ptr[CUnsignedChar], CInt], unlink : CFuncPtr2[Ptr[CUnsignedChar], CInt, CInt], rename : CFuncPtr2[Ptr[CUnsignedChar], Ptr[CUnsignedChar], CInt], open : CFuncPtr2[Ptr[CUnsignedChar], FileOptions, Ptr[SDFile]], close : CFuncPtr1[Ptr[SDFile], CInt], read : CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], write : CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt], flush : CFuncPtr1[Ptr[SDFile], CInt], tell : CFuncPtr1[Ptr[SDFile], CInt], seek : CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt])(using Zone): Ptr[playdate_file] =
       val ____ptr = apply()
       (!____ptr).geterr = geterr
       (!____ptr).listfiles = listfiles
@@ -1868,20 +1868,20 @@ object structs:
       (!____ptr).seek = seek
       ____ptr
     extension (struct: playdate_file)
-      def geterr : CFuncPtr0[CString] = struct._1
-      def geterr_=(value: CFuncPtr0[CString]): Unit = !struct.at1 = value
-      def listfiles : CFuncPtr4[CString, CFuncPtr2[CString, Ptr[Byte], Unit], Ptr[Byte], CInt, CInt] = struct._2
-      def listfiles_=(value: CFuncPtr4[CString, CFuncPtr2[CString, Ptr[Byte], Unit], Ptr[Byte], CInt, CInt]): Unit = !struct.at2 = value
-      def stat : CFuncPtr2[CString, Ptr[FileStat], CInt] = struct._3
-      def stat_=(value: CFuncPtr2[CString, Ptr[FileStat], CInt]): Unit = !struct.at3 = value
-      def mkdir : CFuncPtr1[CString, CInt] = struct._4
-      def mkdir_=(value: CFuncPtr1[CString, CInt]): Unit = !struct.at4 = value
-      def unlink : CFuncPtr2[CString, CInt, CInt] = struct._5
-      def unlink_=(value: CFuncPtr2[CString, CInt, CInt]): Unit = !struct.at5 = value
-      def rename : CFuncPtr2[CString, CString, CInt] = struct._6
-      def rename_=(value: CFuncPtr2[CString, CString, CInt]): Unit = !struct.at6 = value
-      def open : CFuncPtr2[CString, FileOptions, Ptr[SDFile]] = struct._7
-      def open_=(value: CFuncPtr2[CString, FileOptions, Ptr[SDFile]]): Unit = !struct.at7 = value
+      def geterr : CFuncPtr0[Ptr[CUnsignedChar]] = struct._1
+      def geterr_=(value: CFuncPtr0[Ptr[CUnsignedChar]]): Unit = !struct.at1 = value
+      def listfiles : CFuncPtr4[Ptr[CUnsignedChar], CFuncPtr2[Ptr[CUnsignedChar], Ptr[Byte], Unit], Ptr[Byte], CInt, CInt] = struct._2
+      def listfiles_=(value: CFuncPtr4[Ptr[CUnsignedChar], CFuncPtr2[Ptr[CUnsignedChar], Ptr[Byte], Unit], Ptr[Byte], CInt, CInt]): Unit = !struct.at2 = value
+      def stat : CFuncPtr2[Ptr[CUnsignedChar], Ptr[FileStat], CInt] = struct._3
+      def stat_=(value: CFuncPtr2[Ptr[CUnsignedChar], Ptr[FileStat], CInt]): Unit = !struct.at3 = value
+      def mkdir : CFuncPtr1[Ptr[CUnsignedChar], CInt] = struct._4
+      def mkdir_=(value: CFuncPtr1[Ptr[CUnsignedChar], CInt]): Unit = !struct.at4 = value
+      def unlink : CFuncPtr2[Ptr[CUnsignedChar], CInt, CInt] = struct._5
+      def unlink_=(value: CFuncPtr2[Ptr[CUnsignedChar], CInt, CInt]): Unit = !struct.at5 = value
+      def rename : CFuncPtr2[Ptr[CUnsignedChar], Ptr[CUnsignedChar], CInt] = struct._6
+      def rename_=(value: CFuncPtr2[Ptr[CUnsignedChar], Ptr[CUnsignedChar], CInt]): Unit = !struct.at6 = value
+      def open : CFuncPtr2[Ptr[CUnsignedChar], FileOptions, Ptr[SDFile]] = struct._7
+      def open_=(value: CFuncPtr2[Ptr[CUnsignedChar], FileOptions, Ptr[SDFile]]): Unit = !struct.at7 = value
       def close : CFuncPtr1[Ptr[SDFile], CInt] = struct._8
       def close_=(value: CFuncPtr1[Ptr[SDFile], CInt]): Unit = !struct.at8 = value
       def read : CFuncPtr3[Ptr[SDFile], Ptr[Byte], CUnsignedInt, CInt] = struct._9
@@ -1896,13 +1896,13 @@ object structs:
       def seek_=(value: CFuncPtr3[Ptr[SDFile], CInt, CInt, CInt]): Unit = !struct.at13 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
-  opaque type playdate_graphics = CArray[CChar, Nat.Digit3[Nat._4, Nat._8, Nat._0]]
+  opaque type playdate_graphics = CArray[CChar, Nat.Digit3[Nat._2, Nat._4, Nat._0]]
   object playdate_graphics:
-    given _tag: Tag[playdate_graphics] = Tag.CArray[CChar, Nat.Digit3[Nat._4, Nat._8, Nat._0]](Tag.Byte, Tag.Digit3[Nat._4, Nat._8, Nat._0](Tag.Nat4, Tag.Nat8, Tag.Nat0))
+    given _tag: Tag[playdate_graphics] = Tag.CArray[CChar, Nat.Digit3[Nat._2, Nat._4, Nat._0]](Tag.Byte, Tag.Digit3[Nat._2, Nat._4, Nat._0](Tag.Nat2, Tag.Nat4, Tag.Nat0))
     def apply()(using Zone): Ptr[playdate_graphics] = scala.scalanative.unsafe.alloc[playdate_graphics](1)
-    def apply(video : Ptr[playdate_video], clear : CFuncPtr1[LCDColor, Unit], setBackgroundColor : CFuncPtr1[LCDSolidColor, Unit], setStencil : CFuncPtr1[Ptr[LCDBitmap], Unit], setDrawMode : CFuncPtr1[LCDBitmapDrawMode, Unit], setDrawOffset : CFuncPtr2[CInt, CInt, Unit], setClipRect : CFuncPtr4[CInt, CInt, CInt, CInt, Unit], clearClipRect : CFuncPtr0[Unit], setLineCapStyle : CFuncPtr1[LCDLineCapStyle, Unit], setFont : CFuncPtr1[Ptr[LCDFont], Unit], setTextTracking : CFuncPtr1[CInt, Unit], pushContext : CFuncPtr1[Ptr[LCDBitmap], Unit], popContext : CFuncPtr0[Unit], drawBitmap : CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit], tileBitmap : CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit], drawLine : CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit], fillTriangle : CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit], drawRect : CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit], fillRect : CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit], drawEllipse : CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit], fillEllipse : CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit], drawScaledBitmap : CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit], drawText : CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt], newBitmap : CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]], freeBitmap : CFuncPtr1[Ptr[LCDBitmap], Unit], loadBitmap : CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmap]], copyBitmap : CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]], loadIntoBitmap : CFuncPtr3[CString, Ptr[LCDBitmap], Ptr[CString], Unit], getBitmapData : CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit], clearBitmap : CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit], rotatedBitmap : CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]], newBitmapTable : CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]], freeBitmapTable : CFuncPtr1[Ptr[LCDBitmapTable], Unit], loadBitmapTable : CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmapTable]], loadIntoBitmapTable : CFuncPtr3[CString, Ptr[LCDBitmapTable], Ptr[CString], Unit], getTableBitmap : CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]], loadFont : CFuncPtr2[CString, Ptr[CString], Ptr[LCDFont]], getFontPage : CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]], getPageGlyph : CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]], getGlyphKerning : CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt], getTextWidth : CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt], getFrame : CFuncPtr0[Ptr[uint8_t]], getDisplayFrame : CFuncPtr0[Ptr[uint8_t]], getDebugBitmap : CFuncPtr0[Ptr[LCDBitmap]], copyFrameBufferBitmap : CFuncPtr0[Ptr[LCDBitmap]], markUpdatedRows : CFuncPtr2[CInt, CInt, Unit], display : CFuncPtr0[Unit], setColorToPattern : CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit], checkMaskCollision : CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt], setScreenClipRect : CFuncPtr4[CInt, CInt, CInt, CInt, Unit], fillPolygon : CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit], getFontHeight : CFuncPtr1[Ptr[LCDFont], uint8_t], getDisplayBufferBitmap : CFuncPtr0[Ptr[LCDBitmap]], drawRotatedBitmap : CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit], setTextLeading : CFuncPtr1[CInt, Unit], setBitmapMask : CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt], getBitmapMask : CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]], setStencilImage : CFuncPtr2[Ptr[LCDBitmap], CInt, Unit], makeFontFromData : CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]], getTextTracking : CFuncPtr0[CInt])(using Zone): Ptr[playdate_graphics] =
+    def apply(video : Ptr[playdate_video], clear : CFuncPtr1[LCDColor, Unit], setBackgroundColor : CFuncPtr1[LCDSolidColor, Unit], setStencil : CFuncPtr1[Ptr[LCDBitmap], Unit], setDrawMode : CFuncPtr1[LCDBitmapDrawMode, Unit], setDrawOffset : CFuncPtr2[CInt, CInt, Unit], setClipRect : CFuncPtr4[CInt, CInt, CInt, CInt, Unit], clearClipRect : CFuncPtr0[Unit], setLineCapStyle : CFuncPtr1[LCDLineCapStyle, Unit], setFont : CFuncPtr1[Ptr[LCDFont], Unit], setTextTracking : CFuncPtr1[CInt, Unit], pushContext : CFuncPtr1[Ptr[LCDBitmap], Unit], popContext : CFuncPtr0[Unit], drawBitmap : CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit], tileBitmap : CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit], drawLine : CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit], fillTriangle : CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit], drawRect : CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit], fillRect : CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit], drawEllipse : CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit], fillEllipse : CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit], drawScaledBitmap : CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit], drawText : CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt], newBitmap : CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]], freeBitmap : CFuncPtr1[Ptr[LCDBitmap], Unit], loadBitmap : CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmap]], copyBitmap : CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]], loadIntoBitmap : CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmap], Ptr[Ptr[CUnsignedChar]], Unit], getBitmapData : CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit], clearBitmap : CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit], rotatedBitmap : CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]], newBitmapTable : CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]], freeBitmapTable : CFuncPtr1[Ptr[LCDBitmapTable], Unit], loadBitmapTable : CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmapTable]], loadIntoBitmapTable : CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmapTable], Ptr[Ptr[CUnsignedChar]], Unit], getTableBitmap : CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]], loadFont : CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDFont]], getFontPage : CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]], getPageGlyph : CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]], getGlyphKerning : CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt], getTextWidth : CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt], getFrame : CFuncPtr0[Ptr[uint8_t]], getDisplayFrame : CFuncPtr0[Ptr[uint8_t]], getDebugBitmap : CFuncPtr0[Ptr[LCDBitmap]], copyFrameBufferBitmap : CFuncPtr0[Ptr[LCDBitmap]], markUpdatedRows : CFuncPtr2[CInt, CInt, Unit], display : CFuncPtr0[Unit], setColorToPattern : CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit], checkMaskCollision : CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt], setScreenClipRect : CFuncPtr4[CInt, CInt, CInt, CInt, Unit], fillPolygon : CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit], getFontHeight : CFuncPtr1[Ptr[LCDFont], uint8_t], getDisplayBufferBitmap : CFuncPtr0[Ptr[LCDBitmap]], drawRotatedBitmap : CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit], setTextLeading : CFuncPtr1[CInt, Unit], setBitmapMask : CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt], getBitmapMask : CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]], setStencilImage : CFuncPtr2[Ptr[LCDBitmap], CInt, Unit], makeFontFromData : CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]], getTextTracking : CFuncPtr0[CInt])(using Zone): Ptr[playdate_graphics] =
       val ____ptr = apply()
       (!____ptr).video = video
       (!____ptr).clear = clear
@@ -1968,133 +1968,133 @@ object structs:
     extension (struct: playdate_graphics)
       def video: Ptr[playdate_video] = !struct.at(0).asInstanceOf[Ptr[Ptr[playdate_video]]]
       def video_=(value: Ptr[playdate_video]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[playdate_video]]] = value
-      def clear: CFuncPtr1[LCDColor, Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[LCDColor, Unit]]]
-      def clear_=(value: CFuncPtr1[LCDColor, Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[LCDColor, Unit]]] = value
-      def setBackgroundColor: CFuncPtr1[LCDSolidColor, Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[LCDSolidColor, Unit]]]
-      def setBackgroundColor_=(value: CFuncPtr1[LCDSolidColor, Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[LCDSolidColor, Unit]]] = value
-      def setStencil: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
-      def setStencil_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
-      def setDrawMode: CFuncPtr1[LCDBitmapDrawMode, Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[LCDBitmapDrawMode, Unit]]]
-      def setDrawMode_=(value: CFuncPtr1[LCDBitmapDrawMode, Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[LCDBitmapDrawMode, Unit]]] = value
-      def setDrawOffset: CFuncPtr2[CInt, CInt, Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
-      def setDrawOffset_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
-      def setClipRect: CFuncPtr4[CInt, CInt, CInt, CInt, Unit] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]]
-      def setClipRect_=(value: CFuncPtr4[CInt, CInt, CInt, CInt, Unit]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]] = value
-      def clearClipRect: CFuncPtr0[Unit] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def clearClipRect_=(value: CFuncPtr0[Unit]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def setLineCapStyle: CFuncPtr1[LCDLineCapStyle, Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[LCDLineCapStyle, Unit]]]
-      def setLineCapStyle_=(value: CFuncPtr1[LCDLineCapStyle, Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[LCDLineCapStyle, Unit]]] = value
-      def setFont: CFuncPtr1[Ptr[LCDFont], Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], Unit]]]
-      def setFont_=(value: CFuncPtr1[Ptr[LCDFont], Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], Unit]]] = value
-      def setTextTracking: CFuncPtr1[CInt, Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
-      def setTextTracking_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
-      def pushContext: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
-      def pushContext_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
-      def popContext: CFuncPtr0[Unit] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def popContext_=(value: CFuncPtr0[Unit]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def drawBitmap: CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit]]]
-      def drawBitmap_=(value: CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit]]] = value
-      def tileBitmap: CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit]]]
-      def tileBitmap_=(value: CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit]]] = value
-      def drawLine: CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]]
-      def drawLine_=(value: CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
-      def fillTriangle: CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]]
-      def fillTriangle_=(value: CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
-      def drawRect: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]]
-      def drawRect_=(value: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
-      def fillRect: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]]
-      def fillRect_=(value: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
-      def drawEllipse: CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]]
-      def drawEllipse_=(value: CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]] = value
-      def fillEllipse: CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]]
-      def fillEllipse_=(value: CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]] = value
-      def drawScaledBitmap: CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit]]]
-      def drawScaledBitmap_=(value: CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit]]] = value
-      def drawText: CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt]]]
-      def drawText_=(value: CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt]]] = value
-      def newBitmap: CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]]]]
-      def newBitmap_=(value: CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]]]] = value
-      def freeBitmap: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
-      def freeBitmap_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
-      def loadBitmap: CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmap]] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmap]]]]
-      def loadBitmap_=(value: CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmap]]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmap]]]] = value
-      def copyBitmap: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]]
-      def copyBitmap_=(value: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]] = value
-      def loadIntoBitmap: CFuncPtr3[CString, Ptr[LCDBitmap], Ptr[CString], Unit] = !struct.at(216).asInstanceOf[Ptr[CFuncPtr3[CString, Ptr[LCDBitmap], Ptr[CString], Unit]]]
-      def loadIntoBitmap_=(value: CFuncPtr3[CString, Ptr[LCDBitmap], Ptr[CString], Unit]): Unit = !struct.at(216).asInstanceOf[Ptr[CFuncPtr3[CString, Ptr[LCDBitmap], Ptr[CString], Unit]]] = value
-      def getBitmapData: CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit] = !struct.at(224).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit]]]
-      def getBitmapData_=(value: CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit]): Unit = !struct.at(224).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit]]] = value
-      def clearBitmap: CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit] = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit]]]
-      def clearBitmap_=(value: CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit]): Unit = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit]]] = value
-      def rotatedBitmap: CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]] = !struct.at(240).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]]]]
-      def rotatedBitmap_=(value: CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]]): Unit = !struct.at(240).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]]]] = value
-      def newBitmapTable: CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]] = !struct.at(248).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]]]]
-      def newBitmapTable_=(value: CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]]): Unit = !struct.at(248).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]]]] = value
-      def freeBitmapTable: CFuncPtr1[Ptr[LCDBitmapTable], Unit] = !struct.at(256).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmapTable], Unit]]]
-      def freeBitmapTable_=(value: CFuncPtr1[Ptr[LCDBitmapTable], Unit]): Unit = !struct.at(256).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmapTable], Unit]]] = value
-      def loadBitmapTable: CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmapTable]] = !struct.at(264).asInstanceOf[Ptr[CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmapTable]]]]
-      def loadBitmapTable_=(value: CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmapTable]]): Unit = !struct.at(264).asInstanceOf[Ptr[CFuncPtr2[CString, Ptr[CString], Ptr[LCDBitmapTable]]]] = value
-      def loadIntoBitmapTable: CFuncPtr3[CString, Ptr[LCDBitmapTable], Ptr[CString], Unit] = !struct.at(272).asInstanceOf[Ptr[CFuncPtr3[CString, Ptr[LCDBitmapTable], Ptr[CString], Unit]]]
-      def loadIntoBitmapTable_=(value: CFuncPtr3[CString, Ptr[LCDBitmapTable], Ptr[CString], Unit]): Unit = !struct.at(272).asInstanceOf[Ptr[CFuncPtr3[CString, Ptr[LCDBitmapTable], Ptr[CString], Unit]]] = value
-      def getTableBitmap: CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]] = !struct.at(280).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]]]]
-      def getTableBitmap_=(value: CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]]): Unit = !struct.at(280).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]]]] = value
-      def loadFont: CFuncPtr2[CString, Ptr[CString], Ptr[LCDFont]] = !struct.at(288).asInstanceOf[Ptr[CFuncPtr2[CString, Ptr[CString], Ptr[LCDFont]]]]
-      def loadFont_=(value: CFuncPtr2[CString, Ptr[CString], Ptr[LCDFont]]): Unit = !struct.at(288).asInstanceOf[Ptr[CFuncPtr2[CString, Ptr[CString], Ptr[LCDFont]]]] = value
-      def getFontPage: CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]] = !struct.at(296).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]]]]
-      def getFontPage_=(value: CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]]): Unit = !struct.at(296).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]]]] = value
-      def getPageGlyph: CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]] = !struct.at(304).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]]]]
-      def getPageGlyph_=(value: CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]]): Unit = !struct.at(304).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]]]] = value
-      def getGlyphKerning: CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt] = !struct.at(312).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt]]]
-      def getGlyphKerning_=(value: CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt]): Unit = !struct.at(312).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt]]] = value
-      def getTextWidth: CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt] = !struct.at(320).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt]]]
-      def getTextWidth_=(value: CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt]): Unit = !struct.at(320).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt]]] = value
-      def getFrame: CFuncPtr0[Ptr[uint8_t]] = !struct.at(328).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]]
-      def getFrame_=(value: CFuncPtr0[Ptr[uint8_t]]): Unit = !struct.at(328).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]] = value
-      def getDisplayFrame: CFuncPtr0[Ptr[uint8_t]] = !struct.at(336).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]]
-      def getDisplayFrame_=(value: CFuncPtr0[Ptr[uint8_t]]): Unit = !struct.at(336).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]] = value
-      def getDebugBitmap: CFuncPtr0[Ptr[LCDBitmap]] = !struct.at(344).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]]
-      def getDebugBitmap_=(value: CFuncPtr0[Ptr[LCDBitmap]]): Unit = !struct.at(344).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]] = value
-      def copyFrameBufferBitmap: CFuncPtr0[Ptr[LCDBitmap]] = !struct.at(352).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]]
-      def copyFrameBufferBitmap_=(value: CFuncPtr0[Ptr[LCDBitmap]]): Unit = !struct.at(352).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]] = value
-      def markUpdatedRows: CFuncPtr2[CInt, CInt, Unit] = !struct.at(360).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
-      def markUpdatedRows_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(360).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
-      def display: CFuncPtr0[Unit] = !struct.at(368).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def display_=(value: CFuncPtr0[Unit]): Unit = !struct.at(368).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def setColorToPattern: CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit] = !struct.at(376).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit]]]
-      def setColorToPattern_=(value: CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit]): Unit = !struct.at(376).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit]]] = value
-      def checkMaskCollision: CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt] = !struct.at(384).asInstanceOf[Ptr[CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt]]]
-      def checkMaskCollision_=(value: CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt]): Unit = !struct.at(384).asInstanceOf[Ptr[CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt]]] = value
-      def setScreenClipRect: CFuncPtr4[CInt, CInt, CInt, CInt, Unit] = !struct.at(392).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]]
-      def setScreenClipRect_=(value: CFuncPtr4[CInt, CInt, CInt, CInt, Unit]): Unit = !struct.at(392).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]] = value
-      def fillPolygon: CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit] = !struct.at(400).asInstanceOf[Ptr[CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit]]]
-      def fillPolygon_=(value: CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit]): Unit = !struct.at(400).asInstanceOf[Ptr[CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit]]] = value
-      def getFontHeight: CFuncPtr1[Ptr[LCDFont], uint8_t] = !struct.at(408).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], uint8_t]]]
-      def getFontHeight_=(value: CFuncPtr1[Ptr[LCDFont], uint8_t]): Unit = !struct.at(408).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], uint8_t]]] = value
-      def getDisplayBufferBitmap: CFuncPtr0[Ptr[LCDBitmap]] = !struct.at(416).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]]
-      def getDisplayBufferBitmap_=(value: CFuncPtr0[Ptr[LCDBitmap]]): Unit = !struct.at(416).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]] = value
-      def drawRotatedBitmap: CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit] = !struct.at(424).asInstanceOf[Ptr[CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit]]]
-      def drawRotatedBitmap_=(value: CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit]): Unit = !struct.at(424).asInstanceOf[Ptr[CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit]]] = value
-      def setTextLeading: CFuncPtr1[CInt, Unit] = !struct.at(432).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
-      def setTextLeading_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(432).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
-      def setBitmapMask: CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt] = !struct.at(440).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt]]]
-      def setBitmapMask_=(value: CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt]): Unit = !struct.at(440).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt]]] = value
-      def getBitmapMask: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]] = !struct.at(448).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]]
-      def getBitmapMask_=(value: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]): Unit = !struct.at(448).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]] = value
-      def setStencilImage: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit] = !struct.at(456).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]]
-      def setStencilImage_=(value: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]): Unit = !struct.at(456).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]] = value
-      def makeFontFromData: CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]] = !struct.at(464).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]]]]
-      def makeFontFromData_=(value: CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]]): Unit = !struct.at(464).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]]]] = value
-      def getTextTracking: CFuncPtr0[CInt] = !struct.at(472).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def getTextTracking_=(value: CFuncPtr0[CInt]): Unit = !struct.at(472).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def clear: CFuncPtr1[LCDColor, Unit] = !struct.at(4).asInstanceOf[Ptr[CFuncPtr1[LCDColor, Unit]]]
+      def clear_=(value: CFuncPtr1[LCDColor, Unit]): Unit = !struct.at(4).asInstanceOf[Ptr[CFuncPtr1[LCDColor, Unit]]] = value
+      def setBackgroundColor: CFuncPtr1[LCDSolidColor, Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[LCDSolidColor, Unit]]]
+      def setBackgroundColor_=(value: CFuncPtr1[LCDSolidColor, Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[LCDSolidColor, Unit]]] = value
+      def setStencil: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(12).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
+      def setStencil_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(12).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
+      def setDrawMode: CFuncPtr1[LCDBitmapDrawMode, Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[LCDBitmapDrawMode, Unit]]]
+      def setDrawMode_=(value: CFuncPtr1[LCDBitmapDrawMode, Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[LCDBitmapDrawMode, Unit]]] = value
+      def setDrawOffset: CFuncPtr2[CInt, CInt, Unit] = !struct.at(20).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
+      def setDrawOffset_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(20).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
+      def setClipRect: CFuncPtr4[CInt, CInt, CInt, CInt, Unit] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]]
+      def setClipRect_=(value: CFuncPtr4[CInt, CInt, CInt, CInt, Unit]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]] = value
+      def clearClipRect: CFuncPtr0[Unit] = !struct.at(28).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def clearClipRect_=(value: CFuncPtr0[Unit]): Unit = !struct.at(28).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def setLineCapStyle: CFuncPtr1[LCDLineCapStyle, Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[LCDLineCapStyle, Unit]]]
+      def setLineCapStyle_=(value: CFuncPtr1[LCDLineCapStyle, Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[LCDLineCapStyle, Unit]]] = value
+      def setFont: CFuncPtr1[Ptr[LCDFont], Unit] = !struct.at(36).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], Unit]]]
+      def setFont_=(value: CFuncPtr1[Ptr[LCDFont], Unit]): Unit = !struct.at(36).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], Unit]]] = value
+      def setTextTracking: CFuncPtr1[CInt, Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
+      def setTextTracking_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
+      def pushContext: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(44).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
+      def pushContext_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(44).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
+      def popContext: CFuncPtr0[Unit] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def popContext_=(value: CFuncPtr0[Unit]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def drawBitmap: CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit] = !struct.at(52).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit]]]
+      def drawBitmap_=(value: CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit]): Unit = !struct.at(52).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Unit]]] = value
+      def tileBitmap: CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit]]]
+      def tileBitmap_=(value: CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], CInt, CInt, CInt, CInt, LCDBitmapFlip, Unit]]] = value
+      def drawLine: CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(60).asInstanceOf[Ptr[CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]]
+      def drawLine_=(value: CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(60).asInstanceOf[Ptr[CFuncPtr6[CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
+      def fillTriangle: CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]]
+      def fillTriangle_=(value: CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
+      def drawRect: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(68).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]]
+      def drawRect_=(value: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(68).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
+      def fillRect: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]]
+      def fillRect_=(value: CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr5[CInt, CInt, CInt, CInt, LCDColor, Unit]]] = value
+      def drawEllipse: CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit] = !struct.at(76).asInstanceOf[Ptr[CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]]
+      def drawEllipse_=(value: CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]): Unit = !struct.at(76).asInstanceOf[Ptr[CFuncPtr8[CInt, CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]] = value
+      def fillEllipse: CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]]
+      def fillEllipse_=(value: CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr7[CInt, CInt, CInt, CInt, Float, Float, LCDColor, Unit]]] = value
+      def drawScaledBitmap: CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit] = !struct.at(84).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit]]]
+      def drawScaledBitmap_=(value: CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit]): Unit = !struct.at(84).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], CInt, CInt, Float, Float, Unit]]] = value
+      def drawText: CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt]]]
+      def drawText_=(value: CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr5[Ptr[Byte], size_t, PDStringEncoding, CInt, CInt, CInt]]] = value
+      def newBitmap: CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]] = !struct.at(92).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]]]]
+      def newBitmap_=(value: CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]]): Unit = !struct.at(92).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, LCDColor, Ptr[LCDBitmap]]]] = value
+      def freeBitmap: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
+      def freeBitmap_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
+      def loadBitmap: CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmap]] = !struct.at(100).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmap]]]]
+      def loadBitmap_=(value: CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmap]]): Unit = !struct.at(100).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmap]]]] = value
+      def copyBitmap: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]]
+      def copyBitmap_=(value: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]] = value
+      def loadIntoBitmap: CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmap], Ptr[Ptr[CUnsignedChar]], Unit] = !struct.at(108).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmap], Ptr[Ptr[CUnsignedChar]], Unit]]]
+      def loadIntoBitmap_=(value: CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmap], Ptr[Ptr[CUnsignedChar]], Unit]): Unit = !struct.at(108).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmap], Ptr[Ptr[CUnsignedChar]], Unit]]] = value
+      def getBitmapData: CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit]]]
+      def getBitmapData_=(value: CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDBitmap], Ptr[CInt], Ptr[CInt], Ptr[CInt], Ptr[Ptr[uint8_t]], Ptr[Ptr[uint8_t]], Unit]]] = value
+      def clearBitmap: CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit] = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit]]]
+      def clearBitmap_=(value: CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit]): Unit = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], LCDColor, Unit]]] = value
+      def rotatedBitmap: CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]]]]
+      def rotatedBitmap_=(value: CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDBitmap], Float, Float, Float, Ptr[CInt], Ptr[LCDBitmap]]]] = value
+      def newBitmapTable: CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]] = !struct.at(124).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]]]]
+      def newBitmapTable_=(value: CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]]): Unit = !struct.at(124).asInstanceOf[Ptr[CFuncPtr3[CInt, CInt, CInt, Ptr[LCDBitmapTable]]]] = value
+      def freeBitmapTable: CFuncPtr1[Ptr[LCDBitmapTable], Unit] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmapTable], Unit]]]
+      def freeBitmapTable_=(value: CFuncPtr1[Ptr[LCDBitmapTable], Unit]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmapTable], Unit]]] = value
+      def loadBitmapTable: CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmapTable]] = !struct.at(132).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmapTable]]]]
+      def loadBitmapTable_=(value: CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmapTable]]): Unit = !struct.at(132).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDBitmapTable]]]] = value
+      def loadIntoBitmapTable: CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmapTable], Ptr[Ptr[CUnsignedChar]], Unit] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmapTable], Ptr[Ptr[CUnsignedChar]], Unit]]]
+      def loadIntoBitmapTable_=(value: CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmapTable], Ptr[Ptr[CUnsignedChar]], Unit]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], Ptr[LCDBitmapTable], Ptr[Ptr[CUnsignedChar]], Unit]]] = value
+      def getTableBitmap: CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]] = !struct.at(140).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]]]]
+      def getTableBitmap_=(value: CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]]): Unit = !struct.at(140).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmapTable], CInt, Ptr[LCDBitmap]]]] = value
+      def loadFont: CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDFont]] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDFont]]]]
+      def loadFont_=(value: CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDFont]]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], Ptr[LCDFont]]]] = value
+      def getFontPage: CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]] = !struct.at(148).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]]]]
+      def getFontPage_=(value: CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]]): Unit = !struct.at(148).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFont], uint32_t, Ptr[LCDFontPage]]]] = value
+      def getPageGlyph: CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]]]]
+      def getPageGlyph_=(value: CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDFontPage], uint32_t, Ptr[Ptr[LCDBitmap]], Ptr[CInt], Ptr[LCDFontGlyph]]]] = value
+      def getGlyphKerning: CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt] = !struct.at(156).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt]]]
+      def getGlyphKerning_=(value: CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt]): Unit = !struct.at(156).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDFontGlyph], uint32_t, uint32_t, CInt]]] = value
+      def getTextWidth: CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt]]]
+      def getTextWidth_=(value: CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr5[Ptr[LCDFont], Ptr[Byte], size_t, PDStringEncoding, CInt, CInt]]] = value
+      def getFrame: CFuncPtr0[Ptr[uint8_t]] = !struct.at(164).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]]
+      def getFrame_=(value: CFuncPtr0[Ptr[uint8_t]]): Unit = !struct.at(164).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]] = value
+      def getDisplayFrame: CFuncPtr0[Ptr[uint8_t]] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]]
+      def getDisplayFrame_=(value: CFuncPtr0[Ptr[uint8_t]]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr0[Ptr[uint8_t]]]] = value
+      def getDebugBitmap: CFuncPtr0[Ptr[LCDBitmap]] = !struct.at(172).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]]
+      def getDebugBitmap_=(value: CFuncPtr0[Ptr[LCDBitmap]]): Unit = !struct.at(172).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]] = value
+      def copyFrameBufferBitmap: CFuncPtr0[Ptr[LCDBitmap]] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]]
+      def copyFrameBufferBitmap_=(value: CFuncPtr0[Ptr[LCDBitmap]]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]] = value
+      def markUpdatedRows: CFuncPtr2[CInt, CInt, Unit] = !struct.at(180).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
+      def markUpdatedRows_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(180).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
+      def display: CFuncPtr0[Unit] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def display_=(value: CFuncPtr0[Unit]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def setColorToPattern: CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit] = !struct.at(188).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit]]]
+      def setColorToPattern_=(value: CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit]): Unit = !struct.at(188).asInstanceOf[Ptr[CFuncPtr4[Ptr[LCDColor], Ptr[LCDBitmap], CInt, CInt, Unit]]] = value
+      def checkMaskCollision: CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt]]]
+      def checkMaskCollision_=(value: CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr9[Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, Ptr[LCDBitmap], CInt, CInt, LCDBitmapFlip, LCDRect, CInt]]] = value
+      def setScreenClipRect: CFuncPtr4[CInt, CInt, CInt, CInt, Unit] = !struct.at(196).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]]
+      def setScreenClipRect_=(value: CFuncPtr4[CInt, CInt, CInt, CInt, Unit]): Unit = !struct.at(196).asInstanceOf[Ptr[CFuncPtr4[CInt, CInt, CInt, CInt, Unit]]] = value
+      def fillPolygon: CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit]]]
+      def fillPolygon_=(value: CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr4[CInt, Ptr[CInt], LCDColor, LCDPolygonFillRule, Unit]]] = value
+      def getFontHeight: CFuncPtr1[Ptr[LCDFont], uint8_t] = !struct.at(204).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], uint8_t]]]
+      def getFontHeight_=(value: CFuncPtr1[Ptr[LCDFont], uint8_t]): Unit = !struct.at(204).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDFont], uint8_t]]] = value
+      def getDisplayBufferBitmap: CFuncPtr0[Ptr[LCDBitmap]] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]]
+      def getDisplayBufferBitmap_=(value: CFuncPtr0[Ptr[LCDBitmap]]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDBitmap]]]] = value
+      def drawRotatedBitmap: CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit] = !struct.at(212).asInstanceOf[Ptr[CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit]]]
+      def drawRotatedBitmap_=(value: CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit]): Unit = !struct.at(212).asInstanceOf[Ptr[CFuncPtr8[Ptr[LCDBitmap], CInt, CInt, Float, Float, Float, Float, Float, Unit]]] = value
+      def setTextLeading: CFuncPtr1[CInt, Unit] = !struct.at(216).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
+      def setTextLeading_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(216).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
+      def setBitmapMask: CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt] = !struct.at(220).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt]]]
+      def setBitmapMask_=(value: CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt]): Unit = !struct.at(220).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], Ptr[LCDBitmap], CInt]]] = value
+      def getBitmapMask: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]] = !struct.at(224).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]]
+      def getBitmapMask_=(value: CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]): Unit = !struct.at(224).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Ptr[LCDBitmap]]]] = value
+      def setStencilImage: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit] = !struct.at(228).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]]
+      def setStencilImage_=(value: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]): Unit = !struct.at(228).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]] = value
+      def makeFontFromData: CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]] = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]]]]
+      def makeFontFromData_=(value: CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]]): Unit = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDFontData], CInt, Ptr[LCDFont]]]] = value
+      def getTextTracking: CFuncPtr0[CInt] = !struct.at(236).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def getTextTracking_=(value: CFuncPtr0[CInt]): Unit = !struct.at(236).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  opaque type playdate_json = CStruct3[CFuncPtr4[Ptr[Byte], Ptr[writeFunc], Ptr[Byte], CInt, Unit], CFuncPtr3[Ptr[Byte], json_reader, Ptr[json_value], CInt], CFuncPtr3[Ptr[Byte], CString, Ptr[json_value], CInt]]
+  opaque type playdate_json = CStruct3[CFuncPtr4[Ptr[Byte], Ptr[writeFunc], Ptr[Byte], CInt, Unit], CFuncPtr3[Ptr[Byte], json_reader, Ptr[json_value], CInt], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], Ptr[json_value], CInt]]
   object playdate_json:
-    given _tag: Tag[playdate_json] = Tag.materializeCStruct3Tag[CFuncPtr4[Ptr[Byte], Ptr[writeFunc], Ptr[Byte], CInt, Unit], CFuncPtr3[Ptr[Byte], json_reader, Ptr[json_value], CInt], CFuncPtr3[Ptr[Byte], CString, Ptr[json_value], CInt]]
+    given _tag: Tag[playdate_json] = Tag.materializeCStruct3Tag[CFuncPtr4[Ptr[Byte], Ptr[writeFunc], Ptr[Byte], CInt, Unit], CFuncPtr3[Ptr[Byte], json_reader, Ptr[json_value], CInt], CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], Ptr[json_value], CInt]]
     def apply()(using Zone): Ptr[playdate_json] = scala.scalanative.unsafe.alloc[playdate_json](1)
-    def apply(initEncoder : CFuncPtr4[Ptr[json_encoder], Ptr[writeFunc], Ptr[Byte], CInt, Unit], decode : CFuncPtr3[Ptr[json_decoder], json_reader, Ptr[json_value], CInt], decodeString : CFuncPtr3[Ptr[json_decoder], CString, Ptr[json_value], CInt])(using Zone): Ptr[playdate_json] =
+    def apply(initEncoder : CFuncPtr4[Ptr[json_encoder], Ptr[writeFunc], Ptr[Byte], CInt, Unit], decode : CFuncPtr3[Ptr[json_decoder], json_reader, Ptr[json_value], CInt], decodeString : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], Ptr[json_value], CInt])(using Zone): Ptr[playdate_json] =
       val ____ptr = apply()
       (!____ptr).initEncoder = initEncoder
       (!____ptr).decode = decode
@@ -2105,17 +2105,17 @@ object structs:
       def initEncoder_=(value: CFuncPtr4[Ptr[json_encoder], Ptr[writeFunc], Ptr[Byte], CInt, Unit]): Unit = !struct.at1 = value.asInstanceOf[CFuncPtr4[Ptr[Byte], Ptr[writeFunc], Ptr[Byte], CInt, Unit]]
       def decode : CFuncPtr3[Ptr[json_decoder], json_reader, Ptr[json_value], CInt] = struct._2.asInstanceOf[CFuncPtr3[Ptr[json_decoder], json_reader, Ptr[json_value], CInt]]
       def decode_=(value: CFuncPtr3[Ptr[json_decoder], json_reader, Ptr[json_value], CInt]): Unit = !struct.at2 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], json_reader, Ptr[json_value], CInt]]
-      def decodeString : CFuncPtr3[Ptr[json_decoder], CString, Ptr[json_value], CInt] = struct._3.asInstanceOf[CFuncPtr3[Ptr[json_decoder], CString, Ptr[json_value], CInt]]
-      def decodeString_=(value: CFuncPtr3[Ptr[json_decoder], CString, Ptr[json_value], CInt]): Unit = !struct.at3 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], CString, Ptr[json_value], CInt]]
+      def decodeString : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], Ptr[json_value], CInt] = struct._3.asInstanceOf[CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], Ptr[json_value], CInt]]
+      def decodeString_=(value: CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], Ptr[json_value], CInt]): Unit = !struct.at3 = value.asInstanceOf[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], Ptr[json_value], CInt]]
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
-  opaque type playdate_lua = CArray[CChar, Nat.Digit3[Nat._2, Nat._5, Nat._6]]
+  opaque type playdate_lua = CArray[CChar, Nat.Digit3[Nat._1, Nat._2, Nat._8]]
   object playdate_lua:
-    given _tag: Tag[playdate_lua] = Tag.CArray[CChar, Nat.Digit3[Nat._2, Nat._5, Nat._6]](Tag.Byte, Tag.Digit3[Nat._2, Nat._5, Nat._6](Tag.Nat2, Tag.Nat5, Tag.Nat6))
+    given _tag: Tag[playdate_lua] = Tag.CArray[CChar, Nat.Digit3[Nat._1, Nat._2, Nat._8]](Tag.Byte, Tag.Digit3[Nat._1, Nat._2, Nat._8](Tag.Nat1, Tag.Nat2, Tag.Nat8))
     def apply()(using Zone): Ptr[playdate_lua] = scala.scalanative.unsafe.alloc[playdate_lua](1)
-    def apply(addFunction : CFuncPtr3[lua_CFunction, CString, Ptr[CString], CInt], registerClass : CFuncPtr5[CString, Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[CString], CInt], pushFunction : CFuncPtr1[lua_CFunction, Unit], indexMetatable : CFuncPtr0[CInt], stop : CFuncPtr0[Unit], start : CFuncPtr0[Unit], getArgCount : CFuncPtr0[CInt], getArgType : CFuncPtr2[CInt, Ptr[CString], LuaType], argIsNil : CFuncPtr1[CInt, CInt], getArgBool : CFuncPtr1[CInt, CInt], getArgInt : CFuncPtr1[CInt, CInt], getArgFloat : CFuncPtr1[CInt, Float], getArgString : CFuncPtr1[CInt, CString], getArgBytes : CFuncPtr2[CInt, Ptr[size_t], CString], getArgObject : CFuncPtr3[CInt, CString, Ptr[Ptr[LuaUDObject]], Ptr[Byte]], getBitmap : CFuncPtr1[CInt, Ptr[LCDBitmap]], getSprite : CFuncPtr1[CInt, Ptr[LCDSprite]], pushNil : CFuncPtr0[Unit], pushBool : CFuncPtr1[CInt, Unit], pushInt : CFuncPtr1[CInt, Unit], pushFloat : CFuncPtr1[Float, Unit], pushString : CFuncPtr1[CString, Unit], pushBytes : CFuncPtr2[CString, size_t, Unit], pushBitmap : CFuncPtr1[Ptr[LCDBitmap], Unit], pushSprite : CFuncPtr1[Ptr[LCDSprite], Unit], pushObject : CFuncPtr3[Ptr[Byte], CString, CInt, Ptr[LuaUDObject]], retainObject : CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]], releaseObject : CFuncPtr1[Ptr[LuaUDObject], Unit], setUserValue : CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit], getUserValue : CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt], callFunction_deprecated : CFuncPtr2[CString, CInt, Unit], callFunction : CFuncPtr3[CString, CInt, Ptr[CString], CInt])(using Zone): Ptr[playdate_lua] =
+    def apply(addFunction : CFuncPtr3[lua_CFunction, Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt], registerClass : CFuncPtr5[Ptr[CUnsignedChar], Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[Ptr[CUnsignedChar]], CInt], pushFunction : CFuncPtr1[lua_CFunction, Unit], indexMetatable : CFuncPtr0[CInt], stop : CFuncPtr0[Unit], start : CFuncPtr0[Unit], getArgCount : CFuncPtr0[CInt], getArgType : CFuncPtr2[CInt, Ptr[Ptr[CUnsignedChar]], LuaType], argIsNil : CFuncPtr1[CInt, CInt], getArgBool : CFuncPtr1[CInt, CInt], getArgInt : CFuncPtr1[CInt, CInt], getArgFloat : CFuncPtr1[CInt, Float], getArgString : CFuncPtr1[CInt, Ptr[CUnsignedChar]], getArgBytes : CFuncPtr2[CInt, Ptr[size_t], Ptr[CUnsignedChar]], getArgObject : CFuncPtr3[CInt, Ptr[CUnsignedChar], Ptr[Ptr[LuaUDObject]], Ptr[Byte]], getBitmap : CFuncPtr1[CInt, Ptr[LCDBitmap]], getSprite : CFuncPtr1[CInt, Ptr[LCDSprite]], pushNil : CFuncPtr0[Unit], pushBool : CFuncPtr1[CInt, Unit], pushInt : CFuncPtr1[CInt, Unit], pushFloat : CFuncPtr1[Float, Unit], pushString : CFuncPtr1[Ptr[CUnsignedChar], Unit], pushBytes : CFuncPtr2[Ptr[CUnsignedChar], size_t, Unit], pushBitmap : CFuncPtr1[Ptr[LCDBitmap], Unit], pushSprite : CFuncPtr1[Ptr[LCDSprite], Unit], pushObject : CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Ptr[LuaUDObject]], retainObject : CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]], releaseObject : CFuncPtr1[Ptr[LuaUDObject], Unit], setUserValue : CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit], getUserValue : CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt], callFunction_deprecated : CFuncPtr2[Ptr[CUnsignedChar], CInt, Unit], callFunction : CFuncPtr3[Ptr[CUnsignedChar], CInt, Ptr[Ptr[CUnsignedChar]], CInt])(using Zone): Ptr[playdate_lua] =
       val ____ptr = apply()
       (!____ptr).addFunction = addFunction
       (!____ptr).registerClass = registerClass
@@ -2151,79 +2151,79 @@ object structs:
       (!____ptr).callFunction = callFunction
       ____ptr
     extension (struct: playdate_lua)
-      def addFunction: CFuncPtr3[lua_CFunction, CString, Ptr[CString], CInt] = !struct.at(0).asInstanceOf[Ptr[CFuncPtr3[lua_CFunction, CString, Ptr[CString], CInt]]]
-      def addFunction_=(value: CFuncPtr3[lua_CFunction, CString, Ptr[CString], CInt]): Unit = !struct.at(0).asInstanceOf[Ptr[CFuncPtr3[lua_CFunction, CString, Ptr[CString], CInt]]] = value
-      def registerClass: CFuncPtr5[CString, Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[CString], CInt] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr5[CString, Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[CString], CInt]]]
-      def registerClass_=(value: CFuncPtr5[CString, Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[CString], CInt]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr5[CString, Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[CString], CInt]]] = value
-      def pushFunction: CFuncPtr1[lua_CFunction, Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[lua_CFunction, Unit]]]
-      def pushFunction_=(value: CFuncPtr1[lua_CFunction, Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[lua_CFunction, Unit]]] = value
-      def indexMetatable: CFuncPtr0[CInt] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def indexMetatable_=(value: CFuncPtr0[CInt]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def stop: CFuncPtr0[Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def stop_=(value: CFuncPtr0[Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def start: CFuncPtr0[Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def start_=(value: CFuncPtr0[Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def getArgCount: CFuncPtr0[CInt] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def getArgCount_=(value: CFuncPtr0[CInt]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def getArgType: CFuncPtr2[CInt, Ptr[CString], LuaType] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[CString], LuaType]]]
-      def getArgType_=(value: CFuncPtr2[CInt, Ptr[CString], LuaType]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[CString], LuaType]]] = value
-      def argIsNil: CFuncPtr1[CInt, CInt] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
-      def argIsNil_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
-      def getArgBool: CFuncPtr1[CInt, CInt] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
-      def getArgBool_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
-      def getArgInt: CFuncPtr1[CInt, CInt] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
-      def getArgInt_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
-      def getArgFloat: CFuncPtr1[CInt, Float] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr1[CInt, Float]]]
-      def getArgFloat_=(value: CFuncPtr1[CInt, Float]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr1[CInt, Float]]] = value
-      def getArgString: CFuncPtr1[CInt, CString] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[CInt, CString]]]
-      def getArgString_=(value: CFuncPtr1[CInt, CString]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[CInt, CString]]] = value
-      def getArgBytes: CFuncPtr2[CInt, Ptr[size_t], CString] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[size_t], CString]]]
-      def getArgBytes_=(value: CFuncPtr2[CInt, Ptr[size_t], CString]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[size_t], CString]]] = value
-      def getArgObject: CFuncPtr3[CInt, CString, Ptr[Ptr[LuaUDObject]], Ptr[Byte]] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr3[CInt, CString, Ptr[Ptr[LuaUDObject]], Ptr[Byte]]]]
-      def getArgObject_=(value: CFuncPtr3[CInt, CString, Ptr[Ptr[LuaUDObject]], Ptr[Byte]]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr3[CInt, CString, Ptr[Ptr[LuaUDObject]], Ptr[Byte]]]] = value
-      def getBitmap: CFuncPtr1[CInt, Ptr[LCDBitmap]] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDBitmap]]]]
-      def getBitmap_=(value: CFuncPtr1[CInt, Ptr[LCDBitmap]]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDBitmap]]]] = value
-      def getSprite: CFuncPtr1[CInt, Ptr[LCDSprite]] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDSprite]]]]
-      def getSprite_=(value: CFuncPtr1[CInt, Ptr[LCDSprite]]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDSprite]]]] = value
-      def pushNil: CFuncPtr0[Unit] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def pushNil_=(value: CFuncPtr0[Unit]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def pushBool: CFuncPtr1[CInt, Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
-      def pushBool_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
-      def pushInt: CFuncPtr1[CInt, Unit] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
-      def pushInt_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
-      def pushFloat: CFuncPtr1[Float, Unit] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr1[Float, Unit]]]
-      def pushFloat_=(value: CFuncPtr1[Float, Unit]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr1[Float, Unit]]] = value
-      def pushString: CFuncPtr1[CString, Unit] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr1[CString, Unit]]]
-      def pushString_=(value: CFuncPtr1[CString, Unit]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr1[CString, Unit]]] = value
-      def pushBytes: CFuncPtr2[CString, size_t, Unit] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr2[CString, size_t, Unit]]]
-      def pushBytes_=(value: CFuncPtr2[CString, size_t, Unit]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr2[CString, size_t, Unit]]] = value
-      def pushBitmap: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
-      def pushBitmap_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
-      def pushSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def pushSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def pushObject: CFuncPtr3[Ptr[Byte], CString, CInt, Ptr[LuaUDObject]] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr3[Ptr[Byte], CString, CInt, Ptr[LuaUDObject]]]]
-      def pushObject_=(value: CFuncPtr3[Ptr[Byte], CString, CInt, Ptr[LuaUDObject]]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr3[Ptr[Byte], CString, CInt, Ptr[LuaUDObject]]]] = value
-      def retainObject: CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]]]]
-      def retainObject_=(value: CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]]]] = value
-      def releaseObject: CFuncPtr1[Ptr[LuaUDObject], Unit] = !struct.at(216).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Unit]]]
-      def releaseObject_=(value: CFuncPtr1[Ptr[LuaUDObject], Unit]): Unit = !struct.at(216).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Unit]]] = value
-      def setUserValue: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit] = !struct.at(224).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit]]]
-      def setUserValue_=(value: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit]): Unit = !struct.at(224).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit]]] = value
-      def getUserValue: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt] = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt]]]
-      def getUserValue_=(value: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt]): Unit = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt]]] = value
-      def callFunction_deprecated: CFuncPtr2[CString, CInt, Unit] = !struct.at(240).asInstanceOf[Ptr[CFuncPtr2[CString, CInt, Unit]]]
-      def callFunction_deprecated_=(value: CFuncPtr2[CString, CInt, Unit]): Unit = !struct.at(240).asInstanceOf[Ptr[CFuncPtr2[CString, CInt, Unit]]] = value
-      def callFunction: CFuncPtr3[CString, CInt, Ptr[CString], CInt] = !struct.at(248).asInstanceOf[Ptr[CFuncPtr3[CString, CInt, Ptr[CString], CInt]]]
-      def callFunction_=(value: CFuncPtr3[CString, CInt, Ptr[CString], CInt]): Unit = !struct.at(248).asInstanceOf[Ptr[CFuncPtr3[CString, CInt, Ptr[CString], CInt]]] = value
+      def addFunction: CFuncPtr3[lua_CFunction, Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt] = !struct.at(0).asInstanceOf[Ptr[CFuncPtr3[lua_CFunction, Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt]]]
+      def addFunction_=(value: CFuncPtr3[lua_CFunction, Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt]): Unit = !struct.at(0).asInstanceOf[Ptr[CFuncPtr3[lua_CFunction, Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt]]] = value
+      def registerClass: CFuncPtr5[Ptr[CUnsignedChar], Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[Ptr[CUnsignedChar]], CInt] = !struct.at(4).asInstanceOf[Ptr[CFuncPtr5[Ptr[CUnsignedChar], Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[Ptr[CUnsignedChar]], CInt]]]
+      def registerClass_=(value: CFuncPtr5[Ptr[CUnsignedChar], Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[Ptr[CUnsignedChar]], CInt]): Unit = !struct.at(4).asInstanceOf[Ptr[CFuncPtr5[Ptr[CUnsignedChar], Ptr[lua_reg], Ptr[lua_val], CInt, Ptr[Ptr[CUnsignedChar]], CInt]]] = value
+      def pushFunction: CFuncPtr1[lua_CFunction, Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[lua_CFunction, Unit]]]
+      def pushFunction_=(value: CFuncPtr1[lua_CFunction, Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[lua_CFunction, Unit]]] = value
+      def indexMetatable: CFuncPtr0[CInt] = !struct.at(12).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def indexMetatable_=(value: CFuncPtr0[CInt]): Unit = !struct.at(12).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def stop: CFuncPtr0[Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def stop_=(value: CFuncPtr0[Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def start: CFuncPtr0[Unit] = !struct.at(20).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def start_=(value: CFuncPtr0[Unit]): Unit = !struct.at(20).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def getArgCount: CFuncPtr0[CInt] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def getArgCount_=(value: CFuncPtr0[CInt]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def getArgType: CFuncPtr2[CInt, Ptr[Ptr[CUnsignedChar]], LuaType] = !struct.at(28).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[Ptr[CUnsignedChar]], LuaType]]]
+      def getArgType_=(value: CFuncPtr2[CInt, Ptr[Ptr[CUnsignedChar]], LuaType]): Unit = !struct.at(28).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[Ptr[CUnsignedChar]], LuaType]]] = value
+      def argIsNil: CFuncPtr1[CInt, CInt] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
+      def argIsNil_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
+      def getArgBool: CFuncPtr1[CInt, CInt] = !struct.at(36).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
+      def getArgBool_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(36).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
+      def getArgInt: CFuncPtr1[CInt, CInt] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
+      def getArgInt_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
+      def getArgFloat: CFuncPtr1[CInt, Float] = !struct.at(44).asInstanceOf[Ptr[CFuncPtr1[CInt, Float]]]
+      def getArgFloat_=(value: CFuncPtr1[CInt, Float]): Unit = !struct.at(44).asInstanceOf[Ptr[CFuncPtr1[CInt, Float]]] = value
+      def getArgString: CFuncPtr1[CInt, Ptr[CUnsignedChar]] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[CUnsignedChar]]]]
+      def getArgString_=(value: CFuncPtr1[CInt, Ptr[CUnsignedChar]]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[CUnsignedChar]]]] = value
+      def getArgBytes: CFuncPtr2[CInt, Ptr[size_t], Ptr[CUnsignedChar]] = !struct.at(52).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[size_t], Ptr[CUnsignedChar]]]]
+      def getArgBytes_=(value: CFuncPtr2[CInt, Ptr[size_t], Ptr[CUnsignedChar]]): Unit = !struct.at(52).asInstanceOf[Ptr[CFuncPtr2[CInt, Ptr[size_t], Ptr[CUnsignedChar]]]] = value
+      def getArgObject: CFuncPtr3[CInt, Ptr[CUnsignedChar], Ptr[Ptr[LuaUDObject]], Ptr[Byte]] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr3[CInt, Ptr[CUnsignedChar], Ptr[Ptr[LuaUDObject]], Ptr[Byte]]]]
+      def getArgObject_=(value: CFuncPtr3[CInt, Ptr[CUnsignedChar], Ptr[Ptr[LuaUDObject]], Ptr[Byte]]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr3[CInt, Ptr[CUnsignedChar], Ptr[Ptr[LuaUDObject]], Ptr[Byte]]]] = value
+      def getBitmap: CFuncPtr1[CInt, Ptr[LCDBitmap]] = !struct.at(60).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDBitmap]]]]
+      def getBitmap_=(value: CFuncPtr1[CInt, Ptr[LCDBitmap]]): Unit = !struct.at(60).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDBitmap]]]] = value
+      def getSprite: CFuncPtr1[CInt, Ptr[LCDSprite]] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDSprite]]]]
+      def getSprite_=(value: CFuncPtr1[CInt, Ptr[LCDSprite]]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[CInt, Ptr[LCDSprite]]]] = value
+      def pushNil: CFuncPtr0[Unit] = !struct.at(68).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def pushNil_=(value: CFuncPtr0[Unit]): Unit = !struct.at(68).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def pushBool: CFuncPtr1[CInt, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
+      def pushBool_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
+      def pushInt: CFuncPtr1[CInt, Unit] = !struct.at(76).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
+      def pushInt_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(76).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
+      def pushFloat: CFuncPtr1[Float, Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[Float, Unit]]]
+      def pushFloat_=(value: CFuncPtr1[Float, Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[Float, Unit]]] = value
+      def pushString: CFuncPtr1[Ptr[CUnsignedChar], Unit] = !struct.at(84).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedChar], Unit]]]
+      def pushString_=(value: CFuncPtr1[Ptr[CUnsignedChar], Unit]): Unit = !struct.at(84).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedChar], Unit]]] = value
+      def pushBytes: CFuncPtr2[Ptr[CUnsignedChar], size_t, Unit] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], size_t, Unit]]]
+      def pushBytes_=(value: CFuncPtr2[Ptr[CUnsignedChar], size_t, Unit]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], size_t, Unit]]] = value
+      def pushBitmap: CFuncPtr1[Ptr[LCDBitmap], Unit] = !struct.at(92).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]]
+      def pushBitmap_=(value: CFuncPtr1[Ptr[LCDBitmap], Unit]): Unit = !struct.at(92).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDBitmap], Unit]]] = value
+      def pushSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def pushSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def pushObject: CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Ptr[LuaUDObject]] = !struct.at(100).asInstanceOf[Ptr[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Ptr[LuaUDObject]]]]
+      def pushObject_=(value: CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Ptr[LuaUDObject]]): Unit = !struct.at(100).asInstanceOf[Ptr[CFuncPtr3[Ptr[Byte], Ptr[CUnsignedChar], CInt, Ptr[LuaUDObject]]]] = value
+      def retainObject: CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]]]]
+      def retainObject_=(value: CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Ptr[LuaUDObject]]]] = value
+      def releaseObject: CFuncPtr1[Ptr[LuaUDObject], Unit] = !struct.at(108).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Unit]]]
+      def releaseObject_=(value: CFuncPtr1[Ptr[LuaUDObject], Unit]): Unit = !struct.at(108).asInstanceOf[Ptr[CFuncPtr1[Ptr[LuaUDObject], Unit]]] = value
+      def setUserValue: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit]]]
+      def setUserValue_=(value: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, Unit]]] = value
+      def getUserValue: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt] = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt]]]
+      def getUserValue_=(value: CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt]): Unit = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[LuaUDObject], CUnsignedInt, CInt]]] = value
+      def callFunction_deprecated: CFuncPtr2[Ptr[CUnsignedChar], CInt, Unit] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], CInt, Unit]]]
+      def callFunction_deprecated_=(value: CFuncPtr2[Ptr[CUnsignedChar], CInt, Unit]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr2[Ptr[CUnsignedChar], CInt, Unit]]] = value
+      def callFunction: CFuncPtr3[Ptr[CUnsignedChar], CInt, Ptr[Ptr[CUnsignedChar]], CInt] = !struct.at(124).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], CInt, Ptr[Ptr[CUnsignedChar]], CInt]]]
+      def callFunction_=(value: CFuncPtr3[Ptr[CUnsignedChar], CInt, Ptr[Ptr[CUnsignedChar]], CInt]): Unit = !struct.at(124).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], CInt, Ptr[Ptr[CUnsignedChar]], CInt]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_scoreboards.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_scoreboards.h
   */
-  opaque type playdate_scoreboards = CStruct7[CFuncPtr3[CString, uint32_t, AddScoreCallback, CInt], CFuncPtr2[CString, PersonalBestCallback, CInt], CFuncPtr1[Ptr[PDScore], Unit], CFuncPtr1[BoardsListCallback, CInt], CFuncPtr1[Ptr[PDBoardsList], Unit], CFuncPtr2[CString, ScoresCallback, CInt], CFuncPtr1[Ptr[PDScoresList], Unit]]
+  opaque type playdate_scoreboards = CStruct7[CFuncPtr3[Ptr[CUnsignedChar], uint32_t, AddScoreCallback, CInt], CFuncPtr2[Ptr[CUnsignedChar], PersonalBestCallback, CInt], CFuncPtr1[Ptr[PDScore], Unit], CFuncPtr1[BoardsListCallback, CInt], CFuncPtr1[Ptr[PDBoardsList], Unit], CFuncPtr2[Ptr[CUnsignedChar], ScoresCallback, CInt], CFuncPtr1[Ptr[PDScoresList], Unit]]
   object playdate_scoreboards:
-    given _tag: Tag[playdate_scoreboards] = Tag.materializeCStruct7Tag[CFuncPtr3[CString, uint32_t, AddScoreCallback, CInt], CFuncPtr2[CString, PersonalBestCallback, CInt], CFuncPtr1[Ptr[PDScore], Unit], CFuncPtr1[BoardsListCallback, CInt], CFuncPtr1[Ptr[PDBoardsList], Unit], CFuncPtr2[CString, ScoresCallback, CInt], CFuncPtr1[Ptr[PDScoresList], Unit]]
+    given _tag: Tag[playdate_scoreboards] = Tag.materializeCStruct7Tag[CFuncPtr3[Ptr[CUnsignedChar], uint32_t, AddScoreCallback, CInt], CFuncPtr2[Ptr[CUnsignedChar], PersonalBestCallback, CInt], CFuncPtr1[Ptr[PDScore], Unit], CFuncPtr1[BoardsListCallback, CInt], CFuncPtr1[Ptr[PDBoardsList], Unit], CFuncPtr2[Ptr[CUnsignedChar], ScoresCallback, CInt], CFuncPtr1[Ptr[PDScoresList], Unit]]
     def apply()(using Zone): Ptr[playdate_scoreboards] = scala.scalanative.unsafe.alloc[playdate_scoreboards](1)
-    def apply(addScore : CFuncPtr3[CString, uint32_t, AddScoreCallback, CInt], getPersonalBest : CFuncPtr2[CString, PersonalBestCallback, CInt], freeScore : CFuncPtr1[Ptr[PDScore], Unit], getScoreboards : CFuncPtr1[BoardsListCallback, CInt], freeBoardsList : CFuncPtr1[Ptr[PDBoardsList], Unit], getScores : CFuncPtr2[CString, ScoresCallback, CInt], freeScoresList : CFuncPtr1[Ptr[PDScoresList], Unit])(using Zone): Ptr[playdate_scoreboards] =
+    def apply(addScore : CFuncPtr3[Ptr[CUnsignedChar], uint32_t, AddScoreCallback, CInt], getPersonalBest : CFuncPtr2[Ptr[CUnsignedChar], PersonalBestCallback, CInt], freeScore : CFuncPtr1[Ptr[PDScore], Unit], getScoreboards : CFuncPtr1[BoardsListCallback, CInt], freeBoardsList : CFuncPtr1[Ptr[PDBoardsList], Unit], getScores : CFuncPtr2[Ptr[CUnsignedChar], ScoresCallback, CInt], freeScoresList : CFuncPtr1[Ptr[PDScoresList], Unit])(using Zone): Ptr[playdate_scoreboards] =
       val ____ptr = apply()
       (!____ptr).addScore = addScore
       (!____ptr).getPersonalBest = getPersonalBest
@@ -2234,29 +2234,29 @@ object structs:
       (!____ptr).freeScoresList = freeScoresList
       ____ptr
     extension (struct: playdate_scoreboards)
-      def addScore : CFuncPtr3[CString, uint32_t, AddScoreCallback, CInt] = struct._1
-      def addScore_=(value: CFuncPtr3[CString, uint32_t, AddScoreCallback, CInt]): Unit = !struct.at1 = value
-      def getPersonalBest : CFuncPtr2[CString, PersonalBestCallback, CInt] = struct._2
-      def getPersonalBest_=(value: CFuncPtr2[CString, PersonalBestCallback, CInt]): Unit = !struct.at2 = value
+      def addScore : CFuncPtr3[Ptr[CUnsignedChar], uint32_t, AddScoreCallback, CInt] = struct._1
+      def addScore_=(value: CFuncPtr3[Ptr[CUnsignedChar], uint32_t, AddScoreCallback, CInt]): Unit = !struct.at1 = value
+      def getPersonalBest : CFuncPtr2[Ptr[CUnsignedChar], PersonalBestCallback, CInt] = struct._2
+      def getPersonalBest_=(value: CFuncPtr2[Ptr[CUnsignedChar], PersonalBestCallback, CInt]): Unit = !struct.at2 = value
       def freeScore : CFuncPtr1[Ptr[PDScore], Unit] = struct._3
       def freeScore_=(value: CFuncPtr1[Ptr[PDScore], Unit]): Unit = !struct.at3 = value
       def getScoreboards : CFuncPtr1[BoardsListCallback, CInt] = struct._4
       def getScoreboards_=(value: CFuncPtr1[BoardsListCallback, CInt]): Unit = !struct.at4 = value
       def freeBoardsList : CFuncPtr1[Ptr[PDBoardsList], Unit] = struct._5
       def freeBoardsList_=(value: CFuncPtr1[Ptr[PDBoardsList], Unit]): Unit = !struct.at5 = value
-      def getScores : CFuncPtr2[CString, ScoresCallback, CInt] = struct._6
-      def getScores_=(value: CFuncPtr2[CString, ScoresCallback, CInt]): Unit = !struct.at6 = value
+      def getScores : CFuncPtr2[Ptr[CUnsignedChar], ScoresCallback, CInt] = struct._6
+      def getScores_=(value: CFuncPtr2[Ptr[CUnsignedChar], ScoresCallback, CInt]): Unit = !struct.at6 = value
       def freeScoresList : CFuncPtr1[Ptr[PDScoresList], Unit] = struct._7
       def freeScoresList_=(value: CFuncPtr1[Ptr[PDScoresList], Unit]): Unit = !struct.at7 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
-  opaque type playdate_sound = CArray[CChar, Nat.Digit3[Nat._1, Nat._9, Nat._2]]
+  opaque type playdate_sound = CArray[CChar, Nat.Digit2[Nat._9, Nat._6]]
   object playdate_sound:
-    given _tag: Tag[playdate_sound] = Tag.CArray[CChar, Nat.Digit3[Nat._1, Nat._9, Nat._2]](Tag.Byte, Tag.Digit3[Nat._1, Nat._9, Nat._2](Tag.Nat1, Tag.Nat9, Tag.Nat2))
+    given _tag: Tag[playdate_sound] = Tag.CArray[CChar, Nat.Digit2[Nat._9, Nat._6]](Tag.Byte, Tag.Digit2[Nat._9, Nat._6](Tag.Nat9, Tag.Nat6))
     def apply()(using Zone): Ptr[playdate_sound] = scala.scalanative.unsafe.alloc[playdate_sound](1)
-    def apply(channel : Ptr[playdate_sound_channel], fileplayer : Ptr[playdate_sound_fileplayer], sample : Ptr[playdate_sound_sample], sampleplayer : Ptr[playdate_sound_sampleplayer], synth : Ptr[playdate_sound_synth], sequence : Ptr[playdate_sound_sequence], effect : Ptr[playdate_sound_effect], lfo : Ptr[playdate_sound_lfo], envelope : Ptr[playdate_sound_envelope], source : Ptr[playdate_sound_source], controlsignal : Ptr[playdate_control_signal], track : Ptr[playdate_sound_track], instrument : Ptr[playdate_sound_instrument], getCurrentTime : CFuncPtr0[uint32_t], addSource : CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]], getDefaultChannel : CFuncPtr0[Ptr[SoundChannel]], addChannel : CFuncPtr1[Ptr[SoundChannel], CInt], removeChannel : CFuncPtr1[Ptr[SoundChannel], CInt], setMicCallback : CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit], getHeadphoneState : CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit], setOutputsActive : CFuncPtr2[CInt, CInt, Unit], removeSource : CFuncPtr1[Ptr[SoundSource], CInt], signal : Ptr[playdate_sound_signal], getError : CFuncPtr0[CString])(using Zone): Ptr[playdate_sound] =
+    def apply(channel : Ptr[playdate_sound_channel], fileplayer : Ptr[playdate_sound_fileplayer], sample : Ptr[playdate_sound_sample], sampleplayer : Ptr[playdate_sound_sampleplayer], synth : Ptr[playdate_sound_synth], sequence : Ptr[playdate_sound_sequence], effect : Ptr[playdate_sound_effect], lfo : Ptr[playdate_sound_lfo], envelope : Ptr[playdate_sound_envelope], source : Ptr[playdate_sound_source], controlsignal : Ptr[playdate_control_signal], track : Ptr[playdate_sound_track], instrument : Ptr[playdate_sound_instrument], getCurrentTime : CFuncPtr0[uint32_t], addSource : CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]], getDefaultChannel : CFuncPtr0[Ptr[SoundChannel]], addChannel : CFuncPtr1[Ptr[SoundChannel], CInt], removeChannel : CFuncPtr1[Ptr[SoundChannel], CInt], setMicCallback : CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit], getHeadphoneState : CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit], setOutputsActive : CFuncPtr2[CInt, CInt, Unit], removeSource : CFuncPtr1[Ptr[SoundSource], CInt], signal : Ptr[playdate_sound_signal], getError : CFuncPtr0[Ptr[CUnsignedChar]])(using Zone): Ptr[playdate_sound] =
       val ____ptr = apply()
       (!____ptr).channel = channel
       (!____ptr).fileplayer = fileplayer
@@ -2286,55 +2286,55 @@ object structs:
     extension (struct: playdate_sound)
       def channel: Ptr[playdate_sound_channel] = !struct.at(0).asInstanceOf[Ptr[Ptr[playdate_sound_channel]]]
       def channel_=(value: Ptr[playdate_sound_channel]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[playdate_sound_channel]]] = value
-      def fileplayer: Ptr[playdate_sound_fileplayer] = !struct.at(8).asInstanceOf[Ptr[Ptr[playdate_sound_fileplayer]]]
-      def fileplayer_=(value: Ptr[playdate_sound_fileplayer]): Unit = !struct.at(8).asInstanceOf[Ptr[Ptr[playdate_sound_fileplayer]]] = value
-      def sample: Ptr[playdate_sound_sample] = !struct.at(16).asInstanceOf[Ptr[Ptr[playdate_sound_sample]]]
-      def sample_=(value: Ptr[playdate_sound_sample]): Unit = !struct.at(16).asInstanceOf[Ptr[Ptr[playdate_sound_sample]]] = value
-      def sampleplayer: Ptr[playdate_sound_sampleplayer] = !struct.at(24).asInstanceOf[Ptr[Ptr[playdate_sound_sampleplayer]]]
-      def sampleplayer_=(value: Ptr[playdate_sound_sampleplayer]): Unit = !struct.at(24).asInstanceOf[Ptr[Ptr[playdate_sound_sampleplayer]]] = value
-      def synth: Ptr[playdate_sound_synth] = !struct.at(32).asInstanceOf[Ptr[Ptr[playdate_sound_synth]]]
-      def synth_=(value: Ptr[playdate_sound_synth]): Unit = !struct.at(32).asInstanceOf[Ptr[Ptr[playdate_sound_synth]]] = value
-      def sequence: Ptr[playdate_sound_sequence] = !struct.at(40).asInstanceOf[Ptr[Ptr[playdate_sound_sequence]]]
-      def sequence_=(value: Ptr[playdate_sound_sequence]): Unit = !struct.at(40).asInstanceOf[Ptr[Ptr[playdate_sound_sequence]]] = value
-      def effect: Ptr[playdate_sound_effect] = !struct.at(48).asInstanceOf[Ptr[Ptr[playdate_sound_effect]]]
-      def effect_=(value: Ptr[playdate_sound_effect]): Unit = !struct.at(48).asInstanceOf[Ptr[Ptr[playdate_sound_effect]]] = value
-      def lfo: Ptr[playdate_sound_lfo] = !struct.at(56).asInstanceOf[Ptr[Ptr[playdate_sound_lfo]]]
-      def lfo_=(value: Ptr[playdate_sound_lfo]): Unit = !struct.at(56).asInstanceOf[Ptr[Ptr[playdate_sound_lfo]]] = value
-      def envelope: Ptr[playdate_sound_envelope] = !struct.at(64).asInstanceOf[Ptr[Ptr[playdate_sound_envelope]]]
-      def envelope_=(value: Ptr[playdate_sound_envelope]): Unit = !struct.at(64).asInstanceOf[Ptr[Ptr[playdate_sound_envelope]]] = value
-      def source: Ptr[playdate_sound_source] = !struct.at(72).asInstanceOf[Ptr[Ptr[playdate_sound_source]]]
-      def source_=(value: Ptr[playdate_sound_source]): Unit = !struct.at(72).asInstanceOf[Ptr[Ptr[playdate_sound_source]]] = value
-      def controlsignal: Ptr[playdate_control_signal] = !struct.at(80).asInstanceOf[Ptr[Ptr[playdate_control_signal]]]
-      def controlsignal_=(value: Ptr[playdate_control_signal]): Unit = !struct.at(80).asInstanceOf[Ptr[Ptr[playdate_control_signal]]] = value
-      def track: Ptr[playdate_sound_track] = !struct.at(88).asInstanceOf[Ptr[Ptr[playdate_sound_track]]]
-      def track_=(value: Ptr[playdate_sound_track]): Unit = !struct.at(88).asInstanceOf[Ptr[Ptr[playdate_sound_track]]] = value
-      def instrument: Ptr[playdate_sound_instrument] = !struct.at(96).asInstanceOf[Ptr[Ptr[playdate_sound_instrument]]]
-      def instrument_=(value: Ptr[playdate_sound_instrument]): Unit = !struct.at(96).asInstanceOf[Ptr[Ptr[playdate_sound_instrument]]] = value
-      def getCurrentTime: CFuncPtr0[uint32_t] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr0[uint32_t]]]
-      def getCurrentTime_=(value: CFuncPtr0[uint32_t]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr0[uint32_t]]] = value
-      def addSource: CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]]]]
-      def addSource_=(value: CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]]]] = value
-      def getDefaultChannel: CFuncPtr0[Ptr[SoundChannel]] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr0[Ptr[SoundChannel]]]]
-      def getDefaultChannel_=(value: CFuncPtr0[Ptr[SoundChannel]]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr0[Ptr[SoundChannel]]]] = value
-      def addChannel: CFuncPtr1[Ptr[SoundChannel], CInt] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]]
-      def addChannel_=(value: CFuncPtr1[Ptr[SoundChannel], CInt]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]] = value
-      def removeChannel: CFuncPtr1[Ptr[SoundChannel], CInt] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]]
-      def removeChannel_=(value: CFuncPtr1[Ptr[SoundChannel], CInt]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]] = value
-      def setMicCallback: CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit]]]
-      def setMicCallback_=(value: CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit]]] = value
-      def getHeadphoneState: CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit]]]
-      def getHeadphoneState_=(value: CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit]]] = value
-      def setOutputsActive: CFuncPtr2[CInt, CInt, Unit] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
-      def setOutputsActive_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
-      def removeSource: CFuncPtr1[Ptr[SoundSource], CInt] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundSource], CInt]]]
-      def removeSource_=(value: CFuncPtr1[Ptr[SoundSource], CInt]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundSource], CInt]]] = value
-      def signal: Ptr[playdate_sound_signal] = !struct.at(176).asInstanceOf[Ptr[Ptr[playdate_sound_signal]]]
-      def signal_=(value: Ptr[playdate_sound_signal]): Unit = !struct.at(176).asInstanceOf[Ptr[Ptr[playdate_sound_signal]]] = value
-      def getError: CFuncPtr0[CString] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr0[CString]]]
-      def getError_=(value: CFuncPtr0[CString]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr0[CString]]] = value
+      def fileplayer: Ptr[playdate_sound_fileplayer] = !struct.at(4).asInstanceOf[Ptr[Ptr[playdate_sound_fileplayer]]]
+      def fileplayer_=(value: Ptr[playdate_sound_fileplayer]): Unit = !struct.at(4).asInstanceOf[Ptr[Ptr[playdate_sound_fileplayer]]] = value
+      def sample: Ptr[playdate_sound_sample] = !struct.at(8).asInstanceOf[Ptr[Ptr[playdate_sound_sample]]]
+      def sample_=(value: Ptr[playdate_sound_sample]): Unit = !struct.at(8).asInstanceOf[Ptr[Ptr[playdate_sound_sample]]] = value
+      def sampleplayer: Ptr[playdate_sound_sampleplayer] = !struct.at(12).asInstanceOf[Ptr[Ptr[playdate_sound_sampleplayer]]]
+      def sampleplayer_=(value: Ptr[playdate_sound_sampleplayer]): Unit = !struct.at(12).asInstanceOf[Ptr[Ptr[playdate_sound_sampleplayer]]] = value
+      def synth: Ptr[playdate_sound_synth] = !struct.at(16).asInstanceOf[Ptr[Ptr[playdate_sound_synth]]]
+      def synth_=(value: Ptr[playdate_sound_synth]): Unit = !struct.at(16).asInstanceOf[Ptr[Ptr[playdate_sound_synth]]] = value
+      def sequence: Ptr[playdate_sound_sequence] = !struct.at(20).asInstanceOf[Ptr[Ptr[playdate_sound_sequence]]]
+      def sequence_=(value: Ptr[playdate_sound_sequence]): Unit = !struct.at(20).asInstanceOf[Ptr[Ptr[playdate_sound_sequence]]] = value
+      def effect: Ptr[playdate_sound_effect] = !struct.at(24).asInstanceOf[Ptr[Ptr[playdate_sound_effect]]]
+      def effect_=(value: Ptr[playdate_sound_effect]): Unit = !struct.at(24).asInstanceOf[Ptr[Ptr[playdate_sound_effect]]] = value
+      def lfo: Ptr[playdate_sound_lfo] = !struct.at(28).asInstanceOf[Ptr[Ptr[playdate_sound_lfo]]]
+      def lfo_=(value: Ptr[playdate_sound_lfo]): Unit = !struct.at(28).asInstanceOf[Ptr[Ptr[playdate_sound_lfo]]] = value
+      def envelope: Ptr[playdate_sound_envelope] = !struct.at(32).asInstanceOf[Ptr[Ptr[playdate_sound_envelope]]]
+      def envelope_=(value: Ptr[playdate_sound_envelope]): Unit = !struct.at(32).asInstanceOf[Ptr[Ptr[playdate_sound_envelope]]] = value
+      def source: Ptr[playdate_sound_source] = !struct.at(36).asInstanceOf[Ptr[Ptr[playdate_sound_source]]]
+      def source_=(value: Ptr[playdate_sound_source]): Unit = !struct.at(36).asInstanceOf[Ptr[Ptr[playdate_sound_source]]] = value
+      def controlsignal: Ptr[playdate_control_signal] = !struct.at(40).asInstanceOf[Ptr[Ptr[playdate_control_signal]]]
+      def controlsignal_=(value: Ptr[playdate_control_signal]): Unit = !struct.at(40).asInstanceOf[Ptr[Ptr[playdate_control_signal]]] = value
+      def track: Ptr[playdate_sound_track] = !struct.at(44).asInstanceOf[Ptr[Ptr[playdate_sound_track]]]
+      def track_=(value: Ptr[playdate_sound_track]): Unit = !struct.at(44).asInstanceOf[Ptr[Ptr[playdate_sound_track]]] = value
+      def instrument: Ptr[playdate_sound_instrument] = !struct.at(48).asInstanceOf[Ptr[Ptr[playdate_sound_instrument]]]
+      def instrument_=(value: Ptr[playdate_sound_instrument]): Unit = !struct.at(48).asInstanceOf[Ptr[Ptr[playdate_sound_instrument]]] = value
+      def getCurrentTime: CFuncPtr0[uint32_t] = !struct.at(52).asInstanceOf[Ptr[CFuncPtr0[uint32_t]]]
+      def getCurrentTime_=(value: CFuncPtr0[uint32_t]): Unit = !struct.at(52).asInstanceOf[Ptr[CFuncPtr0[uint32_t]]] = value
+      def addSource: CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]]]]
+      def addSource_=(value: CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr3[Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]]]] = value
+      def getDefaultChannel: CFuncPtr0[Ptr[SoundChannel]] = !struct.at(60).asInstanceOf[Ptr[CFuncPtr0[Ptr[SoundChannel]]]]
+      def getDefaultChannel_=(value: CFuncPtr0[Ptr[SoundChannel]]): Unit = !struct.at(60).asInstanceOf[Ptr[CFuncPtr0[Ptr[SoundChannel]]]] = value
+      def addChannel: CFuncPtr1[Ptr[SoundChannel], CInt] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]]
+      def addChannel_=(value: CFuncPtr1[Ptr[SoundChannel], CInt]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]] = value
+      def removeChannel: CFuncPtr1[Ptr[SoundChannel], CInt] = !struct.at(68).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]]
+      def removeChannel_=(value: CFuncPtr1[Ptr[SoundChannel], CInt]): Unit = !struct.at(68).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundChannel], CInt]]] = value
+      def setMicCallback: CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit]]]
+      def setMicCallback_=(value: CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr3[Ptr[RecordCallback], Ptr[Byte], CInt, Unit]]] = value
+      def getHeadphoneState: CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit] = !struct.at(76).asInstanceOf[Ptr[CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit]]]
+      def getHeadphoneState_=(value: CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit]): Unit = !struct.at(76).asInstanceOf[Ptr[CFuncPtr3[Ptr[CInt], Ptr[CInt], CFuncPtr2[CInt, CInt, Unit], Unit]]] = value
+      def setOutputsActive: CFuncPtr2[CInt, CInt, Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
+      def setOutputsActive_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
+      def removeSource: CFuncPtr1[Ptr[SoundSource], CInt] = !struct.at(84).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundSource], CInt]]]
+      def removeSource_=(value: CFuncPtr1[Ptr[SoundSource], CInt]): Unit = !struct.at(84).asInstanceOf[Ptr[CFuncPtr1[Ptr[SoundSource], CInt]]] = value
+      def signal: Ptr[playdate_sound_signal] = !struct.at(88).asInstanceOf[Ptr[Ptr[playdate_sound_signal]]]
+      def signal_=(value: Ptr[playdate_sound_signal]): Unit = !struct.at(88).asInstanceOf[Ptr[Ptr[playdate_sound_signal]]] = value
+      def getError: CFuncPtr0[Ptr[CUnsignedChar]] = !struct.at(92).asInstanceOf[Ptr[CFuncPtr0[Ptr[CUnsignedChar]]]]
+      def getError_=(value: CFuncPtr0[Ptr[CUnsignedChar]]): Unit = !struct.at(92).asInstanceOf[Ptr[CFuncPtr0[Ptr[CUnsignedChar]]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_channel = CStruct16[CFuncPtr0[Ptr[SoundChannel]], CFuncPtr1[Ptr[SoundChannel], Unit], CFuncPtr2[Ptr[SoundChannel], Ptr[SoundSource], CInt], CFuncPtr2[Ptr[SoundChannel], Ptr[SoundSource], CInt], CFuncPtr4[Ptr[SoundChannel], Ptr[AudioSourceFunction], Ptr[Byte], CInt, Ptr[SoundSource]], CFuncPtr2[Ptr[SoundChannel], Ptr[SoundEffect], Unit], CFuncPtr2[Ptr[SoundChannel], Ptr[SoundEffect], Unit], CFuncPtr2[Ptr[SoundChannel], Float, Unit], CFuncPtr1[Ptr[SoundChannel], Float], CFuncPtr2[Ptr[SoundChannel], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[SoundChannel], Ptr[PDSynthSignalValue]], CFuncPtr2[Ptr[SoundChannel], Float, Unit], CFuncPtr2[Ptr[SoundChannel], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[SoundChannel], Ptr[PDSynthSignalValue]], CFuncPtr1[Ptr[SoundChannel], Ptr[PDSynthSignalValue]], CFuncPtr1[Ptr[SoundChannel], Ptr[PDSynthSignalValue]]]
   object playdate_sound_channel:
@@ -2394,7 +2394,7 @@ object structs:
       def getWetLevelSignal_=(value: CFuncPtr1[Ptr[SoundChannel], Ptr[PDSynthSignalValue]]): Unit = !struct.at16 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect = CStruct13[CFuncPtr2[Ptr[effectProc], Ptr[Byte], Ptr[SoundEffect]], CFuncPtr1[Ptr[SoundEffect], Unit], CFuncPtr2[Ptr[SoundEffect], Float, Unit], CFuncPtr2[Ptr[SoundEffect], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[SoundEffect], Ptr[PDSynthSignalValue]], CFuncPtr2[Ptr[SoundEffect], Ptr[Byte], Unit], CFuncPtr1[Ptr[SoundEffect], Ptr[Byte]], Ptr[playdate_sound_effect_twopolefilter], Ptr[playdate_sound_effect_onepolefilter], Ptr[playdate_sound_effect_bitcrusher], Ptr[playdate_sound_effect_ringmodulator], Ptr[playdate_sound_effect_delayline], Ptr[playdate_sound_effect_overdrive]]
   object playdate_sound_effect:
@@ -2445,7 +2445,7 @@ object structs:
       def overdrive_=(value: Ptr[playdate_sound_effect_overdrive]): Unit = !struct.at13 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect_bitcrusher = CStruct8[CFuncPtr0[Ptr[BitCrusher]], CFuncPtr1[Ptr[BitCrusher], Unit], CFuncPtr2[Ptr[BitCrusher], Float, Unit], CFuncPtr2[Ptr[BitCrusher], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[BitCrusher], Ptr[PDSynthSignalValue]], CFuncPtr2[Ptr[BitCrusher], Float, Unit], CFuncPtr2[Ptr[BitCrusher], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[BitCrusher], Ptr[PDSynthSignalValue]]]
   object playdate_sound_effect_bitcrusher:
@@ -2481,7 +2481,7 @@ object structs:
       def getUndersampleModulator_=(value: CFuncPtr1[Ptr[BitCrusher], Ptr[PDSynthSignalValue]]): Unit = !struct.at8 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect_delayline = CStruct10[CFuncPtr2[CInt, CInt, Ptr[DelayLine]], CFuncPtr1[Ptr[DelayLine], Unit], CFuncPtr2[Ptr[DelayLine], CInt, Unit], CFuncPtr2[Ptr[DelayLine], Float, Unit], CFuncPtr2[Ptr[DelayLine], CInt, Ptr[DelayLineTap]], CFuncPtr1[Ptr[DelayLineTap], Unit], CFuncPtr2[Ptr[DelayLineTap], CInt, Unit], CFuncPtr2[Ptr[DelayLineTap], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[DelayLineTap], Ptr[PDSynthSignalValue]], CFuncPtr2[Ptr[DelayLineTap], CInt, Unit]]
   object playdate_sound_effect_delayline:
@@ -2523,7 +2523,7 @@ object structs:
       def setTapChannelsFlipped_=(value: CFuncPtr2[Ptr[DelayLineTap], CInt, Unit]): Unit = !struct.at10 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect_onepolefilter = CStruct5[CFuncPtr0[Ptr[OnePoleFilter]], CFuncPtr1[Ptr[OnePoleFilter], Unit], CFuncPtr2[Ptr[OnePoleFilter], Float, Unit], CFuncPtr2[Ptr[OnePoleFilter], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[OnePoleFilter], Ptr[PDSynthSignalValue]]]
   object playdate_sound_effect_onepolefilter:
@@ -2550,7 +2550,7 @@ object structs:
       def getParameterModulator_=(value: CFuncPtr1[Ptr[OnePoleFilter], Ptr[PDSynthSignalValue]]): Unit = !struct.at5 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect_overdrive = CStruct9[CFuncPtr0[Ptr[Overdrive]], CFuncPtr1[Ptr[Overdrive], Unit], CFuncPtr2[Ptr[Overdrive], Float, Unit], CFuncPtr2[Ptr[Overdrive], Float, Unit], CFuncPtr2[Ptr[Overdrive], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[Overdrive], Ptr[PDSynthSignalValue]], CFuncPtr2[Ptr[Overdrive], Float, Unit], CFuncPtr2[Ptr[Overdrive], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[Overdrive], Ptr[PDSynthSignalValue]]]
   object playdate_sound_effect_overdrive:
@@ -2589,7 +2589,7 @@ object structs:
       def getOffsetModulator_=(value: CFuncPtr1[Ptr[Overdrive], Ptr[PDSynthSignalValue]]): Unit = !struct.at9 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect_ringmodulator = CStruct5[CFuncPtr0[Ptr[RingModulator]], CFuncPtr1[Ptr[RingModulator], Unit], CFuncPtr2[Ptr[RingModulator], Float, Unit], CFuncPtr2[Ptr[RingModulator], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[RingModulator], Ptr[PDSynthSignalValue]]]
   object playdate_sound_effect_ringmodulator:
@@ -2616,7 +2616,7 @@ object structs:
       def getFrequencyModulator_=(value: CFuncPtr1[Ptr[RingModulator], Ptr[PDSynthSignalValue]]): Unit = !struct.at5 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_effect_twopolefilter = CStruct10[CFuncPtr0[Ptr[TwoPoleFilter]], CFuncPtr1[Ptr[TwoPoleFilter], Unit], CFuncPtr2[Ptr[TwoPoleFilter], TwoPoleFilterType, Unit], CFuncPtr2[Ptr[TwoPoleFilter], Float, Unit], CFuncPtr2[Ptr[TwoPoleFilter], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[TwoPoleFilter], Ptr[PDSynthSignalValue]], CFuncPtr2[Ptr[TwoPoleFilter], Float, Unit], CFuncPtr2[Ptr[TwoPoleFilter], Float, Unit], CFuncPtr2[Ptr[TwoPoleFilter], Ptr[PDSynthSignalValue], Unit], CFuncPtr1[Ptr[TwoPoleFilter], Ptr[PDSynthSignalValue]]]
   object playdate_sound_effect_twopolefilter:
@@ -2658,7 +2658,7 @@ object structs:
       def getResonanceModulator_=(value: CFuncPtr1[Ptr[TwoPoleFilter], Ptr[PDSynthSignalValue]]): Unit = !struct.at10 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_envelope = CStruct12[CFuncPtr4[Float, Float, Float, Float, Ptr[PDSynthEnvelope]], CFuncPtr1[Ptr[PDSynthEnvelope], Unit], CFuncPtr2[Ptr[PDSynthEnvelope], Float, Unit], CFuncPtr2[Ptr[PDSynthEnvelope], Float, Unit], CFuncPtr2[Ptr[PDSynthEnvelope], Float, Unit], CFuncPtr2[Ptr[PDSynthEnvelope], Float, Unit], CFuncPtr2[Ptr[PDSynthEnvelope], CInt, Unit], CFuncPtr2[Ptr[PDSynthEnvelope], CInt, Unit], CFuncPtr1[Ptr[PDSynthEnvelope], Float], CFuncPtr2[Ptr[PDSynthEnvelope], Float, Unit], CFuncPtr2[Ptr[PDSynthEnvelope], Float, Unit], CFuncPtr4[Ptr[PDSynthEnvelope], Float, MIDINote, MIDINote, Unit]]
   object playdate_sound_envelope:
@@ -2706,13 +2706,13 @@ object structs:
       def setRateScaling_=(value: CFuncPtr4[Ptr[PDSynthEnvelope], Float, MIDINote, MIDINote, Unit]): Unit = !struct.at12 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
-  opaque type playdate_sound_fileplayer = CStruct22[CFuncPtr0[Ptr[FilePlayer]], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr2[Ptr[FilePlayer], CString, CInt], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], CInt, CInt], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr3[Ptr[FilePlayer], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], CInt, Unit], CFuncPtr5[Ptr[FilePlayer], Float, Float, int32_t, sndCallbackProc, Unit], CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit]]
+  opaque type playdate_sound_fileplayer = CStruct22[CFuncPtr0[Ptr[FilePlayer]], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr2[Ptr[FilePlayer], Ptr[CUnsignedChar], CInt], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], CInt, CInt], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr3[Ptr[FilePlayer], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], CInt, Unit], CFuncPtr5[Ptr[FilePlayer], Float, Float, int32_t, sndCallbackProc, Unit], CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit]]
   object playdate_sound_fileplayer:
-    given _tag: Tag[playdate_sound_fileplayer] = Tag.materializeCStruct22Tag[CFuncPtr0[Ptr[FilePlayer]], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr2[Ptr[FilePlayer], CString, CInt], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], CInt, CInt], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr3[Ptr[FilePlayer], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], CInt, Unit], CFuncPtr5[Ptr[FilePlayer], Float, Float, int32_t, sndCallbackProc, Unit], CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit]]
+    given _tag: Tag[playdate_sound_fileplayer] = Tag.materializeCStruct22Tag[CFuncPtr0[Ptr[FilePlayer]], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr2[Ptr[FilePlayer], Ptr[CUnsignedChar], CInt], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], CInt, CInt], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr1[Ptr[FilePlayer], Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr3[Ptr[FilePlayer], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr2[Ptr[FilePlayer], Float, Unit], CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], CFuncPtr1[Ptr[FilePlayer], CInt], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr1[Ptr[FilePlayer], Float], CFuncPtr2[Ptr[FilePlayer], CInt, Unit], CFuncPtr5[Ptr[FilePlayer], Float, Float, int32_t, sndCallbackProc, Unit], CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit]]
     def apply()(using Zone): Ptr[playdate_sound_fileplayer] = scala.scalanative.unsafe.alloc[playdate_sound_fileplayer](1)
-    def apply(newPlayer : CFuncPtr0[Ptr[FilePlayer]], freePlayer : CFuncPtr1[Ptr[FilePlayer], Unit], loadIntoPlayer : CFuncPtr2[Ptr[FilePlayer], CString, CInt], setBufferLength : CFuncPtr2[Ptr[FilePlayer], Float, Unit], play : CFuncPtr2[Ptr[FilePlayer], CInt, CInt], isPlaying : CFuncPtr1[Ptr[FilePlayer], CInt], pause : CFuncPtr1[Ptr[FilePlayer], Unit], stop : CFuncPtr1[Ptr[FilePlayer], Unit], setVolume : CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], getVolume : CFuncPtr3[Ptr[FilePlayer], Ptr[Float], Ptr[Float], Unit], getLength : CFuncPtr1[Ptr[FilePlayer], Float], setOffset : CFuncPtr2[Ptr[FilePlayer], Float, Unit], setRate : CFuncPtr2[Ptr[FilePlayer], Float, Unit], setLoopRange : CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], didUnderrun : CFuncPtr1[Ptr[FilePlayer], CInt], setFinishCallback : CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], setLoopCallback : CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], getOffset : CFuncPtr1[Ptr[FilePlayer], Float], getRate : CFuncPtr1[Ptr[FilePlayer], Float], setStopOnUnderrun : CFuncPtr2[Ptr[FilePlayer], CInt, Unit], fadeVolume : CFuncPtr5[Ptr[FilePlayer], Float, Float, int32_t, sndCallbackProc, Unit], setMP3StreamSource : CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit])(using Zone): Ptr[playdate_sound_fileplayer] =
+    def apply(newPlayer : CFuncPtr0[Ptr[FilePlayer]], freePlayer : CFuncPtr1[Ptr[FilePlayer], Unit], loadIntoPlayer : CFuncPtr2[Ptr[FilePlayer], Ptr[CUnsignedChar], CInt], setBufferLength : CFuncPtr2[Ptr[FilePlayer], Float, Unit], play : CFuncPtr2[Ptr[FilePlayer], CInt, CInt], isPlaying : CFuncPtr1[Ptr[FilePlayer], CInt], pause : CFuncPtr1[Ptr[FilePlayer], Unit], stop : CFuncPtr1[Ptr[FilePlayer], Unit], setVolume : CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], getVolume : CFuncPtr3[Ptr[FilePlayer], Ptr[Float], Ptr[Float], Unit], getLength : CFuncPtr1[Ptr[FilePlayer], Float], setOffset : CFuncPtr2[Ptr[FilePlayer], Float, Unit], setRate : CFuncPtr2[Ptr[FilePlayer], Float, Unit], setLoopRange : CFuncPtr3[Ptr[FilePlayer], Float, Float, Unit], didUnderrun : CFuncPtr1[Ptr[FilePlayer], CInt], setFinishCallback : CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], setLoopCallback : CFuncPtr2[Ptr[FilePlayer], sndCallbackProc, Unit], getOffset : CFuncPtr1[Ptr[FilePlayer], Float], getRate : CFuncPtr1[Ptr[FilePlayer], Float], setStopOnUnderrun : CFuncPtr2[Ptr[FilePlayer], CInt, Unit], fadeVolume : CFuncPtr5[Ptr[FilePlayer], Float, Float, int32_t, sndCallbackProc, Unit], setMP3StreamSource : CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit])(using Zone): Ptr[playdate_sound_fileplayer] =
       val ____ptr = apply()
       (!____ptr).newPlayer = newPlayer
       (!____ptr).freePlayer = freePlayer
@@ -2742,8 +2742,8 @@ object structs:
       def newPlayer_=(value: CFuncPtr0[Ptr[FilePlayer]]): Unit = !struct.at1 = value
       def freePlayer : CFuncPtr1[Ptr[FilePlayer], Unit] = struct._2
       def freePlayer_=(value: CFuncPtr1[Ptr[FilePlayer], Unit]): Unit = !struct.at2 = value
-      def loadIntoPlayer : CFuncPtr2[Ptr[FilePlayer], CString, CInt] = struct._3
-      def loadIntoPlayer_=(value: CFuncPtr2[Ptr[FilePlayer], CString, CInt]): Unit = !struct.at3 = value
+      def loadIntoPlayer : CFuncPtr2[Ptr[FilePlayer], Ptr[CUnsignedChar], CInt] = struct._3
+      def loadIntoPlayer_=(value: CFuncPtr2[Ptr[FilePlayer], Ptr[CUnsignedChar], CInt]): Unit = !struct.at3 = value
       def setBufferLength : CFuncPtr2[Ptr[FilePlayer], Float, Unit] = struct._4
       def setBufferLength_=(value: CFuncPtr2[Ptr[FilePlayer], Float, Unit]): Unit = !struct.at4 = value
       def play : CFuncPtr2[Ptr[FilePlayer], CInt, CInt] = struct._5
@@ -2784,7 +2784,7 @@ object structs:
       def setMP3StreamSource_=(value: CFuncPtr4[Ptr[FilePlayer], CFuncPtr3[Ptr[uint8_t], CInt, Ptr[Byte], CInt], Ptr[Byte], Float, Unit]): Unit = !struct.at22 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_instrument = CStruct13[CFuncPtr0[Ptr[PDSynthInstrument]], CFuncPtr1[Ptr[PDSynthInstrument], Unit], CFuncPtr5[Ptr[PDSynthInstrument], Ptr[PDSynth], MIDINote, MIDINote, Float, CInt], CFuncPtr5[Ptr[PDSynthInstrument], Float, Float, Float, uint32_t, Ptr[PDSynth]], CFuncPtr5[Ptr[PDSynthInstrument], MIDINote, Float, Float, uint32_t, Ptr[PDSynth]], CFuncPtr2[Ptr[PDSynthInstrument], Float, Unit], CFuncPtr2[Ptr[PDSynthInstrument], Float, Unit], CFuncPtr2[Ptr[PDSynthInstrument], Float, Unit], CFuncPtr3[Ptr[PDSynthInstrument], MIDINote, uint32_t, Unit], CFuncPtr2[Ptr[PDSynthInstrument], uint32_t, Unit], CFuncPtr3[Ptr[PDSynthInstrument], Float, Float, Unit], CFuncPtr3[Ptr[PDSynthInstrument], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[PDSynthInstrument], CInt]]
   object playdate_sound_instrument:
@@ -2835,7 +2835,7 @@ object structs:
       def activeVoiceCount_=(value: CFuncPtr1[Ptr[PDSynthInstrument], CInt]): Unit = !struct.at13 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_lfo = CStruct14[CFuncPtr1[LFOType, Ptr[PDSynthLFO]], CFuncPtr1[Ptr[PDSynthLFO], Unit], CFuncPtr2[Ptr[PDSynthLFO], LFOType, Unit], CFuncPtr2[Ptr[PDSynthLFO], Float, Unit], CFuncPtr2[Ptr[PDSynthLFO], Float, Unit], CFuncPtr2[Ptr[PDSynthLFO], Float, Unit], CFuncPtr2[Ptr[PDSynthLFO], Float, Unit], CFuncPtr3[Ptr[PDSynthLFO], CInt, Ptr[Float], Unit], CFuncPtr4[Ptr[PDSynthLFO], CFuncPtr2[Ptr[PDSynthLFO], Ptr[Byte], Float], Ptr[Byte], CInt, Unit], CFuncPtr3[Ptr[PDSynthLFO], Float, Float, Unit], CFuncPtr2[Ptr[PDSynthLFO], CInt, Unit], CFuncPtr1[Ptr[PDSynthLFO], Float], CFuncPtr2[Ptr[PDSynthLFO], CInt, Unit], CFuncPtr2[Ptr[PDSynthLFO], Float, Unit]]
   object playdate_sound_lfo:
@@ -2889,13 +2889,13 @@ object structs:
       def setStartPhase_=(value: CFuncPtr2[Ptr[PDSynthLFO], Float, Unit]): Unit = !struct.at14 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
-  opaque type playdate_sound_sample = CStruct7[CFuncPtr1[CInt, Ptr[AudioSample]], CFuncPtr2[Ptr[AudioSample], CString, CInt], CFuncPtr1[CString, Ptr[AudioSample]], CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]], CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit], CFuncPtr1[Ptr[AudioSample], Unit], CFuncPtr1[Ptr[AudioSample], Float]]
+  opaque type playdate_sound_sample = CStruct7[CFuncPtr1[CInt, Ptr[AudioSample]], CFuncPtr2[Ptr[AudioSample], Ptr[CUnsignedChar], CInt], CFuncPtr1[Ptr[CUnsignedChar], Ptr[AudioSample]], CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]], CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit], CFuncPtr1[Ptr[AudioSample], Unit], CFuncPtr1[Ptr[AudioSample], Float]]
   object playdate_sound_sample:
-    given _tag: Tag[playdate_sound_sample] = Tag.materializeCStruct7Tag[CFuncPtr1[CInt, Ptr[AudioSample]], CFuncPtr2[Ptr[AudioSample], CString, CInt], CFuncPtr1[CString, Ptr[AudioSample]], CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]], CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit], CFuncPtr1[Ptr[AudioSample], Unit], CFuncPtr1[Ptr[AudioSample], Float]]
+    given _tag: Tag[playdate_sound_sample] = Tag.materializeCStruct7Tag[CFuncPtr1[CInt, Ptr[AudioSample]], CFuncPtr2[Ptr[AudioSample], Ptr[CUnsignedChar], CInt], CFuncPtr1[Ptr[CUnsignedChar], Ptr[AudioSample]], CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]], CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit], CFuncPtr1[Ptr[AudioSample], Unit], CFuncPtr1[Ptr[AudioSample], Float]]
     def apply()(using Zone): Ptr[playdate_sound_sample] = scala.scalanative.unsafe.alloc[playdate_sound_sample](1)
-    def apply(newSampleBuffer : CFuncPtr1[CInt, Ptr[AudioSample]], loadIntoSample : CFuncPtr2[Ptr[AudioSample], CString, CInt], load : CFuncPtr1[CString, Ptr[AudioSample]], newSampleFromData : CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]], getData : CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit], freeSample : CFuncPtr1[Ptr[AudioSample], Unit], getLength : CFuncPtr1[Ptr[AudioSample], Float])(using Zone): Ptr[playdate_sound_sample] =
+    def apply(newSampleBuffer : CFuncPtr1[CInt, Ptr[AudioSample]], loadIntoSample : CFuncPtr2[Ptr[AudioSample], Ptr[CUnsignedChar], CInt], load : CFuncPtr1[Ptr[CUnsignedChar], Ptr[AudioSample]], newSampleFromData : CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]], getData : CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit], freeSample : CFuncPtr1[Ptr[AudioSample], Unit], getLength : CFuncPtr1[Ptr[AudioSample], Float])(using Zone): Ptr[playdate_sound_sample] =
       val ____ptr = apply()
       (!____ptr).newSampleBuffer = newSampleBuffer
       (!____ptr).loadIntoSample = loadIntoSample
@@ -2908,10 +2908,10 @@ object structs:
     extension (struct: playdate_sound_sample)
       def newSampleBuffer : CFuncPtr1[CInt, Ptr[AudioSample]] = struct._1
       def newSampleBuffer_=(value: CFuncPtr1[CInt, Ptr[AudioSample]]): Unit = !struct.at1 = value
-      def loadIntoSample : CFuncPtr2[Ptr[AudioSample], CString, CInt] = struct._2
-      def loadIntoSample_=(value: CFuncPtr2[Ptr[AudioSample], CString, CInt]): Unit = !struct.at2 = value
-      def load : CFuncPtr1[CString, Ptr[AudioSample]] = struct._3
-      def load_=(value: CFuncPtr1[CString, Ptr[AudioSample]]): Unit = !struct.at3 = value
+      def loadIntoSample : CFuncPtr2[Ptr[AudioSample], Ptr[CUnsignedChar], CInt] = struct._2
+      def loadIntoSample_=(value: CFuncPtr2[Ptr[AudioSample], Ptr[CUnsignedChar], CInt]): Unit = !struct.at2 = value
+      def load : CFuncPtr1[Ptr[CUnsignedChar], Ptr[AudioSample]] = struct._3
+      def load_=(value: CFuncPtr1[Ptr[CUnsignedChar], Ptr[AudioSample]]): Unit = !struct.at3 = value
       def newSampleFromData : CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]] = struct._4
       def newSampleFromData_=(value: CFuncPtr4[Ptr[uint8_t], SoundFormat, uint32_t, CInt, Ptr[AudioSample]]): Unit = !struct.at4 = value
       def getData : CFuncPtr5[Ptr[AudioSample], Ptr[Ptr[uint8_t]], Ptr[SoundFormat], Ptr[uint32_t], Ptr[uint32_t], Unit] = struct._5
@@ -2922,7 +2922,7 @@ object structs:
       def getLength_=(value: CFuncPtr1[Ptr[AudioSample], Float]): Unit = !struct.at7 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_sampleplayer = CStruct17[CFuncPtr0[Ptr[SamplePlayer]], CFuncPtr1[Ptr[SamplePlayer], Unit], CFuncPtr2[Ptr[SamplePlayer], Ptr[AudioSample], Unit], CFuncPtr3[Ptr[SamplePlayer], CInt, Float, CInt], CFuncPtr1[Ptr[SamplePlayer], CInt], CFuncPtr1[Ptr[SamplePlayer], Unit], CFuncPtr3[Ptr[SamplePlayer], Float, Float, Unit], CFuncPtr3[Ptr[SamplePlayer], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[SamplePlayer], Float], CFuncPtr2[Ptr[SamplePlayer], Float, Unit], CFuncPtr2[Ptr[SamplePlayer], Float, Unit], CFuncPtr3[Ptr[SamplePlayer], CInt, CInt, Unit], CFuncPtr2[Ptr[SamplePlayer], sndCallbackProc, Unit], CFuncPtr2[Ptr[SamplePlayer], sndCallbackProc, Unit], CFuncPtr1[Ptr[SamplePlayer], Float], CFuncPtr1[Ptr[SamplePlayer], Float], CFuncPtr2[Ptr[SamplePlayer], CInt, Unit]]
   object playdate_sound_sampleplayer:
@@ -2985,13 +2985,13 @@ object structs:
       def setPaused_=(value: CFuncPtr2[Ptr[SamplePlayer], CInt, Unit]): Unit = !struct.at17 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
-  opaque type playdate_sound_sequence = CStruct19[CFuncPtr0[Ptr[SoundSequence]], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], CString, CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr2[Ptr[SoundSequence], Float, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], Ptr[SequenceTrack]], CFuncPtr2[Ptr[SoundSequence], CUnsignedInt, Ptr[SequenceTrack]], CFuncPtr3[Ptr[SoundSequence], Ptr[SequenceTrack], CUnsignedInt, Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr3[Ptr[SoundSequence], SequenceFinishedCallback, Ptr[Byte], Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], Ptr[CInt], CInt], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit]]
+  opaque type playdate_sound_sequence = CStruct19[CFuncPtr0[Ptr[SoundSequence]], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], Ptr[CUnsignedChar], CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr2[Ptr[SoundSequence], Float, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], Ptr[SequenceTrack]], CFuncPtr2[Ptr[SoundSequence], CUnsignedInt, Ptr[SequenceTrack]], CFuncPtr3[Ptr[SoundSequence], Ptr[SequenceTrack], CUnsignedInt, Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr3[Ptr[SoundSequence], SequenceFinishedCallback, Ptr[Byte], Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], Ptr[CInt], CInt], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit]]
   object playdate_sound_sequence:
-    given _tag: Tag[playdate_sound_sequence] = Tag.materializeCStruct19Tag[CFuncPtr0[Ptr[SoundSequence]], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], CString, CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr2[Ptr[SoundSequence], Float, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], Ptr[SequenceTrack]], CFuncPtr2[Ptr[SoundSequence], CUnsignedInt, Ptr[SequenceTrack]], CFuncPtr3[Ptr[SoundSequence], Ptr[SequenceTrack], CUnsignedInt, Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr3[Ptr[SoundSequence], SequenceFinishedCallback, Ptr[Byte], Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], Ptr[CInt], CInt], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit]]
+    given _tag: Tag[playdate_sound_sequence] = Tag.materializeCStruct19Tag[CFuncPtr0[Ptr[SoundSequence]], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], Ptr[CUnsignedChar], CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr2[Ptr[SoundSequence], Float, Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], Ptr[SequenceTrack]], CFuncPtr2[Ptr[SoundSequence], CUnsignedInt, Ptr[SequenceTrack]], CFuncPtr3[Ptr[SoundSequence], Ptr[SequenceTrack], CUnsignedInt, Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr1[Ptr[SoundSequence], CInt], CFuncPtr1[Ptr[SoundSequence], uint32_t], CFuncPtr3[Ptr[SoundSequence], SequenceFinishedCallback, Ptr[Byte], Unit], CFuncPtr1[Ptr[SoundSequence], Unit], CFuncPtr2[Ptr[SoundSequence], Ptr[CInt], CInt], CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit]]
     def apply()(using Zone): Ptr[playdate_sound_sequence] = scala.scalanative.unsafe.alloc[playdate_sound_sequence](1)
-    def apply(newSequence : CFuncPtr0[Ptr[SoundSequence]], freeSequence : CFuncPtr1[Ptr[SoundSequence], Unit], loadMidiFile : CFuncPtr2[Ptr[SoundSequence], CString, CInt], getTime : CFuncPtr1[Ptr[SoundSequence], uint32_t], setTime : CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit], setLoops : CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit], getTempo : CFuncPtr1[Ptr[SoundSequence], CInt], setTempo : CFuncPtr2[Ptr[SoundSequence], Float, Unit], getTrackCount : CFuncPtr1[Ptr[SoundSequence], CInt], addTrack : CFuncPtr1[Ptr[SoundSequence], Ptr[SequenceTrack]], getTrackAtIndex : CFuncPtr2[Ptr[SoundSequence], CUnsignedInt, Ptr[SequenceTrack]], setTrackAtIndex : CFuncPtr3[Ptr[SoundSequence], Ptr[SequenceTrack], CUnsignedInt, Unit], allNotesOff : CFuncPtr1[Ptr[SoundSequence], Unit], isPlaying : CFuncPtr1[Ptr[SoundSequence], CInt], getLength : CFuncPtr1[Ptr[SoundSequence], uint32_t], play : CFuncPtr3[Ptr[SoundSequence], SequenceFinishedCallback, Ptr[Byte], Unit], stop : CFuncPtr1[Ptr[SoundSequence], Unit], getCurrentStep : CFuncPtr2[Ptr[SoundSequence], Ptr[CInt], CInt], setCurrentStep : CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit])(using Zone): Ptr[playdate_sound_sequence] =
+    def apply(newSequence : CFuncPtr0[Ptr[SoundSequence]], freeSequence : CFuncPtr1[Ptr[SoundSequence], Unit], loadMidiFile : CFuncPtr2[Ptr[SoundSequence], Ptr[CUnsignedChar], CInt], getTime : CFuncPtr1[Ptr[SoundSequence], uint32_t], setTime : CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit], setLoops : CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit], getTempo : CFuncPtr1[Ptr[SoundSequence], CInt], setTempo : CFuncPtr2[Ptr[SoundSequence], Float, Unit], getTrackCount : CFuncPtr1[Ptr[SoundSequence], CInt], addTrack : CFuncPtr1[Ptr[SoundSequence], Ptr[SequenceTrack]], getTrackAtIndex : CFuncPtr2[Ptr[SoundSequence], CUnsignedInt, Ptr[SequenceTrack]], setTrackAtIndex : CFuncPtr3[Ptr[SoundSequence], Ptr[SequenceTrack], CUnsignedInt, Unit], allNotesOff : CFuncPtr1[Ptr[SoundSequence], Unit], isPlaying : CFuncPtr1[Ptr[SoundSequence], CInt], getLength : CFuncPtr1[Ptr[SoundSequence], uint32_t], play : CFuncPtr3[Ptr[SoundSequence], SequenceFinishedCallback, Ptr[Byte], Unit], stop : CFuncPtr1[Ptr[SoundSequence], Unit], getCurrentStep : CFuncPtr2[Ptr[SoundSequence], Ptr[CInt], CInt], setCurrentStep : CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit])(using Zone): Ptr[playdate_sound_sequence] =
       val ____ptr = apply()
       (!____ptr).newSequence = newSequence
       (!____ptr).freeSequence = freeSequence
@@ -3018,8 +3018,8 @@ object structs:
       def newSequence_=(value: CFuncPtr0[Ptr[SoundSequence]]): Unit = !struct.at1 = value
       def freeSequence : CFuncPtr1[Ptr[SoundSequence], Unit] = struct._2
       def freeSequence_=(value: CFuncPtr1[Ptr[SoundSequence], Unit]): Unit = !struct.at2 = value
-      def loadMidiFile : CFuncPtr2[Ptr[SoundSequence], CString, CInt] = struct._3
-      def loadMidiFile_=(value: CFuncPtr2[Ptr[SoundSequence], CString, CInt]): Unit = !struct.at3 = value
+      def loadMidiFile : CFuncPtr2[Ptr[SoundSequence], Ptr[CUnsignedChar], CInt] = struct._3
+      def loadMidiFile_=(value: CFuncPtr2[Ptr[SoundSequence], Ptr[CUnsignedChar], CInt]): Unit = !struct.at3 = value
       def getTime : CFuncPtr1[Ptr[SoundSequence], uint32_t] = struct._4
       def getTime_=(value: CFuncPtr1[Ptr[SoundSequence], uint32_t]): Unit = !struct.at4 = value
       def setTime : CFuncPtr2[Ptr[SoundSequence], uint32_t, Unit] = struct._5
@@ -3054,7 +3054,7 @@ object structs:
       def setCurrentStep_=(value: CFuncPtr4[Ptr[SoundSequence], CInt, CInt, CInt, Unit]): Unit = !struct.at19 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_signal = CStruct5[CFuncPtr5[signalStepFunc, signalNoteOnFunc, signalNoteOffFunc, signalDeallocFunc, Ptr[Byte], Ptr[PDSynthSignal]], CFuncPtr1[Ptr[PDSynthSignal], Unit], CFuncPtr1[Ptr[PDSynthSignal], Float], CFuncPtr2[Ptr[PDSynthSignal], Float, Unit], CFuncPtr2[Ptr[PDSynthSignal], Float, Unit]]
   object playdate_sound_signal:
@@ -3081,7 +3081,7 @@ object structs:
       def setValueOffset_=(value: CFuncPtr2[Ptr[PDSynthSignal], Float, Unit]): Unit = !struct.at5 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_source = CStruct4[CFuncPtr3[Ptr[SoundSource], Float, Float, Unit], CFuncPtr3[Ptr[SoundSource], Ptr[Float], Ptr[Float], Unit], CFuncPtr1[Ptr[SoundSource], CInt], CFuncPtr2[Ptr[SoundSource], sndCallbackProc, Unit]]
   object playdate_sound_source:
@@ -3105,11 +3105,11 @@ object structs:
       def setFinishCallback_=(value: CFuncPtr2[Ptr[SoundSource], sndCallbackProc, Unit]): Unit = !struct.at4 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
-  opaque type playdate_sound_synth = CArray[CChar, Nat.Digit3[Nat._2, Nat._1, Nat._6]]
+  opaque type playdate_sound_synth = CArray[CChar, Nat.Digit3[Nat._1, Nat._0, Nat._8]]
   object playdate_sound_synth:
-    given _tag: Tag[playdate_sound_synth] = Tag.CArray[CChar, Nat.Digit3[Nat._2, Nat._1, Nat._6]](Tag.Byte, Tag.Digit3[Nat._2, Nat._1, Nat._6](Tag.Nat2, Tag.Nat1, Tag.Nat6))
+    given _tag: Tag[playdate_sound_synth] = Tag.CArray[CChar, Nat.Digit3[Nat._1, Nat._0, Nat._8]](Tag.Byte, Tag.Digit3[Nat._1, Nat._0, Nat._8](Tag.Nat1, Tag.Nat0, Tag.Nat8))
     def apply()(using Zone): Ptr[playdate_sound_synth] = scala.scalanative.unsafe.alloc[playdate_sound_synth](1)
     def apply(newSynth : CFuncPtr0[Ptr[PDSynth]], freeSynth : CFuncPtr1[Ptr[PDSynth], Unit], setWaveform : CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit], setGenerator : CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit], setSample : CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit], setAttackTime : CFuncPtr2[Ptr[PDSynth], Float, Unit], setDecayTime : CFuncPtr2[Ptr[PDSynth], Float, Unit], setSustainLevel : CFuncPtr2[Ptr[PDSynth], Float, Unit], setReleaseTime : CFuncPtr2[Ptr[PDSynth], Float, Unit], setTranspose : CFuncPtr2[Ptr[PDSynth], Float, Unit], setFrequencyModulator : CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit], getFrequencyModulator : CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]], setAmplitudeModulator : CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit], getAmplitudeModulator : CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]], getParameterCount : CFuncPtr1[Ptr[PDSynth], CInt], setParameter : CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt], setParameterModulator : CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit], getParameterModulator : CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]], playNote : CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit], playMIDINote : CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit], noteOff : CFuncPtr2[Ptr[PDSynth], uint32_t, Unit], stop : CFuncPtr1[Ptr[PDSynth], Unit], setVolume : CFuncPtr3[Ptr[PDSynth], Float, Float, Unit], getVolume : CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit], isPlaying : CFuncPtr1[Ptr[PDSynth], CInt], getEnvelope : CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]], setWavetable : CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt])(using Zone): Ptr[playdate_sound_synth] =
       val ____ptr = apply()
@@ -3144,61 +3144,61 @@ object structs:
     extension (struct: playdate_sound_synth)
       def newSynth: CFuncPtr0[Ptr[PDSynth]] = !struct.at(0).asInstanceOf[Ptr[CFuncPtr0[Ptr[PDSynth]]]]
       def newSynth_=(value: CFuncPtr0[Ptr[PDSynth]]): Unit = !struct.at(0).asInstanceOf[Ptr[CFuncPtr0[Ptr[PDSynth]]]] = value
-      def freeSynth: CFuncPtr1[Ptr[PDSynth], Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]]
-      def freeSynth_=(value: CFuncPtr1[Ptr[PDSynth], Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]] = value
-      def setWaveform: CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit]]]
-      def setWaveform_=(value: CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit]]] = value
-      def setGenerator: CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit]]]
-      def setGenerator_=(value: CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit]]] = value
-      def setSample: CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit]]]
-      def setSample_=(value: CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit]]] = value
-      def setAttackTime: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
-      def setAttackTime_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
-      def setDecayTime: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
-      def setDecayTime_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
-      def setSustainLevel: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
-      def setSustainLevel_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
-      def setReleaseTime: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
-      def setReleaseTime_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
-      def setTranspose: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
-      def setTranspose_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
-      def setFrequencyModulator: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]]
-      def setFrequencyModulator_=(value: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]] = value
-      def getFrequencyModulator: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]]
-      def getFrequencyModulator_=(value: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]] = value
-      def setAmplitudeModulator: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]]
-      def setAmplitudeModulator_=(value: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]] = value
-      def getAmplitudeModulator: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]]
-      def getAmplitudeModulator_=(value: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]] = value
-      def getParameterCount: CFuncPtr1[Ptr[PDSynth], CInt] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]]
-      def getParameterCount_=(value: CFuncPtr1[Ptr[PDSynth], CInt]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]] = value
-      def setParameter: CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt]]]
-      def setParameter_=(value: CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt]]] = value
-      def setParameterModulator: CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit]]]
-      def setParameterModulator_=(value: CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit]]] = value
-      def getParameterModulator: CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]]]]
-      def getParameterModulator_=(value: CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]]]] = value
-      def playNote: CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit]]]
-      def playNote_=(value: CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit]]] = value
-      def playMIDINote: CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit]]]
-      def playMIDINote_=(value: CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit]]] = value
-      def noteOff: CFuncPtr2[Ptr[PDSynth], uint32_t, Unit] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], uint32_t, Unit]]]
-      def noteOff_=(value: CFuncPtr2[Ptr[PDSynth], uint32_t, Unit]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], uint32_t, Unit]]] = value
-      def stop: CFuncPtr1[Ptr[PDSynth], Unit] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]]
-      def stop_=(value: CFuncPtr1[Ptr[PDSynth], Unit]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]] = value
-      def setVolume: CFuncPtr3[Ptr[PDSynth], Float, Float, Unit] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Float, Float, Unit]]]
-      def setVolume_=(value: CFuncPtr3[Ptr[PDSynth], Float, Float, Unit]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Float, Float, Unit]]] = value
-      def getVolume: CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit]]]
-      def getVolume_=(value: CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit]]] = value
-      def isPlaying: CFuncPtr1[Ptr[PDSynth], CInt] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]]
-      def isPlaying_=(value: CFuncPtr1[Ptr[PDSynth], CInt]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]] = value
-      def getEnvelope: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]]]]
-      def getEnvelope_=(value: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]]]] = value
-      def setWavetable: CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt]]]
-      def setWavetable_=(value: CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt]]] = value
+      def freeSynth: CFuncPtr1[Ptr[PDSynth], Unit] = !struct.at(4).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]]
+      def freeSynth_=(value: CFuncPtr1[Ptr[PDSynth], Unit]): Unit = !struct.at(4).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]] = value
+      def setWaveform: CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit]]]
+      def setWaveform_=(value: CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], SoundWaveform, Unit]]] = value
+      def setGenerator: CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit] = !struct.at(12).asInstanceOf[Ptr[CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit]]]
+      def setGenerator_=(value: CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit]): Unit = !struct.at(12).asInstanceOf[Ptr[CFuncPtr8[Ptr[PDSynth], CInt, synthRenderFunc, synthNoteOnFunc, synthReleaseFunc, synthSetParameterFunc, synthDeallocFunc, Ptr[Byte], Unit]]] = value
+      def setSample: CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit]]]
+      def setSample_=(value: CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr4[Ptr[PDSynth], Ptr[AudioSample], uint32_t, uint32_t, Unit]]] = value
+      def setAttackTime: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(20).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
+      def setAttackTime_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(20).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
+      def setDecayTime: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
+      def setDecayTime_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
+      def setSustainLevel: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(28).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
+      def setSustainLevel_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(28).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
+      def setReleaseTime: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
+      def setReleaseTime_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
+      def setTranspose: CFuncPtr2[Ptr[PDSynth], Float, Unit] = !struct.at(36).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]]
+      def setTranspose_=(value: CFuncPtr2[Ptr[PDSynth], Float, Unit]): Unit = !struct.at(36).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Float, Unit]]] = value
+      def setFrequencyModulator: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]]
+      def setFrequencyModulator_=(value: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]] = value
+      def getFrequencyModulator: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]] = !struct.at(44).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]]
+      def getFrequencyModulator_=(value: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]): Unit = !struct.at(44).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]] = value
+      def setAmplitudeModulator: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]]
+      def setAmplitudeModulator_=(value: CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], Ptr[PDSynthSignalValue], Unit]]] = value
+      def getAmplitudeModulator: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]] = !struct.at(52).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]]
+      def getAmplitudeModulator_=(value: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]): Unit = !struct.at(52).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthSignalValue]]]] = value
+      def getParameterCount: CFuncPtr1[Ptr[PDSynth], CInt] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]]
+      def getParameterCount_=(value: CFuncPtr1[Ptr[PDSynth], CInt]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]] = value
+      def setParameter: CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt] = !struct.at(60).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt]]]
+      def setParameter_=(value: CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt]): Unit = !struct.at(60).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Float, CInt]]] = value
+      def setParameterModulator: CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit]]]
+      def setParameterModulator_=(value: CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue], Unit]]] = value
+      def getParameterModulator: CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]] = !struct.at(68).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]]]]
+      def getParameterModulator_=(value: CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]]): Unit = !struct.at(68).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], CInt, Ptr[PDSynthSignalValue]]]] = value
+      def playNote: CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit]]]
+      def playNote_=(value: CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Float, Float, Float, uint32_t, Unit]]] = value
+      def playMIDINote: CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit] = !struct.at(76).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit]]]
+      def playMIDINote_=(value: CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit]): Unit = !struct.at(76).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], MIDINote, Float, Float, uint32_t, Unit]]] = value
+      def noteOff: CFuncPtr2[Ptr[PDSynth], uint32_t, Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], uint32_t, Unit]]]
+      def noteOff_=(value: CFuncPtr2[Ptr[PDSynth], uint32_t, Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDSynth], uint32_t, Unit]]] = value
+      def stop: CFuncPtr1[Ptr[PDSynth], Unit] = !struct.at(84).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]]
+      def stop_=(value: CFuncPtr1[Ptr[PDSynth], Unit]): Unit = !struct.at(84).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Unit]]] = value
+      def setVolume: CFuncPtr3[Ptr[PDSynth], Float, Float, Unit] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Float, Float, Unit]]]
+      def setVolume_=(value: CFuncPtr3[Ptr[PDSynth], Float, Float, Unit]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Float, Float, Unit]]] = value
+      def getVolume: CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit] = !struct.at(92).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit]]]
+      def getVolume_=(value: CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(92).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDSynth], Ptr[Float], Ptr[Float], Unit]]] = value
+      def isPlaying: CFuncPtr1[Ptr[PDSynth], CInt] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]]
+      def isPlaying_=(value: CFuncPtr1[Ptr[PDSynth], CInt]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], CInt]]] = value
+      def getEnvelope: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]] = !struct.at(100).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]]]]
+      def getEnvelope_=(value: CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]]): Unit = !struct.at(100).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDSynth], Ptr[PDSynthEnvelope]]]] = value
+      def setWavetable: CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt]]]
+      def setWavetable_=(value: CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr5[Ptr[PDSynth], Ptr[AudioSample], CInt, CInt, CInt, CInt]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   opaque type playdate_sound_track = CStruct17[CFuncPtr0[Ptr[SequenceTrack]], CFuncPtr1[Ptr[SequenceTrack], Unit], CFuncPtr2[Ptr[SequenceTrack], Ptr[PDSynthInstrument], Unit], CFuncPtr1[Ptr[SequenceTrack], Ptr[PDSynthInstrument]], CFuncPtr5[Ptr[SequenceTrack], uint32_t, uint32_t, MIDINote, Float, Unit], CFuncPtr3[Ptr[SequenceTrack], uint32_t, MIDINote, Unit], CFuncPtr1[Ptr[SequenceTrack], Unit], CFuncPtr1[Ptr[SequenceTrack], CInt], CFuncPtr2[Ptr[SequenceTrack], CInt, Ptr[ControlSignal]], CFuncPtr1[Ptr[SequenceTrack], Unit], CFuncPtr1[Ptr[SequenceTrack], CInt], CFuncPtr1[Ptr[SequenceTrack], CInt], CFuncPtr2[Ptr[SequenceTrack], CInt, Unit], CFuncPtr1[Ptr[SequenceTrack], uint32_t], CFuncPtr2[Ptr[SequenceTrack], uint32_t, CInt], CFuncPtr6[Ptr[SequenceTrack], CInt, Ptr[uint32_t], Ptr[uint32_t], Ptr[MIDINote], Ptr[Float], CInt], CFuncPtr3[Ptr[SequenceTrack], CInt, CInt, Ptr[ControlSignal]]]
   object playdate_sound_track:
@@ -3261,11 +3261,11 @@ object structs:
       def getSignalForController_=(value: CFuncPtr3[Ptr[SequenceTrack], CInt, CInt, Ptr[ControlSignal]]): Unit = !struct.at17 = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
-  opaque type playdate_sprite = CArray[CChar, Nat.Digit3[Nat._5, Nat._0, Nat._4]]
+  opaque type playdate_sprite = CArray[CChar, Nat.Digit3[Nat._2, Nat._5, Nat._2]]
   object playdate_sprite:
-    given _tag: Tag[playdate_sprite] = Tag.CArray[CChar, Nat.Digit3[Nat._5, Nat._0, Nat._4]](Tag.Byte, Tag.Digit3[Nat._5, Nat._0, Nat._4](Tag.Nat5, Tag.Nat0, Tag.Nat4))
+    given _tag: Tag[playdate_sprite] = Tag.CArray[CChar, Nat.Digit3[Nat._2, Nat._5, Nat._2]](Tag.Byte, Tag.Digit3[Nat._2, Nat._5, Nat._2](Tag.Nat2, Tag.Nat5, Tag.Nat2))
     def apply()(using Zone): Ptr[playdate_sprite] = scala.scalanative.unsafe.alloc[playdate_sprite](1)
     def apply(setAlwaysRedraw : CFuncPtr1[CInt, Unit], addDirtyRect : CFuncPtr1[LCDRect, Unit], drawSprites : CFuncPtr0[Unit], updateAndDrawSprites : CFuncPtr0[Unit], newSprite : CFuncPtr0[Ptr[LCDSprite]], freeSprite : CFuncPtr1[Ptr[LCDSprite], Unit], copy : CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]], addSprite : CFuncPtr1[Ptr[LCDSprite], Unit], removeSprite : CFuncPtr1[Ptr[LCDSprite], Unit], removeSprites : CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit], removeAllSprites : CFuncPtr0[Unit], getSpriteCount : CFuncPtr0[CInt], setBounds : CFuncPtr2[Ptr[LCDSprite], PDRect, Unit], getBounds : CFuncPtr1[Ptr[LCDSprite], PDRect], moveTo : CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit], moveBy : CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit], setImage : CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit], getImage : CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]], setSize : CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit], setZIndex : CFuncPtr2[Ptr[LCDSprite], int16_t, Unit], getZIndex : CFuncPtr1[Ptr[LCDSprite], int16_t], setDrawMode : CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit], setImageFlip : CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit], getImageFlip : CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip], setStencil : CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit], setClipRect : CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit], clearClipRect : CFuncPtr1[Ptr[LCDSprite], Unit], setClipRectsInRange : CFuncPtr3[LCDRect, CInt, CInt, Unit], clearClipRectsInRange : CFuncPtr2[CInt, CInt, Unit], setUpdatesEnabled : CFuncPtr2[Ptr[LCDSprite], CInt, Unit], updatesEnabled : CFuncPtr1[Ptr[LCDSprite], CInt], setCollisionsEnabled : CFuncPtr2[Ptr[LCDSprite], CInt, Unit], collisionsEnabled : CFuncPtr1[Ptr[LCDSprite], CInt], setVisible : CFuncPtr2[Ptr[LCDSprite], CInt, Unit], isVisible : CFuncPtr1[Ptr[LCDSprite], CInt], setOpaque : CFuncPtr2[Ptr[LCDSprite], CInt, Unit], markDirty : CFuncPtr1[Ptr[LCDSprite], Unit], setTag : CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit], getTag : CFuncPtr1[Ptr[LCDSprite], uint8_t], setIgnoresDrawOffset : CFuncPtr2[Ptr[LCDSprite], CInt, Unit], setUpdateFunction : CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit], setDrawFunction : CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit], getPosition : CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit], resetCollisionWorld : CFuncPtr0[Unit], setCollideRect : CFuncPtr2[Ptr[LCDSprite], PDRect, Unit], getCollideRect : CFuncPtr1[Ptr[LCDSprite], PDRect], clearCollideRect : CFuncPtr1[Ptr[LCDSprite], Unit], setCollisionResponseFunction : CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit], checkCollisions : CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]], moveWithCollisions : CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]], querySpritesAtPoint : CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]], querySpritesInRect : CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]], querySpritesAlongLine : CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]], querySpriteInfoAlongLine : CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]], overlappingSprites : CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]], allOverlappingSprites : CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]], setStencilPattern : CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit], clearStencil : CFuncPtr1[Ptr[LCDSprite], Unit], setUserdata : CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit], getUserdata : CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]], setStencilImage : CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit], setCenter : CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit], getCenter : CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit])(using Zone): Ptr[playdate_sprite] =
       val ____ptr = apply()
@@ -3336,139 +3336,139 @@ object structs:
     extension (struct: playdate_sprite)
       def setAlwaysRedraw: CFuncPtr1[CInt, Unit] = !struct.at(0).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
       def setAlwaysRedraw_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(0).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
-      def addDirtyRect: CFuncPtr1[LCDRect, Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[LCDRect, Unit]]]
-      def addDirtyRect_=(value: CFuncPtr1[LCDRect, Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[LCDRect, Unit]]] = value
-      def drawSprites: CFuncPtr0[Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def drawSprites_=(value: CFuncPtr0[Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def updateAndDrawSprites: CFuncPtr0[Unit] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def updateAndDrawSprites_=(value: CFuncPtr0[Unit]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def newSprite: CFuncPtr0[Ptr[LCDSprite]] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDSprite]]]]
-      def newSprite_=(value: CFuncPtr0[Ptr[LCDSprite]]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDSprite]]]] = value
-      def freeSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def freeSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def copy: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]]]]
-      def copy_=(value: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]]]] = value
-      def addSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def addSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def removeSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def removeSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def removeSprites: CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit]]]
-      def removeSprites_=(value: CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit]]] = value
-      def removeAllSprites: CFuncPtr0[Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def removeAllSprites_=(value: CFuncPtr0[Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def getSpriteCount: CFuncPtr0[CInt] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def getSpriteCount_=(value: CFuncPtr0[CInt]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def setBounds: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]]
-      def setBounds_=(value: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]] = value
-      def getBounds: CFuncPtr1[Ptr[LCDSprite], PDRect] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]]
-      def getBounds_=(value: CFuncPtr1[Ptr[LCDSprite], PDRect]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]] = value
-      def moveTo: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
-      def moveTo_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
-      def moveBy: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
-      def moveBy_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
-      def setImage: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit]]]
-      def setImage_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit]]] = value
-      def getImage: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]]]]
-      def getImage_=(value: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]]]] = value
-      def setSize: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
-      def setSize_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
-      def setZIndex: CFuncPtr2[Ptr[LCDSprite], int16_t, Unit] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], int16_t, Unit]]]
-      def setZIndex_=(value: CFuncPtr2[Ptr[LCDSprite], int16_t, Unit]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], int16_t, Unit]]] = value
-      def getZIndex: CFuncPtr1[Ptr[LCDSprite], int16_t] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], int16_t]]]
-      def getZIndex_=(value: CFuncPtr1[Ptr[LCDSprite], int16_t]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], int16_t]]] = value
-      def setDrawMode: CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit]]]
-      def setDrawMode_=(value: CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit]]] = value
-      def setImageFlip: CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit]]]
-      def setImageFlip_=(value: CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit]]] = value
-      def getImageFlip: CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip]]]
-      def getImageFlip_=(value: CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip]]] = value
-      def setStencil: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit]]]
-      def setStencil_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit]]] = value
-      def setClipRect: CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit]]]
-      def setClipRect_=(value: CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit]]] = value
-      def clearClipRect: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def clearClipRect_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def setClipRectsInRange: CFuncPtr3[LCDRect, CInt, CInt, Unit] = !struct.at(216).asInstanceOf[Ptr[CFuncPtr3[LCDRect, CInt, CInt, Unit]]]
-      def setClipRectsInRange_=(value: CFuncPtr3[LCDRect, CInt, CInt, Unit]): Unit = !struct.at(216).asInstanceOf[Ptr[CFuncPtr3[LCDRect, CInt, CInt, Unit]]] = value
-      def clearClipRectsInRange: CFuncPtr2[CInt, CInt, Unit] = !struct.at(224).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
-      def clearClipRectsInRange_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(224).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
-      def setUpdatesEnabled: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
-      def setUpdatesEnabled_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
-      def updatesEnabled: CFuncPtr1[Ptr[LCDSprite], CInt] = !struct.at(240).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]]
-      def updatesEnabled_=(value: CFuncPtr1[Ptr[LCDSprite], CInt]): Unit = !struct.at(240).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]] = value
-      def setCollisionsEnabled: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(248).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
-      def setCollisionsEnabled_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(248).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
-      def collisionsEnabled: CFuncPtr1[Ptr[LCDSprite], CInt] = !struct.at(256).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]]
-      def collisionsEnabled_=(value: CFuncPtr1[Ptr[LCDSprite], CInt]): Unit = !struct.at(256).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]] = value
-      def setVisible: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(264).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
-      def setVisible_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(264).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
-      def isVisible: CFuncPtr1[Ptr[LCDSprite], CInt] = !struct.at(272).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]]
-      def isVisible_=(value: CFuncPtr1[Ptr[LCDSprite], CInt]): Unit = !struct.at(272).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]] = value
-      def setOpaque: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(280).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
-      def setOpaque_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(280).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
-      def markDirty: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(288).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def markDirty_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(288).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def setTag: CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit] = !struct.at(296).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit]]]
-      def setTag_=(value: CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit]): Unit = !struct.at(296).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit]]] = value
-      def getTag: CFuncPtr1[Ptr[LCDSprite], uint8_t] = !struct.at(304).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], uint8_t]]]
-      def getTag_=(value: CFuncPtr1[Ptr[LCDSprite], uint8_t]): Unit = !struct.at(304).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], uint8_t]]] = value
-      def setIgnoresDrawOffset: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(312).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
-      def setIgnoresDrawOffset_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(312).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
-      def setUpdateFunction: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit] = !struct.at(320).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit]]]
-      def setUpdateFunction_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit]): Unit = !struct.at(320).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit]]] = value
-      def setDrawFunction: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit] = !struct.at(328).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit]]]
-      def setDrawFunction_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit]): Unit = !struct.at(328).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit]]] = value
-      def getPosition: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit] = !struct.at(336).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]]
-      def getPosition_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(336).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]] = value
-      def resetCollisionWorld: CFuncPtr0[Unit] = !struct.at(344).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def resetCollisionWorld_=(value: CFuncPtr0[Unit]): Unit = !struct.at(344).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def setCollideRect: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit] = !struct.at(352).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]]
-      def setCollideRect_=(value: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]): Unit = !struct.at(352).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]] = value
-      def getCollideRect: CFuncPtr1[Ptr[LCDSprite], PDRect] = !struct.at(360).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]]
-      def getCollideRect_=(value: CFuncPtr1[Ptr[LCDSprite], PDRect]): Unit = !struct.at(360).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]] = value
-      def clearCollideRect: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(368).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def clearCollideRect_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(368).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def setCollisionResponseFunction: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit] = !struct.at(376).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit]]]
-      def setCollisionResponseFunction_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit]): Unit = !struct.at(376).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit]]] = value
-      def checkCollisions: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]] = !struct.at(384).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]]
-      def checkCollisions_=(value: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]): Unit = !struct.at(384).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]] = value
-      def moveWithCollisions: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]] = !struct.at(392).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]]
-      def moveWithCollisions_=(value: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]): Unit = !struct.at(392).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]] = value
-      def querySpritesAtPoint: CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(400).asInstanceOf[Ptr[CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
-      def querySpritesAtPoint_=(value: CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(400).asInstanceOf[Ptr[CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
-      def querySpritesInRect: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(408).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
-      def querySpritesInRect_=(value: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(408).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
-      def querySpritesAlongLine: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(416).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
-      def querySpritesAlongLine_=(value: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(416).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
-      def querySpriteInfoAlongLine: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]] = !struct.at(424).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]]]]
-      def querySpriteInfoAlongLine_=(value: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]]): Unit = !struct.at(424).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]]]] = value
-      def overlappingSprites: CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(432).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
-      def overlappingSprites_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(432).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
-      def allOverlappingSprites: CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(440).asInstanceOf[Ptr[CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
-      def allOverlappingSprites_=(value: CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(440).asInstanceOf[Ptr[CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
-      def setStencilPattern: CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit] = !struct.at(448).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit]]]
-      def setStencilPattern_=(value: CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit]): Unit = !struct.at(448).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit]]] = value
-      def clearStencil: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(456).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
-      def clearStencil_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(456).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
-      def setUserdata: CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit] = !struct.at(464).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit]]]
-      def setUserdata_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit]): Unit = !struct.at(464).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit]]] = value
-      def getUserdata: CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]] = !struct.at(472).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]]]]
-      def getUserdata_=(value: CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]]): Unit = !struct.at(472).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]]]] = value
-      def setStencilImage: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit] = !struct.at(480).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit]]]
-      def setStencilImage_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit]): Unit = !struct.at(480).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit]]] = value
-      def setCenter: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(488).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
-      def setCenter_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(488).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
-      def getCenter: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit] = !struct.at(496).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]]
-      def getCenter_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(496).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]] = value
+      def addDirtyRect: CFuncPtr1[LCDRect, Unit] = !struct.at(4).asInstanceOf[Ptr[CFuncPtr1[LCDRect, Unit]]]
+      def addDirtyRect_=(value: CFuncPtr1[LCDRect, Unit]): Unit = !struct.at(4).asInstanceOf[Ptr[CFuncPtr1[LCDRect, Unit]]] = value
+      def drawSprites: CFuncPtr0[Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def drawSprites_=(value: CFuncPtr0[Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def updateAndDrawSprites: CFuncPtr0[Unit] = !struct.at(12).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def updateAndDrawSprites_=(value: CFuncPtr0[Unit]): Unit = !struct.at(12).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def newSprite: CFuncPtr0[Ptr[LCDSprite]] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDSprite]]]]
+      def newSprite_=(value: CFuncPtr0[Ptr[LCDSprite]]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[Ptr[LCDSprite]]]] = value
+      def freeSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(20).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def freeSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(20).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def copy: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]]]]
+      def copy_=(value: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDSprite]]]] = value
+      def addSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(28).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def addSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(28).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def removeSprite: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def removeSprite_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def removeSprites: CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit] = !struct.at(36).asInstanceOf[Ptr[CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit]]]
+      def removeSprites_=(value: CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit]): Unit = !struct.at(36).asInstanceOf[Ptr[CFuncPtr2[Ptr[Ptr[LCDSprite]], CInt, Unit]]] = value
+      def removeAllSprites: CFuncPtr0[Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def removeAllSprites_=(value: CFuncPtr0[Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def getSpriteCount: CFuncPtr0[CInt] = !struct.at(44).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def getSpriteCount_=(value: CFuncPtr0[CInt]): Unit = !struct.at(44).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def setBounds: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]]
+      def setBounds_=(value: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]] = value
+      def getBounds: CFuncPtr1[Ptr[LCDSprite], PDRect] = !struct.at(52).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]]
+      def getBounds_=(value: CFuncPtr1[Ptr[LCDSprite], PDRect]): Unit = !struct.at(52).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]] = value
+      def moveTo: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
+      def moveTo_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
+      def moveBy: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(60).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
+      def moveBy_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(60).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
+      def setImage: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit]]]
+      def setImage_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], LCDBitmapFlip, Unit]]] = value
+      def getImage: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]] = !struct.at(68).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]]]]
+      def getImage_=(value: CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]]): Unit = !struct.at(68).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[LCDBitmap]]]] = value
+      def setSize: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
+      def setSize_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
+      def setZIndex: CFuncPtr2[Ptr[LCDSprite], int16_t, Unit] = !struct.at(76).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], int16_t, Unit]]]
+      def setZIndex_=(value: CFuncPtr2[Ptr[LCDSprite], int16_t, Unit]): Unit = !struct.at(76).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], int16_t, Unit]]] = value
+      def getZIndex: CFuncPtr1[Ptr[LCDSprite], int16_t] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], int16_t]]]
+      def getZIndex_=(value: CFuncPtr1[Ptr[LCDSprite], int16_t]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], int16_t]]] = value
+      def setDrawMode: CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit] = !struct.at(84).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit]]]
+      def setDrawMode_=(value: CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit]): Unit = !struct.at(84).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapDrawMode, Unit]]] = value
+      def setImageFlip: CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit]]]
+      def setImageFlip_=(value: CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDBitmapFlip, Unit]]] = value
+      def getImageFlip: CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip] = !struct.at(92).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip]]]
+      def getImageFlip_=(value: CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip]): Unit = !struct.at(92).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], LCDBitmapFlip]]] = value
+      def setStencil: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit]]]
+      def setStencil_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDBitmap], Unit]]] = value
+      def setClipRect: CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit] = !struct.at(100).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit]]]
+      def setClipRect_=(value: CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit]): Unit = !struct.at(100).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], LCDRect, Unit]]] = value
+      def clearClipRect: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def clearClipRect_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def setClipRectsInRange: CFuncPtr3[LCDRect, CInt, CInt, Unit] = !struct.at(108).asInstanceOf[Ptr[CFuncPtr3[LCDRect, CInt, CInt, Unit]]]
+      def setClipRectsInRange_=(value: CFuncPtr3[LCDRect, CInt, CInt, Unit]): Unit = !struct.at(108).asInstanceOf[Ptr[CFuncPtr3[LCDRect, CInt, CInt, Unit]]] = value
+      def clearClipRectsInRange: CFuncPtr2[CInt, CInt, Unit] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
+      def clearClipRectsInRange_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
+      def setUpdatesEnabled: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
+      def setUpdatesEnabled_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
+      def updatesEnabled: CFuncPtr1[Ptr[LCDSprite], CInt] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]]
+      def updatesEnabled_=(value: CFuncPtr1[Ptr[LCDSprite], CInt]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]] = value
+      def setCollisionsEnabled: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(124).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
+      def setCollisionsEnabled_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(124).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
+      def collisionsEnabled: CFuncPtr1[Ptr[LCDSprite], CInt] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]]
+      def collisionsEnabled_=(value: CFuncPtr1[Ptr[LCDSprite], CInt]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]] = value
+      def setVisible: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(132).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
+      def setVisible_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(132).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
+      def isVisible: CFuncPtr1[Ptr[LCDSprite], CInt] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]]
+      def isVisible_=(value: CFuncPtr1[Ptr[LCDSprite], CInt]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], CInt]]] = value
+      def setOpaque: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(140).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
+      def setOpaque_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(140).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
+      def markDirty: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def markDirty_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def setTag: CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit] = !struct.at(148).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit]]]
+      def setTag_=(value: CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit]): Unit = !struct.at(148).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], uint8_t, Unit]]] = value
+      def getTag: CFuncPtr1[Ptr[LCDSprite], uint8_t] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], uint8_t]]]
+      def getTag_=(value: CFuncPtr1[Ptr[LCDSprite], uint8_t]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], uint8_t]]] = value
+      def setIgnoresDrawOffset: CFuncPtr2[Ptr[LCDSprite], CInt, Unit] = !struct.at(156).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]]
+      def setIgnoresDrawOffset_=(value: CFuncPtr2[Ptr[LCDSprite], CInt, Unit]): Unit = !struct.at(156).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CInt, Unit]]] = value
+      def setUpdateFunction: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit]]]
+      def setUpdateFunction_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteUpdateFunction], Unit]]] = value
+      def setDrawFunction: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit] = !struct.at(164).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit]]]
+      def setDrawFunction_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit]): Unit = !struct.at(164).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteDrawFunction], Unit]]] = value
+      def getPosition: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]]
+      def getPosition_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]] = value
+      def resetCollisionWorld: CFuncPtr0[Unit] = !struct.at(172).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def resetCollisionWorld_=(value: CFuncPtr0[Unit]): Unit = !struct.at(172).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def setCollideRect: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]]
+      def setCollideRect_=(value: CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], PDRect, Unit]]] = value
+      def getCollideRect: CFuncPtr1[Ptr[LCDSprite], PDRect] = !struct.at(180).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]]
+      def getCollideRect_=(value: CFuncPtr1[Ptr[LCDSprite], PDRect]): Unit = !struct.at(180).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], PDRect]]] = value
+      def clearCollideRect: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def clearCollideRect_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def setCollisionResponseFunction: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit] = !struct.at(188).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit]]]
+      def setCollisionResponseFunction_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit]): Unit = !struct.at(188).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[LCDSpriteCollisionFilterProc], Unit]]] = value
+      def checkCollisions: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]]
+      def checkCollisions_=(value: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]] = value
+      def moveWithCollisions: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]] = !struct.at(196).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]]
+      def moveWithCollisions_=(value: CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]): Unit = !struct.at(196).asInstanceOf[Ptr[CFuncPtr6[Ptr[LCDSprite], Float, Float, Ptr[Float], Ptr[Float], Ptr[CInt], Ptr[SpriteCollisionInfo]]]] = value
+      def querySpritesAtPoint: CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
+      def querySpritesAtPoint_=(value: CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr3[Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
+      def querySpritesInRect: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(204).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
+      def querySpritesInRect_=(value: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(204).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
+      def querySpritesAlongLine: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
+      def querySpritesAlongLine_=(value: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
+      def querySpriteInfoAlongLine: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]] = !struct.at(212).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]]]]
+      def querySpriteInfoAlongLine_=(value: CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]]): Unit = !struct.at(212).asInstanceOf[Ptr[CFuncPtr5[Float, Float, Float, Float, Ptr[CInt], Ptr[SpriteQueryInfo]]]] = value
+      def overlappingSprites: CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(216).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
+      def overlappingSprites_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(216).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
+      def allOverlappingSprites: CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]] = !struct.at(220).asInstanceOf[Ptr[CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]]]]
+      def allOverlappingSprites_=(value: CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]]): Unit = !struct.at(220).asInstanceOf[Ptr[CFuncPtr1[Ptr[CInt], Ptr[Ptr[LCDSprite]]]]] = value
+      def setStencilPattern: CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit] = !struct.at(224).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit]]]
+      def setStencilPattern_=(value: CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit]): Unit = !struct.at(224).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], CArray[uint8_t, Nat._8], Unit]]] = value
+      def clearStencil: CFuncPtr1[Ptr[LCDSprite], Unit] = !struct.at(228).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]]
+      def clearStencil_=(value: CFuncPtr1[Ptr[LCDSprite], Unit]): Unit = !struct.at(228).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Unit]]] = value
+      def setUserdata: CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit] = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit]]]
+      def setUserdata_=(value: CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit]): Unit = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDSprite], Ptr[Byte], Unit]]] = value
+      def getUserdata: CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]] = !struct.at(236).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]]]]
+      def getUserdata_=(value: CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]]): Unit = !struct.at(236).asInstanceOf[Ptr[CFuncPtr1[Ptr[LCDSprite], Ptr[Byte]]]] = value
+      def setStencilImage: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit] = !struct.at(240).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit]]]
+      def setStencilImage_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit]): Unit = !struct.at(240).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[LCDBitmap], CInt, Unit]]] = value
+      def setCenter: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit] = !struct.at(244).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]]
+      def setCenter_=(value: CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]): Unit = !struct.at(244).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Float, Float, Unit]]] = value
+      def getCenter: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit] = !struct.at(248).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]]
+      def getCenter_=(value: CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(248).asInstanceOf[Ptr[CFuncPtr3[Ptr[LCDSprite], Ptr[Float], Ptr[Float], Unit]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sys.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sys.h
   */
-  opaque type playdate_sys = CArray[CChar, Nat.Digit3[Nat._3, Nat._2, Nat._0]]
+  opaque type playdate_sys = CArray[CChar, Nat.Digit3[Nat._1, Nat._6, Nat._0]]
   object playdate_sys:
-    given _tag: Tag[playdate_sys] = Tag.CArray[CChar, Nat.Digit3[Nat._3, Nat._2, Nat._0]](Tag.Byte, Tag.Digit3[Nat._3, Nat._2, Nat._0](Tag.Nat3, Tag.Nat2, Tag.Nat0))
+    given _tag: Tag[playdate_sys] = Tag.CArray[CChar, Nat.Digit3[Nat._1, Nat._6, Nat._0]](Tag.Byte, Tag.Digit3[Nat._1, Nat._6, Nat._0](Tag.Nat1, Tag.Nat6, Tag.Nat0))
     def apply()(using Zone): Ptr[playdate_sys] = scala.scalanative.unsafe.alloc[playdate_sys](1)
-    def apply(realloc : CFuncPtr2[Ptr[Byte], size_t, Ptr[Byte]], formatString : CFuncPtr2[Ptr[CString], CString, CInt], logToConsole : CFuncPtr1[CString, Unit], error : CFuncPtr1[CString, Unit], getLanguage : CFuncPtr0[PDLanguage], getCurrentTimeMilliseconds : CFuncPtr0[CUnsignedInt], getSecondsSinceEpoch : CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt], drawFPS : CFuncPtr2[CInt, CInt, Unit], setUpdateCallback : CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit], getButtonState : CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit], setPeripheralsEnabled : CFuncPtr1[PDPeripherals, Unit], getAccelerometer : CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit], getCrankChange : CFuncPtr0[Float], getCrankAngle : CFuncPtr0[Float], isCrankDocked : CFuncPtr0[CInt], setCrankSoundsDisabled : CFuncPtr1[CInt, CInt], getFlipped : CFuncPtr0[CInt], setAutoLockDisabled : CFuncPtr1[CInt, Unit], setMenuImage : CFuncPtr2[Ptr[LCDBitmap], CInt, Unit], addMenuItem : CFuncPtr3[CString, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]], addCheckmarkMenuItem : CFuncPtr4[CString, CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]], addOptionsMenuItem : CFuncPtr5[CString, Ptr[CString], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]], removeAllMenuItems : CFuncPtr0[Unit], removeMenuItem : CFuncPtr1[Ptr[PDMenuItem], Unit], getMenuItemValue : CFuncPtr1[Ptr[PDMenuItem], CInt], setMenuItemValue : CFuncPtr2[Ptr[PDMenuItem], CInt, Unit], getMenuItemTitle : CFuncPtr1[Ptr[PDMenuItem], CString], setMenuItemTitle : CFuncPtr2[Ptr[PDMenuItem], CString, Unit], getMenuItemUserdata : CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]], setMenuItemUserdata : CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit], getReduceFlashing : CFuncPtr0[CInt], getElapsedTime : CFuncPtr0[Float], resetElapsedTime : CFuncPtr0[Unit], getBatteryPercentage : CFuncPtr0[Float], getBatteryVoltage : CFuncPtr0[Float], getTimezoneOffset : CFuncPtr0[int32_t], shouldDisplay24HourTime : CFuncPtr0[CInt], convertEpochToDateTime : CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit], convertDateTimeToEpoch : CFuncPtr1[Ptr[PDDateTime], uint32_t], clearICache : CFuncPtr0[Unit])(using Zone): Ptr[playdate_sys] =
+    def apply(realloc : CFuncPtr2[Ptr[Byte], size_t, Ptr[Byte]], formatString : CFuncPtr2[Ptr[Ptr[CUnsignedChar]], Ptr[CUnsignedChar], CInt], logToConsole : CFuncPtr1[Ptr[CUnsignedChar], Unit], error : CFuncPtr1[Ptr[CUnsignedChar], Unit], getLanguage : CFuncPtr0[PDLanguage], getCurrentTimeMilliseconds : CFuncPtr0[CUnsignedInt], getSecondsSinceEpoch : CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt], drawFPS : CFuncPtr2[CInt, CInt, Unit], setUpdateCallback : CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit], getButtonState : CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit], setPeripheralsEnabled : CFuncPtr1[PDPeripherals, Unit], getAccelerometer : CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit], getCrankChange : CFuncPtr0[Float], getCrankAngle : CFuncPtr0[Float], isCrankDocked : CFuncPtr0[CInt], setCrankSoundsDisabled : CFuncPtr1[CInt, CInt], getFlipped : CFuncPtr0[CInt], setAutoLockDisabled : CFuncPtr1[CInt, Unit], setMenuImage : CFuncPtr2[Ptr[LCDBitmap], CInt, Unit], addMenuItem : CFuncPtr3[Ptr[CUnsignedChar], Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]], addCheckmarkMenuItem : CFuncPtr4[Ptr[CUnsignedChar], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]], addOptionsMenuItem : CFuncPtr5[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]], removeAllMenuItems : CFuncPtr0[Unit], removeMenuItem : CFuncPtr1[Ptr[PDMenuItem], Unit], getMenuItemValue : CFuncPtr1[Ptr[PDMenuItem], CInt], setMenuItemValue : CFuncPtr2[Ptr[PDMenuItem], CInt, Unit], getMenuItemTitle : CFuncPtr1[Ptr[PDMenuItem], Ptr[CUnsignedChar]], setMenuItemTitle : CFuncPtr2[Ptr[PDMenuItem], Ptr[CUnsignedChar], Unit], getMenuItemUserdata : CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]], setMenuItemUserdata : CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit], getReduceFlashing : CFuncPtr0[CInt], getElapsedTime : CFuncPtr0[Float], resetElapsedTime : CFuncPtr0[Unit], getBatteryPercentage : CFuncPtr0[Float], getBatteryVoltage : CFuncPtr0[Float], getTimezoneOffset : CFuncPtr0[int32_t], shouldDisplay24HourTime : CFuncPtr0[CInt], convertEpochToDateTime : CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit], convertDateTimeToEpoch : CFuncPtr1[Ptr[PDDateTime], uint32_t], clearICache : CFuncPtr0[Unit])(using Zone): Ptr[playdate_sys] =
       val ____ptr = apply()
       (!____ptr).realloc = realloc
       (!____ptr).formatString = formatString
@@ -3514,93 +3514,93 @@ object structs:
     extension (struct: playdate_sys)
       def realloc: CFuncPtr2[Ptr[Byte], size_t, Ptr[Byte]] = !struct.at(0).asInstanceOf[Ptr[CFuncPtr2[Ptr[Byte], size_t, Ptr[Byte]]]]
       def realloc_=(value: CFuncPtr2[Ptr[Byte], size_t, Ptr[Byte]]): Unit = !struct.at(0).asInstanceOf[Ptr[CFuncPtr2[Ptr[Byte], size_t, Ptr[Byte]]]] = value
-      def formatString: CFuncPtr2[Ptr[CString], CString, CInt] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr2[Ptr[CString], CString, CInt]]]
-      def formatString_=(value: CFuncPtr2[Ptr[CString], CString, CInt]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr2[Ptr[CString], CString, CInt]]] = value
-      def logToConsole: CFuncPtr1[CString, Unit] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[CString, Unit]]]
-      def logToConsole_=(value: CFuncPtr1[CString, Unit]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr1[CString, Unit]]] = value
-      def error: CFuncPtr1[CString, Unit] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[CString, Unit]]]
-      def error_=(value: CFuncPtr1[CString, Unit]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[CString, Unit]]] = value
-      def getLanguage: CFuncPtr0[PDLanguage] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr0[PDLanguage]]]
-      def getLanguage_=(value: CFuncPtr0[PDLanguage]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr0[PDLanguage]]] = value
-      def getCurrentTimeMilliseconds: CFuncPtr0[CUnsignedInt] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr0[CUnsignedInt]]]
-      def getCurrentTimeMilliseconds_=(value: CFuncPtr0[CUnsignedInt]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr0[CUnsignedInt]]] = value
-      def getSecondsSinceEpoch: CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt]]]
-      def getSecondsSinceEpoch_=(value: CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt]]] = value
-      def drawFPS: CFuncPtr2[CInt, CInt, Unit] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
-      def drawFPS_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
-      def setUpdateCallback: CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit]]]
-      def setUpdateCallback_=(value: CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit]]] = value
-      def getButtonState: CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit]]]
-      def getButtonState_=(value: CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit]]] = value
-      def setPeripheralsEnabled: CFuncPtr1[PDPeripherals, Unit] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[PDPeripherals, Unit]]]
-      def setPeripheralsEnabled_=(value: CFuncPtr1[PDPeripherals, Unit]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr1[PDPeripherals, Unit]]] = value
-      def getAccelerometer: CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit]]]
-      def getAccelerometer_=(value: CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit]]] = value
-      def getCrankChange: CFuncPtr0[Float] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr0[Float]]]
-      def getCrankChange_=(value: CFuncPtr0[Float]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
-      def getCrankAngle: CFuncPtr0[Float] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr0[Float]]]
-      def getCrankAngle_=(value: CFuncPtr0[Float]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
-      def isCrankDocked: CFuncPtr0[CInt] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def isCrankDocked_=(value: CFuncPtr0[CInt]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def setCrankSoundsDisabled: CFuncPtr1[CInt, CInt] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
-      def setCrankSoundsDisabled_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
-      def getFlipped: CFuncPtr0[CInt] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def getFlipped_=(value: CFuncPtr0[CInt]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def setAutoLockDisabled: CFuncPtr1[CInt, Unit] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
-      def setAutoLockDisabled_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
-      def setMenuImage: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]]
-      def setMenuImage_=(value: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]] = value
-      def addMenuItem: CFuncPtr3[CString, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr3[CString, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]]
-      def addMenuItem_=(value: CFuncPtr3[CString, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr3[CString, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]] = value
-      def addCheckmarkMenuItem: CFuncPtr4[CString, CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]] = !struct.at(160).asInstanceOf[Ptr[CFuncPtr4[CString, CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]]
-      def addCheckmarkMenuItem_=(value: CFuncPtr4[CString, CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]): Unit = !struct.at(160).asInstanceOf[Ptr[CFuncPtr4[CString, CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]] = value
-      def addOptionsMenuItem: CFuncPtr5[CString, Ptr[CString], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]] = !struct.at(168).asInstanceOf[Ptr[CFuncPtr5[CString, Ptr[CString], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]]
-      def addOptionsMenuItem_=(value: CFuncPtr5[CString, Ptr[CString], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]): Unit = !struct.at(168).asInstanceOf[Ptr[CFuncPtr5[CString, Ptr[CString], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]] = value
-      def removeAllMenuItems: CFuncPtr0[Unit] = !struct.at(176).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def removeAllMenuItems_=(value: CFuncPtr0[Unit]): Unit = !struct.at(176).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def removeMenuItem: CFuncPtr1[Ptr[PDMenuItem], Unit] = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Unit]]]
-      def removeMenuItem_=(value: CFuncPtr1[Ptr[PDMenuItem], Unit]): Unit = !struct.at(184).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Unit]]] = value
-      def getMenuItemValue: CFuncPtr1[Ptr[PDMenuItem], CInt] = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], CInt]]]
-      def getMenuItemValue_=(value: CFuncPtr1[Ptr[PDMenuItem], CInt]): Unit = !struct.at(192).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], CInt]]] = value
-      def setMenuItemValue: CFuncPtr2[Ptr[PDMenuItem], CInt, Unit] = !struct.at(200).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], CInt, Unit]]]
-      def setMenuItemValue_=(value: CFuncPtr2[Ptr[PDMenuItem], CInt, Unit]): Unit = !struct.at(200).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], CInt, Unit]]] = value
-      def getMenuItemTitle: CFuncPtr1[Ptr[PDMenuItem], CString] = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], CString]]]
-      def getMenuItemTitle_=(value: CFuncPtr1[Ptr[PDMenuItem], CString]): Unit = !struct.at(208).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], CString]]] = value
-      def setMenuItemTitle: CFuncPtr2[Ptr[PDMenuItem], CString, Unit] = !struct.at(216).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], CString, Unit]]]
-      def setMenuItemTitle_=(value: CFuncPtr2[Ptr[PDMenuItem], CString, Unit]): Unit = !struct.at(216).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], CString, Unit]]] = value
-      def getMenuItemUserdata: CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]] = !struct.at(224).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]]]]
-      def getMenuItemUserdata_=(value: CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]]): Unit = !struct.at(224).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]]]] = value
-      def setMenuItemUserdata: CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit] = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit]]]
-      def setMenuItemUserdata_=(value: CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit]): Unit = !struct.at(232).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit]]] = value
-      def getReduceFlashing: CFuncPtr0[CInt] = !struct.at(240).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def getReduceFlashing_=(value: CFuncPtr0[CInt]): Unit = !struct.at(240).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def getElapsedTime: CFuncPtr0[Float] = !struct.at(248).asInstanceOf[Ptr[CFuncPtr0[Float]]]
-      def getElapsedTime_=(value: CFuncPtr0[Float]): Unit = !struct.at(248).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
-      def resetElapsedTime: CFuncPtr0[Unit] = !struct.at(256).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def resetElapsedTime_=(value: CFuncPtr0[Unit]): Unit = !struct.at(256).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
-      def getBatteryPercentage: CFuncPtr0[Float] = !struct.at(264).asInstanceOf[Ptr[CFuncPtr0[Float]]]
-      def getBatteryPercentage_=(value: CFuncPtr0[Float]): Unit = !struct.at(264).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
-      def getBatteryVoltage: CFuncPtr0[Float] = !struct.at(272).asInstanceOf[Ptr[CFuncPtr0[Float]]]
-      def getBatteryVoltage_=(value: CFuncPtr0[Float]): Unit = !struct.at(272).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
-      def getTimezoneOffset: CFuncPtr0[int32_t] = !struct.at(280).asInstanceOf[Ptr[CFuncPtr0[int32_t]]]
-      def getTimezoneOffset_=(value: CFuncPtr0[int32_t]): Unit = !struct.at(280).asInstanceOf[Ptr[CFuncPtr0[int32_t]]] = value
-      def shouldDisplay24HourTime: CFuncPtr0[CInt] = !struct.at(288).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
-      def shouldDisplay24HourTime_=(value: CFuncPtr0[CInt]): Unit = !struct.at(288).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
-      def convertEpochToDateTime: CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit] = !struct.at(296).asInstanceOf[Ptr[CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit]]]
-      def convertEpochToDateTime_=(value: CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit]): Unit = !struct.at(296).asInstanceOf[Ptr[CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit]]] = value
-      def convertDateTimeToEpoch: CFuncPtr1[Ptr[PDDateTime], uint32_t] = !struct.at(304).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDDateTime], uint32_t]]]
-      def convertDateTimeToEpoch_=(value: CFuncPtr1[Ptr[PDDateTime], uint32_t]): Unit = !struct.at(304).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDDateTime], uint32_t]]] = value
-      def clearICache: CFuncPtr0[Unit] = !struct.at(312).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
-      def clearICache_=(value: CFuncPtr0[Unit]): Unit = !struct.at(312).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def formatString: CFuncPtr2[Ptr[Ptr[CUnsignedChar]], Ptr[CUnsignedChar], CInt] = !struct.at(4).asInstanceOf[Ptr[CFuncPtr2[Ptr[Ptr[CUnsignedChar]], Ptr[CUnsignedChar], CInt]]]
+      def formatString_=(value: CFuncPtr2[Ptr[Ptr[CUnsignedChar]], Ptr[CUnsignedChar], CInt]): Unit = !struct.at(4).asInstanceOf[Ptr[CFuncPtr2[Ptr[Ptr[CUnsignedChar]], Ptr[CUnsignedChar], CInt]]] = value
+      def logToConsole: CFuncPtr1[Ptr[CUnsignedChar], Unit] = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedChar], Unit]]]
+      def logToConsole_=(value: CFuncPtr1[Ptr[CUnsignedChar], Unit]): Unit = !struct.at(8).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedChar], Unit]]] = value
+      def error: CFuncPtr1[Ptr[CUnsignedChar], Unit] = !struct.at(12).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedChar], Unit]]]
+      def error_=(value: CFuncPtr1[Ptr[CUnsignedChar], Unit]): Unit = !struct.at(12).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedChar], Unit]]] = value
+      def getLanguage: CFuncPtr0[PDLanguage] = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[PDLanguage]]]
+      def getLanguage_=(value: CFuncPtr0[PDLanguage]): Unit = !struct.at(16).asInstanceOf[Ptr[CFuncPtr0[PDLanguage]]] = value
+      def getCurrentTimeMilliseconds: CFuncPtr0[CUnsignedInt] = !struct.at(20).asInstanceOf[Ptr[CFuncPtr0[CUnsignedInt]]]
+      def getCurrentTimeMilliseconds_=(value: CFuncPtr0[CUnsignedInt]): Unit = !struct.at(20).asInstanceOf[Ptr[CFuncPtr0[CUnsignedInt]]] = value
+      def getSecondsSinceEpoch: CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt] = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt]]]
+      def getSecondsSinceEpoch_=(value: CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt]): Unit = !struct.at(24).asInstanceOf[Ptr[CFuncPtr1[Ptr[CUnsignedInt], CUnsignedInt]]] = value
+      def drawFPS: CFuncPtr2[CInt, CInt, Unit] = !struct.at(28).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]]
+      def drawFPS_=(value: CFuncPtr2[CInt, CInt, Unit]): Unit = !struct.at(28).asInstanceOf[Ptr[CFuncPtr2[CInt, CInt, Unit]]] = value
+      def setUpdateCallback: CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit] = !struct.at(32).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit]]]
+      def setUpdateCallback_=(value: CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit]): Unit = !struct.at(32).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDCallbackFunction], Ptr[Byte], Unit]]] = value
+      def getButtonState: CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit] = !struct.at(36).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit]]]
+      def getButtonState_=(value: CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit]): Unit = !struct.at(36).asInstanceOf[Ptr[CFuncPtr3[Ptr[PDButtons], Ptr[PDButtons], Ptr[PDButtons], Unit]]] = value
+      def setPeripheralsEnabled: CFuncPtr1[PDPeripherals, Unit] = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[PDPeripherals, Unit]]]
+      def setPeripheralsEnabled_=(value: CFuncPtr1[PDPeripherals, Unit]): Unit = !struct.at(40).asInstanceOf[Ptr[CFuncPtr1[PDPeripherals, Unit]]] = value
+      def getAccelerometer: CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit] = !struct.at(44).asInstanceOf[Ptr[CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit]]]
+      def getAccelerometer_=(value: CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit]): Unit = !struct.at(44).asInstanceOf[Ptr[CFuncPtr3[Ptr[Float], Ptr[Float], Ptr[Float], Unit]]] = value
+      def getCrankChange: CFuncPtr0[Float] = !struct.at(48).asInstanceOf[Ptr[CFuncPtr0[Float]]]
+      def getCrankChange_=(value: CFuncPtr0[Float]): Unit = !struct.at(48).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
+      def getCrankAngle: CFuncPtr0[Float] = !struct.at(52).asInstanceOf[Ptr[CFuncPtr0[Float]]]
+      def getCrankAngle_=(value: CFuncPtr0[Float]): Unit = !struct.at(52).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
+      def isCrankDocked: CFuncPtr0[CInt] = !struct.at(56).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def isCrankDocked_=(value: CFuncPtr0[CInt]): Unit = !struct.at(56).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def setCrankSoundsDisabled: CFuncPtr1[CInt, CInt] = !struct.at(60).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]]
+      def setCrankSoundsDisabled_=(value: CFuncPtr1[CInt, CInt]): Unit = !struct.at(60).asInstanceOf[Ptr[CFuncPtr1[CInt, CInt]]] = value
+      def getFlipped: CFuncPtr0[CInt] = !struct.at(64).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def getFlipped_=(value: CFuncPtr0[CInt]): Unit = !struct.at(64).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def setAutoLockDisabled: CFuncPtr1[CInt, Unit] = !struct.at(68).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]]
+      def setAutoLockDisabled_=(value: CFuncPtr1[CInt, Unit]): Unit = !struct.at(68).asInstanceOf[Ptr[CFuncPtr1[CInt, Unit]]] = value
+      def setMenuImage: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit] = !struct.at(72).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]]
+      def setMenuImage_=(value: CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]): Unit = !struct.at(72).asInstanceOf[Ptr[CFuncPtr2[Ptr[LCDBitmap], CInt, Unit]]] = value
+      def addMenuItem: CFuncPtr3[Ptr[CUnsignedChar], Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]] = !struct.at(76).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]]
+      def addMenuItem_=(value: CFuncPtr3[Ptr[CUnsignedChar], Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]): Unit = !struct.at(76).asInstanceOf[Ptr[CFuncPtr3[Ptr[CUnsignedChar], Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]] = value
+      def addCheckmarkMenuItem: CFuncPtr4[Ptr[CUnsignedChar], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]] = !struct.at(80).asInstanceOf[Ptr[CFuncPtr4[Ptr[CUnsignedChar], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]]
+      def addCheckmarkMenuItem_=(value: CFuncPtr4[Ptr[CUnsignedChar], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]): Unit = !struct.at(80).asInstanceOf[Ptr[CFuncPtr4[Ptr[CUnsignedChar], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]] = value
+      def addOptionsMenuItem: CFuncPtr5[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]] = !struct.at(84).asInstanceOf[Ptr[CFuncPtr5[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]]
+      def addOptionsMenuItem_=(value: CFuncPtr5[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]): Unit = !struct.at(84).asInstanceOf[Ptr[CFuncPtr5[Ptr[CUnsignedChar], Ptr[Ptr[CUnsignedChar]], CInt, Ptr[PDMenuItemCallbackFunction], Ptr[Byte], Ptr[PDMenuItem]]]] = value
+      def removeAllMenuItems: CFuncPtr0[Unit] = !struct.at(88).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def removeAllMenuItems_=(value: CFuncPtr0[Unit]): Unit = !struct.at(88).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def removeMenuItem: CFuncPtr1[Ptr[PDMenuItem], Unit] = !struct.at(92).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Unit]]]
+      def removeMenuItem_=(value: CFuncPtr1[Ptr[PDMenuItem], Unit]): Unit = !struct.at(92).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Unit]]] = value
+      def getMenuItemValue: CFuncPtr1[Ptr[PDMenuItem], CInt] = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], CInt]]]
+      def getMenuItemValue_=(value: CFuncPtr1[Ptr[PDMenuItem], CInt]): Unit = !struct.at(96).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], CInt]]] = value
+      def setMenuItemValue: CFuncPtr2[Ptr[PDMenuItem], CInt, Unit] = !struct.at(100).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], CInt, Unit]]]
+      def setMenuItemValue_=(value: CFuncPtr2[Ptr[PDMenuItem], CInt, Unit]): Unit = !struct.at(100).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], CInt, Unit]]] = value
+      def getMenuItemTitle: CFuncPtr1[Ptr[PDMenuItem], Ptr[CUnsignedChar]] = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Ptr[CUnsignedChar]]]]
+      def getMenuItemTitle_=(value: CFuncPtr1[Ptr[PDMenuItem], Ptr[CUnsignedChar]]): Unit = !struct.at(104).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Ptr[CUnsignedChar]]]] = value
+      def setMenuItemTitle: CFuncPtr2[Ptr[PDMenuItem], Ptr[CUnsignedChar], Unit] = !struct.at(108).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], Ptr[CUnsignedChar], Unit]]]
+      def setMenuItemTitle_=(value: CFuncPtr2[Ptr[PDMenuItem], Ptr[CUnsignedChar], Unit]): Unit = !struct.at(108).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], Ptr[CUnsignedChar], Unit]]] = value
+      def getMenuItemUserdata: CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]] = !struct.at(112).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]]]]
+      def getMenuItemUserdata_=(value: CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]]): Unit = !struct.at(112).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDMenuItem], Ptr[Byte]]]] = value
+      def setMenuItemUserdata: CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit] = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit]]]
+      def setMenuItemUserdata_=(value: CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit]): Unit = !struct.at(116).asInstanceOf[Ptr[CFuncPtr2[Ptr[PDMenuItem], Ptr[Byte], Unit]]] = value
+      def getReduceFlashing: CFuncPtr0[CInt] = !struct.at(120).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def getReduceFlashing_=(value: CFuncPtr0[CInt]): Unit = !struct.at(120).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def getElapsedTime: CFuncPtr0[Float] = !struct.at(124).asInstanceOf[Ptr[CFuncPtr0[Float]]]
+      def getElapsedTime_=(value: CFuncPtr0[Float]): Unit = !struct.at(124).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
+      def resetElapsedTime: CFuncPtr0[Unit] = !struct.at(128).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def resetElapsedTime_=(value: CFuncPtr0[Unit]): Unit = !struct.at(128).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
+      def getBatteryPercentage: CFuncPtr0[Float] = !struct.at(132).asInstanceOf[Ptr[CFuncPtr0[Float]]]
+      def getBatteryPercentage_=(value: CFuncPtr0[Float]): Unit = !struct.at(132).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
+      def getBatteryVoltage: CFuncPtr0[Float] = !struct.at(136).asInstanceOf[Ptr[CFuncPtr0[Float]]]
+      def getBatteryVoltage_=(value: CFuncPtr0[Float]): Unit = !struct.at(136).asInstanceOf[Ptr[CFuncPtr0[Float]]] = value
+      def getTimezoneOffset: CFuncPtr0[int32_t] = !struct.at(140).asInstanceOf[Ptr[CFuncPtr0[int32_t]]]
+      def getTimezoneOffset_=(value: CFuncPtr0[int32_t]): Unit = !struct.at(140).asInstanceOf[Ptr[CFuncPtr0[int32_t]]] = value
+      def shouldDisplay24HourTime: CFuncPtr0[CInt] = !struct.at(144).asInstanceOf[Ptr[CFuncPtr0[CInt]]]
+      def shouldDisplay24HourTime_=(value: CFuncPtr0[CInt]): Unit = !struct.at(144).asInstanceOf[Ptr[CFuncPtr0[CInt]]] = value
+      def convertEpochToDateTime: CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit] = !struct.at(148).asInstanceOf[Ptr[CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit]]]
+      def convertEpochToDateTime_=(value: CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit]): Unit = !struct.at(148).asInstanceOf[Ptr[CFuncPtr2[uint32_t, Ptr[PDDateTime], Unit]]] = value
+      def convertDateTimeToEpoch: CFuncPtr1[Ptr[PDDateTime], uint32_t] = !struct.at(152).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDDateTime], uint32_t]]]
+      def convertDateTimeToEpoch_=(value: CFuncPtr1[Ptr[PDDateTime], uint32_t]): Unit = !struct.at(152).asInstanceOf[Ptr[CFuncPtr1[Ptr[PDDateTime], uint32_t]]] = value
+      def clearICache: CFuncPtr0[Unit] = !struct.at(156).asInstanceOf[Ptr[CFuncPtr0[Unit]]]
+      def clearICache_=(value: CFuncPtr0[Unit]): Unit = !struct.at(156).asInstanceOf[Ptr[CFuncPtr0[Unit]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
-  opaque type playdate_video = CStruct8[CFuncPtr1[CString, Ptr[LCDVideoPlayer]], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt], CFuncPtr1[Ptr[LCDVideoPlayer], CString], CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit], CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]]]
+  opaque type playdate_video = CStruct8[CFuncPtr1[Ptr[CUnsignedChar], Ptr[LCDVideoPlayer]], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt], CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[CUnsignedChar]], CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit], CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]]]
   object playdate_video:
-    given _tag: Tag[playdate_video] = Tag.materializeCStruct8Tag[CFuncPtr1[CString, Ptr[LCDVideoPlayer]], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt], CFuncPtr1[Ptr[LCDVideoPlayer], CString], CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit], CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]]]
+    given _tag: Tag[playdate_video] = Tag.materializeCStruct8Tag[CFuncPtr1[Ptr[CUnsignedChar], Ptr[LCDVideoPlayer]], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt], CFuncPtr1[Ptr[LCDVideoPlayer], Unit], CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt], CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[CUnsignedChar]], CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit], CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]]]
     def apply()(using Zone): Ptr[playdate_video] = scala.scalanative.unsafe.alloc[playdate_video](1)
-    def apply(loadVideo : CFuncPtr1[CString, Ptr[LCDVideoPlayer]], freePlayer : CFuncPtr1[Ptr[LCDVideoPlayer], Unit], setContext : CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt], useScreenContext : CFuncPtr1[Ptr[LCDVideoPlayer], Unit], renderFrame : CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt], getError : CFuncPtr1[Ptr[LCDVideoPlayer], CString], getInfo : CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit], getContext : CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]])(using Zone): Ptr[playdate_video] =
+    def apply(loadVideo : CFuncPtr1[Ptr[CUnsignedChar], Ptr[LCDVideoPlayer]], freePlayer : CFuncPtr1[Ptr[LCDVideoPlayer], Unit], setContext : CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt], useScreenContext : CFuncPtr1[Ptr[LCDVideoPlayer], Unit], renderFrame : CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt], getError : CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[CUnsignedChar]], getInfo : CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit], getContext : CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]])(using Zone): Ptr[playdate_video] =
       val ____ptr = apply()
       (!____ptr).loadVideo = loadVideo
       (!____ptr).freePlayer = freePlayer
@@ -3612,8 +3612,8 @@ object structs:
       (!____ptr).getContext = getContext
       ____ptr
     extension (struct: playdate_video)
-      def loadVideo : CFuncPtr1[CString, Ptr[LCDVideoPlayer]] = struct._1
-      def loadVideo_=(value: CFuncPtr1[CString, Ptr[LCDVideoPlayer]]): Unit = !struct.at1 = value
+      def loadVideo : CFuncPtr1[Ptr[CUnsignedChar], Ptr[LCDVideoPlayer]] = struct._1
+      def loadVideo_=(value: CFuncPtr1[Ptr[CUnsignedChar], Ptr[LCDVideoPlayer]]): Unit = !struct.at1 = value
       def freePlayer : CFuncPtr1[Ptr[LCDVideoPlayer], Unit] = struct._2
       def freePlayer_=(value: CFuncPtr1[Ptr[LCDVideoPlayer], Unit]): Unit = !struct.at2 = value
       def setContext : CFuncPtr2[Ptr[LCDVideoPlayer], Ptr[LCDBitmap], CInt] = struct._3
@@ -3622,8 +3622,8 @@ object structs:
       def useScreenContext_=(value: CFuncPtr1[Ptr[LCDVideoPlayer], Unit]): Unit = !struct.at4 = value
       def renderFrame : CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt] = struct._5
       def renderFrame_=(value: CFuncPtr2[Ptr[LCDVideoPlayer], CInt, CInt]): Unit = !struct.at5 = value
-      def getError : CFuncPtr1[Ptr[LCDVideoPlayer], CString] = struct._6
-      def getError_=(value: CFuncPtr1[Ptr[LCDVideoPlayer], CString]): Unit = !struct.at6 = value
+      def getError : CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[CUnsignedChar]] = struct._6
+      def getError_=(value: CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[CUnsignedChar]]): Unit = !struct.at6 = value
       def getInfo : CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit] = struct._7
       def getInfo_=(value: CFuncPtr6[Ptr[LCDVideoPlayer], Ptr[CInt], Ptr[CInt], Ptr[Float], Ptr[CInt], Ptr[CInt], Unit]): Unit = !struct.at7 = value
       def getContext : CFuncPtr1[Ptr[LCDVideoPlayer], Ptr[LCDBitmap]] = struct._8
@@ -3636,90 +3636,90 @@ object unions:
   import _root_.pdapi.structs.*
   import _root_.pdapi.unions.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  opaque type AUnion = CArray[Byte, Nat._8]
-  object AUnion:
-    given _tag: Tag[AUnion] = Tag.CArray[CChar, Nat._8](Tag.Byte, Tag.Nat8)
-    def apply()(using Zone): Ptr[AUnion] =
-      val ___ptr = alloc[AUnion](1)
+  opaque type json_value_data = CArray[Byte, Nat._4]
+  object json_value_data:
+    given _tag: Tag[json_value_data] = Tag.CArray[CChar, Nat._4](Tag.Byte, Tag.Nat4)
+    def apply()(using Zone): Ptr[json_value_data] =
+      val ___ptr = alloc[json_value_data](1)
       ___ptr
     @scala.annotation.targetName("apply_intval")
-    def apply(intval: CInt)(using Zone): Ptr[AUnion] =
-      val ___ptr = alloc[AUnion](1)
+    def apply(intval: CInt)(using Zone): Ptr[json_value_data] =
+      val ___ptr = alloc[json_value_data](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[CInt]].update(0, intval)
       ___ptr
     @scala.annotation.targetName("apply_floatval")
-    def apply(floatval: Float)(using Zone): Ptr[AUnion] =
-      val ___ptr = alloc[AUnion](1)
+    def apply(floatval: Float)(using Zone): Ptr[json_value_data] =
+      val ___ptr = alloc[json_value_data](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[Float]].update(0, floatval)
       ___ptr
     @scala.annotation.targetName("apply_stringval")
-    def apply(stringval: CString)(using Zone): Ptr[AUnion] =
-      val ___ptr = alloc[AUnion](1)
+    def apply(stringval: Ptr[CUnsignedChar])(using Zone): Ptr[json_value_data] =
+      val ___ptr = alloc[json_value_data](1)
       val un = !___ptr
-      un.at(0).asInstanceOf[Ptr[CString]].update(0, stringval)
+      un.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]].update(0, stringval)
       ___ptr
     @scala.annotation.targetName("apply_arrayval")
-    def apply(arrayval: Ptr[Byte])(using Zone): Ptr[AUnion] =
-      val ___ptr = alloc[AUnion](1)
+    def apply(arrayval: Ptr[Byte])(using Zone): Ptr[json_value_data] =
+      val ___ptr = alloc[json_value_data](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[Ptr[Byte]]].update(0, arrayval)
       ___ptr
     @scala.annotation.targetName("apply_tableval")
-    def apply(tableval: Ptr[Byte])(using Zone): Ptr[AUnion] =
-      val ___ptr = alloc[AUnion](1)
+    def apply(tableval: Ptr[Byte])(using Zone): Ptr[json_value_data] =
+      val ___ptr = alloc[json_value_data](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[Ptr[Byte]]].update(0, tableval)
       ___ptr
-    extension (struct: AUnion)
+    extension (struct: json_value_data)
       def intval : CInt = !struct.at(0).asInstanceOf[Ptr[CInt]]
       def intval_=(value: CInt): Unit = !struct.at(0).asInstanceOf[Ptr[CInt]] = value
       def floatval : Float = !struct.at(0).asInstanceOf[Ptr[Float]]
       def floatval_=(value: Float): Unit = !struct.at(0).asInstanceOf[Ptr[Float]] = value
-      def stringval : CString = !struct.at(0).asInstanceOf[Ptr[CString]]
-      def stringval_=(value: CString): Unit = !struct.at(0).asInstanceOf[Ptr[CString]] = value
+      def stringval : Ptr[CUnsignedChar] = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]]
+      def stringval_=(value: Ptr[CUnsignedChar]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]] = value
       def arrayval : Ptr[Byte] = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]]
       def arrayval_=(value: Ptr[Byte]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]] = value
       def tableval : Ptr[Byte] = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]]
       def tableval_=(value: Ptr[Byte]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[Byte]]] = value
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_lua.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
   */
-  opaque type AUnion2 = CArray[Byte, Nat._8]
-  object AUnion2:
-    given _tag: Tag[AUnion2] = Tag.CArray[CChar, Nat._8](Tag.Byte, Tag.Nat8)
-    def apply()(using Zone): Ptr[AUnion2] =
-      val ___ptr = alloc[AUnion2](1)
+  opaque type lua_val_v = CArray[Byte, Nat._4]
+  object lua_val_v:
+    given _tag: Tag[lua_val_v] = Tag.CArray[CChar, Nat._4](Tag.Byte, Tag.Nat4)
+    def apply()(using Zone): Ptr[lua_val_v] =
+      val ___ptr = alloc[lua_val_v](1)
       ___ptr
     @scala.annotation.targetName("apply_intval")
-    def apply(intval: CUnsignedInt)(using Zone): Ptr[AUnion2] =
-      val ___ptr = alloc[AUnion2](1)
+    def apply(intval: CUnsignedInt)(using Zone): Ptr[lua_val_v] =
+      val ___ptr = alloc[lua_val_v](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[CUnsignedInt]].update(0, intval)
       ___ptr
     @scala.annotation.targetName("apply_floatval")
-    def apply(floatval: Float)(using Zone): Ptr[AUnion2] =
-      val ___ptr = alloc[AUnion2](1)
+    def apply(floatval: Float)(using Zone): Ptr[lua_val_v] =
+      val ___ptr = alloc[lua_val_v](1)
       val un = !___ptr
       un.at(0).asInstanceOf[Ptr[Float]].update(0, floatval)
       ___ptr
     @scala.annotation.targetName("apply_strval")
-    def apply(strval: CString)(using Zone): Ptr[AUnion2] =
-      val ___ptr = alloc[AUnion2](1)
+    def apply(strval: Ptr[CUnsignedChar])(using Zone): Ptr[lua_val_v] =
+      val ___ptr = alloc[lua_val_v](1)
       val un = !___ptr
-      un.at(0).asInstanceOf[Ptr[CString]].update(0, strval)
+      un.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]].update(0, strval)
       ___ptr
-    extension (struct: AUnion2)
+    extension (struct: lua_val_v)
       def intval : CUnsignedInt = !struct.at(0).asInstanceOf[Ptr[CUnsignedInt]]
       def intval_=(value: CUnsignedInt): Unit = !struct.at(0).asInstanceOf[Ptr[CUnsignedInt]] = value
       def floatval : Float = !struct.at(0).asInstanceOf[Ptr[Float]]
       def floatval_=(value: Float): Unit = !struct.at(0).asInstanceOf[Ptr[Float]] = value
-      def strval : CString = !struct.at(0).asInstanceOf[Ptr[CString]]
-      def strval_=(value: CString): Unit = !struct.at(0).asInstanceOf[Ptr[CString]] = value
+      def strval : Ptr[CUnsignedChar] = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]]
+      def strval_=(value: Ptr[CUnsignedChar]): Unit = !struct.at(0).asInstanceOf[Ptr[Ptr[CUnsignedChar]]] = value
 
 
 @extern
@@ -3730,7 +3730,7 @@ private[pdapi] object extern_functions:
   import _root_.pdapi.structs.*
   import _root_.pdapi.unions.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   def SoundFormat_bytesPerFrame(fmt : SoundFormat): uint32_t = extern
 
@@ -3746,30 +3746,30 @@ private[pdapi] object extern_functions:
 
   private[pdapi] def __sn_wrap_pdapi_json_intValue(value : Ptr[json_value]): CInt = extern
 
-  private[pdapi] def __sn_wrap_pdapi_json_stringValue(value : Ptr[json_value]): CString = extern
+  private[pdapi] def __sn_wrap_pdapi_json_stringValue(value : Ptr[json_value]): Ptr[CUnsignedChar] = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api.h
   */
   def eventHandler(playdate : Ptr[PlaydateAPI], event : PDSystemEvent, arg : uint32_t): CInt = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_setArrayDecode(decoder : Ptr[json_decoder], willDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Unit], didDecodeArrayValue : CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit], didDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Ptr[Byte]]): Unit = extern
+  def json_setArrayDecode(decoder : Ptr[json_decoder], willDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Unit], didDecodeArrayValue : CFuncPtr3[Ptr[json_decoder], CInt, json_value, Unit], didDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]]): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_setTableDecode(decoder : Ptr[json_decoder], willDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Unit], didDecodeTableValue : CFuncPtr3[Ptr[json_decoder], CString, json_value, Unit], didDecodeSublist : CFuncPtr3[Ptr[json_decoder], CString, json_value_type, Ptr[Byte]]): Unit = extern
+  def json_setTableDecode(decoder : Ptr[json_decoder], willDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Unit], didDecodeTableValue : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value, Unit], didDecodeSublist : CFuncPtr3[Ptr[json_decoder], Ptr[CUnsignedChar], json_value_type, Ptr[Byte]]): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   def pd_frequencyToNote(f : Float): MIDINote = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sound.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
   */
   def pd_noteToFrequency(n : MIDINote): Float = extern
 
@@ -3784,7 +3784,7 @@ object functions:
   export extern_functions.*
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   def LCDMakeRect(x : CInt, y : CInt, width : CInt, height : CInt)(using Zone): LCDRect =
     val __ptr_0: Ptr[LCDRect] = alloc[LCDRect](1)
@@ -3792,27 +3792,13 @@ object functions:
     !(__ptr_0 + 0)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   def LCDMakeRect(x : CInt, y : CInt, width : CInt, height : CInt)(__return : Ptr[LCDRect]): Unit =
     __sn_wrap_pdapi_LCDMakeRect(x, y, width, height, __return)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
-  */
-  def LCDRect_translate(r : Ptr[LCDRect], dx : CInt, dy : CInt)(__return : Ptr[LCDRect]): Unit =
-    __sn_wrap_pdapi_LCDRect_translate(r, dx, dy, __return)
-
-  /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
-  */
-  def LCDRect_translate(r : Ptr[LCDRect], dx : CInt, dy : CInt)(using Zone): LCDRect =
-    val __ptr_0: Ptr[LCDRect] = alloc[LCDRect](1)
-    __sn_wrap_pdapi_LCDRect_translate(r, dx, dy, (__ptr_0 + 0))
-    !(__ptr_0 + 0)
-
-  /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_gfx.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   def LCDRect_translate(r : LCDRect, dx : CInt, dy : CInt)(using Zone): LCDRect =
     val __ptr_0: Ptr[LCDRect] = alloc[LCDRect](2)
@@ -3821,7 +3807,27 @@ object functions:
     !(__ptr_0 + 1)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
+  */
+  def LCDRect_translate(r : Ptr[LCDRect], dx : CInt, dy : CInt)(using Zone): LCDRect =
+    val __ptr_0: Ptr[LCDRect] = alloc[LCDRect](1)
+    __sn_wrap_pdapi_LCDRect_translate(r, dx, dy, (__ptr_0 + 0))
+    !(__ptr_0 + 0)
+
+  /**
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
+  */
+  def LCDRect_translate(r : Ptr[LCDRect], dx : CInt, dy : CInt)(__return : Ptr[LCDRect]): Unit =
+    __sn_wrap_pdapi_LCDRect_translate(r, dx, dy, __return)
+
+  /**
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
+  */
+  def PDRectMake(x : Float, y : Float, width : Float, height : Float)(__return : Ptr[PDRect]): Unit =
+    __sn_wrap_pdapi_PDRectMake(x, y, width, height, __return)
+
+  /**
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sprite.h
   */
   def PDRectMake(x : Float, y : Float, width : Float, height : Float)(using Zone): PDRect =
     val __ptr_0: Ptr[PDRect] = alloc[PDRect](1)
@@ -3829,19 +3835,7 @@ object functions:
     !(__ptr_0 + 0)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_sprite.h
-  */
-  def PDRectMake(x : Float, y : Float, width : Float, height : Float)(__return : Ptr[PDRect]): Unit =
-    __sn_wrap_pdapi_PDRectMake(x, y, width, height, __return)
-
-  /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
-  */
-  def json_boolValue(value : Ptr[json_value]): CInt =
-    __sn_wrap_pdapi_json_boolValue(value)
-
-  /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
   def json_boolValue(value : json_value)(using Zone): CInt =
     val __ptr_0: Ptr[json_value] = alloc[json_value](1)
@@ -3849,13 +3843,13 @@ object functions:
     __sn_wrap_pdapi_json_boolValue((__ptr_0 + 0))
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_floatValue(value : Ptr[json_value]): Float =
-    __sn_wrap_pdapi_json_floatValue(value)
+  def json_boolValue(value : Ptr[json_value]): CInt =
+    __sn_wrap_pdapi_json_boolValue(value)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
   def json_floatValue(value : json_value)(using Zone): Float =
     val __ptr_0: Ptr[json_value] = alloc[json_value](1)
@@ -3863,7 +3857,19 @@ object functions:
     __sn_wrap_pdapi_json_floatValue((__ptr_0 + 0))
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
+  */
+  def json_floatValue(value : Ptr[json_value]): Float =
+    __sn_wrap_pdapi_json_floatValue(value)
+
+  /**
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
+  */
+  def json_intValue(value : Ptr[json_value]): CInt =
+    __sn_wrap_pdapi_json_intValue(value)
+
+  /**
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
   def json_intValue(value : json_value)(using Zone): CInt =
     val __ptr_0: Ptr[json_value] = alloc[json_value](1)
@@ -3871,23 +3877,17 @@ object functions:
     __sn_wrap_pdapi_json_intValue((__ptr_0 + 0))
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_intValue(value : Ptr[json_value]): CInt =
-    __sn_wrap_pdapi_json_intValue(value)
-
-  /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
-  */
-  def json_stringValue(value : json_value)(using Zone): CString =
+  def json_stringValue(value : json_value)(using Zone): Ptr[CUnsignedChar] =
     val __ptr_0: Ptr[json_value] = alloc[json_value](1)
     !(__ptr_0 + 0) = value
     __sn_wrap_pdapi_json_stringValue((__ptr_0 + 0))
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/demos/app/.native/src/main/resources/pd_api/pd_api_json.h
+   * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
   */
-  def json_stringValue(value : Ptr[json_value]): CString =
+  def json_stringValue(value : Ptr[json_value]): Ptr[CUnsignedChar] =
     __sn_wrap_pdapi_json_stringValue(value)
 
 object types:
@@ -4037,8 +4037,8 @@ object all:
   export _root_.pdapi.structs.playdate_sprite
   export _root_.pdapi.structs.playdate_sys
   export _root_.pdapi.structs.playdate_video
-  export _root_.pdapi.unions.AUnion
-  export _root_.pdapi.unions.AUnion2
+  export _root_.pdapi.unions.json_value_data
+  export _root_.pdapi.unions.lua_val_v
   export _root_.pdapi.functions.SoundFormat_bytesPerFrame
   export _root_.pdapi.functions.eventHandler
   export _root_.pdapi.functions.json_setArrayDecode
