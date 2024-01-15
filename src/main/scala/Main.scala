@@ -36,8 +36,8 @@ object Main {
   val LCD_COLUMNS = 400
   val LCD_ROWS = 240
 
-  var w = 100.0f
-  val h = 100.0f
+  var w = 10.0f
+  val h = 10.0f
 
   var state = true
 
@@ -146,12 +146,12 @@ object Main {
     val kColorWhite = 1.toUInt
     val kColorBlack = 0.toUInt
 
-    pd.!
-      .graphics
-      .!
-      .clear(
-        kColorWhite
-      )
+    // pd.!
+    //   .graphics
+    //   .!
+    //   .clear(
+    //     kColorWhite
+    //   )
 
     // zoned {
     //   printToConsole(toCString(s"kColorWhite is ackshually ${LCDSolidColor.kColorWhite}"))
