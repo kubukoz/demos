@@ -22,7 +22,7 @@ object enumerations:
   opaque type FileOptions = CUnsignedInt
   object FileOptions extends CEnumU[FileOptions]:
     given _tag: Tag[FileOptions] = Tag.UInt
-    inline def define(inline a: Long): FileOptions = a.toUInt
+    inline def define(inline a: Int): FileOptions = a.toUInt
     val kFileRead = define(1)
     val kFileReadData = define(2)
     val kFileWrite = define(4)
@@ -45,7 +45,7 @@ object enumerations:
   opaque type LCDBitmapDrawMode = CUnsignedInt
   object LCDBitmapDrawMode extends CEnumU[LCDBitmapDrawMode]:
     given _tag: Tag[LCDBitmapDrawMode] = Tag.UInt
-    inline def define(inline a: Long): LCDBitmapDrawMode = a.toUInt
+    inline def define(inline a: Int): LCDBitmapDrawMode = a.toUInt
     val kDrawModeCopy = define(0)
     val kDrawModeWhiteTransparent = define(1)
     val kDrawModeBlackTransparent = define(2)
@@ -76,7 +76,7 @@ object enumerations:
   opaque type LCDBitmapFlip = CUnsignedInt
   object LCDBitmapFlip extends CEnumU[LCDBitmapFlip]:
     given _tag: Tag[LCDBitmapFlip] = Tag.UInt
-    inline def define(inline a: Long): LCDBitmapFlip = a.toUInt
+    inline def define(inline a: Int): LCDBitmapFlip = a.toUInt
     val kBitmapUnflipped = define(0)
     val kBitmapFlippedX = define(1)
     val kBitmapFlippedY = define(2)
@@ -99,7 +99,7 @@ object enumerations:
   opaque type LCDFontLanguage = CUnsignedInt
   object LCDFontLanguage extends CEnumU[LCDFontLanguage]:
     given _tag: Tag[LCDFontLanguage] = Tag.UInt
-    inline def define(inline a: Long): LCDFontLanguage = a.toUInt
+    inline def define(inline a: Int): LCDFontLanguage = a.toUInt
     val kLCDFontLanguageEnglish = define(0)
     val kLCDFontLanguageJapanese = define(1)
     val kLCDFontLanguageUnknown = define(2)
@@ -120,7 +120,7 @@ object enumerations:
   opaque type LCDLineCapStyle = CUnsignedInt
   object LCDLineCapStyle extends CEnumU[LCDLineCapStyle]:
     given _tag: Tag[LCDLineCapStyle] = Tag.UInt
-    inline def define(inline a: Long): LCDLineCapStyle = a.toUInt
+    inline def define(inline a: Int): LCDLineCapStyle = a.toUInt
     val kLineCapStyleButt = define(0)
     val kLineCapStyleSquare = define(1)
     val kLineCapStyleRound = define(2)
@@ -141,7 +141,7 @@ object enumerations:
   opaque type LCDPolygonFillRule = CUnsignedInt
   object LCDPolygonFillRule extends CEnumU[LCDPolygonFillRule]:
     given _tag: Tag[LCDPolygonFillRule] = Tag.UInt
-    inline def define(inline a: Long): LCDPolygonFillRule = a.toUInt
+    inline def define(inline a: Int): LCDPolygonFillRule = a.toUInt
     val kPolygonFillNonZero = define(0)
     val kPolygonFillEvenOdd = define(1)
     inline def getName(inline value: LCDPolygonFillRule): Option[String] =
@@ -160,7 +160,7 @@ object enumerations:
   opaque type LCDSolidColor = CUnsignedInt
   object LCDSolidColor extends CEnumU[LCDSolidColor]:
     given _tag: Tag[LCDSolidColor] = Tag.UInt
-    inline def define(inline a: Long): LCDSolidColor = a.toUInt
+    inline def define(inline a: Int): LCDSolidColor = a.toUInt
     val kColorBlack = define(0)
     val kColorWhite = define(1)
     val kColorClear = define(2)
@@ -183,7 +183,7 @@ object enumerations:
   opaque type LFOType = CUnsignedInt
   object LFOType extends CEnumU[LFOType]:
     given _tag: Tag[LFOType] = Tag.UInt
-    inline def define(inline a: Long): LFOType = a.toUInt
+    inline def define(inline a: Int): LFOType = a.toUInt
     val kLFOTypeSquare = define(0)
     val kLFOTypeTriangle = define(1)
     val kLFOTypeSine = define(2)
@@ -214,7 +214,7 @@ object enumerations:
   opaque type LuaType = CUnsignedInt
   object LuaType extends CEnumU[LuaType]:
     given _tag: Tag[LuaType] = Tag.UInt
-    inline def define(inline a: Long): LuaType = a.toUInt
+    inline def define(inline a: Int): LuaType = a.toUInt
     val kTypeNil = define(0)
     val kTypeBool = define(1)
     val kTypeInt = define(2)
@@ -247,7 +247,7 @@ object enumerations:
   opaque type PDButtons = CUnsignedInt
   object PDButtons extends CEnumU[PDButtons]:
     given _tag: Tag[PDButtons] = Tag.UInt
-    inline def define(inline a: Long): PDButtons = a.toUInt
+    inline def define(inline a: Int): PDButtons = a.toUInt
     val kButtonLeft = define(1)
     val kButtonRight = define(2)
     val kButtonUp = define(4)
@@ -274,7 +274,7 @@ object enumerations:
   opaque type PDLanguage = CUnsignedInt
   object PDLanguage extends CEnumU[PDLanguage]:
     given _tag: Tag[PDLanguage] = Tag.UInt
-    inline def define(inline a: Long): PDLanguage = a.toUInt
+    inline def define(inline a: Int): PDLanguage = a.toUInt
     val kPDLanguageEnglish = define(0)
     val kPDLanguageJapanese = define(1)
     val kPDLanguageUnknown = define(2)
@@ -295,7 +295,7 @@ object enumerations:
   opaque type PDPeripherals = CUnsignedInt
   object PDPeripherals extends CEnumU[PDPeripherals]:
     given _tag: Tag[PDPeripherals] = Tag.UInt
-    inline def define(inline a: Long): PDPeripherals = a.toUInt
+    inline def define(inline a: Int): PDPeripherals = a.toUInt
     val kNone = define(0)
     val kAccelerometer = define(1)
     val kAllPeripherals = define(65535)
@@ -316,7 +316,7 @@ object enumerations:
   opaque type PDStringEncoding = CUnsignedInt
   object PDStringEncoding extends CEnumU[PDStringEncoding]:
     given _tag: Tag[PDStringEncoding] = Tag.UInt
-    inline def define(inline a: Long): PDStringEncoding = a.toUInt
+    inline def define(inline a: Int): PDStringEncoding = a.toUInt
     val kASCIIEncoding = define(0)
     val kUTF8Encoding = define(1)
     val k16BitLEEncoding = define(2)
@@ -337,7 +337,7 @@ object enumerations:
   opaque type PDSystemEvent = CUnsignedInt
   object PDSystemEvent extends CEnumU[PDSystemEvent]:
     given _tag: Tag[PDSystemEvent] = Tag.UInt
-    inline def define(inline a: Long): PDSystemEvent = a.toUInt
+    inline def define(inline a: Int): PDSystemEvent = a.toUInt
     val kEventInit = define(0)
     val kEventInitLua = define(1)
     val kEventLock = define(2)
@@ -372,7 +372,7 @@ object enumerations:
   opaque type SoundFormat = CUnsignedInt
   object SoundFormat extends CEnumU[SoundFormat]:
     given _tag: Tag[SoundFormat] = Tag.UInt
-    inline def define(inline a: Long): SoundFormat = a.toUInt
+    inline def define(inline a: Int): SoundFormat = a.toUInt
     val kSound8bitMono = define(0)
     val kSound8bitStereo = define(1)
     val kSound16bitMono = define(2)
@@ -399,7 +399,7 @@ object enumerations:
   opaque type SoundWaveform = CUnsignedInt
   object SoundWaveform extends CEnumU[SoundWaveform]:
     given _tag: Tag[SoundWaveform] = Tag.UInt
-    inline def define(inline a: Long): SoundWaveform = a.toUInt
+    inline def define(inline a: Int): SoundWaveform = a.toUInt
     val kWaveformSquare = define(0)
     val kWaveformTriangle = define(1)
     val kWaveformSine = define(2)
@@ -430,7 +430,7 @@ object enumerations:
   opaque type SpriteCollisionResponseType = CUnsignedInt
   object SpriteCollisionResponseType extends CEnumU[SpriteCollisionResponseType]:
     given _tag: Tag[SpriteCollisionResponseType] = Tag.UInt
-    inline def define(inline a: Long): SpriteCollisionResponseType = a.toUInt
+    inline def define(inline a: Int): SpriteCollisionResponseType = a.toUInt
     val kCollisionTypeSlide = define(0)
     val kCollisionTypeFreeze = define(1)
     val kCollisionTypeOverlap = define(2)
@@ -453,7 +453,7 @@ object enumerations:
   opaque type TwoPoleFilterType = CUnsignedInt
   object TwoPoleFilterType extends CEnumU[TwoPoleFilterType]:
     given _tag: Tag[TwoPoleFilterType] = Tag.UInt
-    inline def define(inline a: Long): TwoPoleFilterType = a.toUInt
+    inline def define(inline a: Int): TwoPoleFilterType = a.toUInt
     val kFilterTypeLowPass = define(0)
     val kFilterTypeHighPass = define(1)
     val kFilterTypeBandPass = define(2)
@@ -482,7 +482,7 @@ object enumerations:
   opaque type json_value_type = CUnsignedInt
   object json_value_type extends CEnumU[json_value_type]:
     given _tag: Tag[json_value_type] = Tag.UInt
-    inline def define(inline a: Long): json_value_type = a.toUInt
+    inline def define(inline a: Int): json_value_type = a.toUInt
     val kJSONNull = define(0)
     val kJSONTrue = define(1)
     val kJSONFalse = define(2)
@@ -513,7 +513,7 @@ object enumerations:
   opaque type l_valtype = CUnsignedInt
   object l_valtype extends CEnumU[l_valtype]:
     given _tag: Tag[l_valtype] = Tag.UInt
-    inline def define(inline a: Long): l_valtype = a.toUInt
+    inline def define(inline a: Int): l_valtype = a.toUInt
     val kInt = define(0)
     val kFloat = define(1)
     val kStr = define(2)
