@@ -160,28 +160,27 @@ object Main {
     pd.!.system.!.drawFPS(0, 0)
 
     if (state)
-      ()
-    // pd.!
-    //   .graphics
-    //   .!
-    //   .fillRect(
-    //     x,
-    //     y,
-    //     w.toInt,
-    //     h.toInt,
-    //     kColorBlack,
-    //   )
-    else {
       pd.!
         .graphics
         .!
-        .drawRect(
+        .fillRect(
           x,
           y,
           w.toInt,
           h.toInt,
-          kColorWhite,
+          kColorBlack,
         )
+    else {
+      // pd.!
+      //   .graphics
+      //   .!
+      //   .drawRect(
+      //     x,
+      //     y,
+      //     w.toInt,
+      //     h.toInt,
+      //     kColorBlack,
+      //   )
     }
 
     if (!state) {
@@ -193,8 +192,7 @@ object Main {
           LCD_ROWS - 50,
           50,
           50,
-          // LCDSolidColor.kColorBlack.value,
-          0.toUInt,
+          kColorBlack,
         )
     }
     1

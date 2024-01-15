@@ -1,3 +1,4 @@
+// format: off
 package pdapi
 
 import _root_.scala.scalanative.unsafe.*
@@ -572,11 +573,6 @@ object aliases:
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
   type LCDColor = USize
-  object LCDColor:
-    given _tag: Tag[LCDColor] = Tag.USize
-    inline def apply(inline o: USize): LCDColor = o
-    extension (v: LCDColor)
-      inline def value: USize = v
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
