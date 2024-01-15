@@ -899,12 +899,13 @@ object aliases:
   /**
    * [bindgen] header: /nix/store/wkn9s7f1r35c789hqcs84hpgqg3p3q15-libSystem-11.0.0/include/sys/_types/_uintptr_t.h
   */
-  opaque type uintptr_t = CUnsignedInt
+  // manually switched to usize
+  opaque type uintptr_t = USize
   object uintptr_t:
-    given _tag: Tag[uintptr_t] = Tag.UInt
-    inline def apply(inline o: CUnsignedInt): uintptr_t = o
+    given _tag: Tag[uintptr_t] = Tag.USize
+    inline def apply(inline o: USize): uintptr_t = o
     extension (v: uintptr_t)
-      inline def value: CUnsignedInt = v
+      inline def value: USize = v
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_json.h
