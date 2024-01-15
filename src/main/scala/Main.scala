@@ -75,7 +75,7 @@ object Main {
     arg: UInt,
   ): Int = {
     if (event == kEventInit)
-      pd_display_setRefreshRate(50.0f)
+      pd.!.display.!.setRefreshRate(50.0f)
     0
   }
 
@@ -84,41 +84,6 @@ object Main {
 
   @extern
   def pd_log_error(msg: CString): Unit = extern
-
-  @extern def pd_system_drawFPS(
-    x: Int,
-    y: Int,
-  ): Unit = extern
-
-  @extern def pd_system_getButtonState(
-    current: Ptr[PDButtons],
-    pressed: Ptr[PDButtons],
-    released: Ptr[PDButtons],
-  ): Unit = extern
-
-  @extern def pd_graphics_clear(color: LCDColor): Unit = extern
-
-  @extern def pd_graphics_drawRect(
-    x: Int,
-    y: Int,
-    w: Int,
-    h: Int,
-    color: LCDColor,
-  ): Unit = extern
-
-  @extern def pd_graphics_fillRect(
-    x: Int,
-    y: Int,
-    w: Int,
-    h: Int,
-    color: LCDColor,
-  ): Unit = extern
-
-  @extern def pd_display_setRefreshRate(
-    rate: Float
-  ): Unit = extern
-
-  @extern def pd_system_getCrankChange(): Float = extern
 
   @exported("sn_update")
   def update(
@@ -129,7 +94,7 @@ object Main {
     val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
     val released = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
 
-    pd_system_getButtonState(current, pressed, released)
+    pd.!.system.!.getButtonState(current, pressed, released)
 
     if (pressed.!.is(kButtonA)) {
       pd_system_logToConsole(c"Button A is pressed")
@@ -140,15 +105,8 @@ object Main {
       state = !state
     }
 
-    if (pressed.!.is(kButtonB)) {
-      zoned {
-        pd_system_logToConsole(
-          toCString(
-            s"State dump: w=$w, h=$h, x=$x, y=$y, state=$state, dirX=$dirX, dirY=$dirY"
-          )
-        )
-      }
-    }
+    // if (pressed.!.is(kButtonB)) {
+    // }
 
     if (dirX == DirectionX.Left) {
       x -= VelocityX
@@ -176,41 +134,43 @@ object Main {
     }
     y = 0 max ((LCD_ROWS - h.toInt) min y.toInt)
 
-    val crankDelta = pd_system_getCrankChange()
+    val crankDelta = pd.!.system.!.getCrankChange()
 
     if (crankDelta != 0) {
       w += crankDelta.toInt
     }
 
-    pd_graphics_clear(
-      LCDColor(uintptr_t(LCDSolidColor.kColorWhite.value))
-    )
+    pd.!
+      .graphics
+      .!
+      .clear(
+        LCDColor(uintptr_t(LCDSolidColor.kColorWhite.value))
+      )
 
-    pd_system_drawFPS(0, 0)
+    pd.!.system.!.drawFPS(0, 0)
 
     if (state)
-      pd_graphics_fillRect(
-        x,
-        y,
-        w.toInt,
-        h.toInt,
-        LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
-      )
+      pd.!
+        .graphics
+        .!
+        .fillRect(
+          x,
+          y,
+          w.toInt,
+          h.toInt,
+          LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+        )
     else {
-
-      // zoned {
-      //   pd_log_error(
-      //     toCString(s"real kBlack is: ${LCDSolidColor.kColorBlack}")
-      //   )
-      // }
-
-      pd_graphics_drawRect(
-        x,
-        y,
-        w.toInt,
-        h.toInt,
-        LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
-      )
+      pd.!
+        .graphics
+        .!
+        .drawRect(
+          x,
+          y,
+          w.toInt,
+          h.toInt,
+          LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+        )
     }
 
     if (!state) {

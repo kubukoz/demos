@@ -22,7 +22,16 @@ void pd_scalanative_init(PlaydateAPI *pd)
 
 static int gameTick(void *userdata)
 {
-    return sn_update((PlaydateAPI *)userdata);
+    PlaydateAPI *pd = userdata;
+
+    PDButtons pressed;
+    pd->system->getButtonState(NULL, &pressed, NULL);
+    if (pressed & kButtonB)
+    {
+        pd->system->logToConsole("getCrankChange native: %p", pd->system->getCrankChange);
+    }
+
+    return sn_update(pd);
 };
 
 void log_old_errors(void);
@@ -97,41 +106,6 @@ void truncate_errors()
 }
 
 // PD API forwarders
-
-void pd_system_drawFPS(int x, int y)
-{
-    _pd->system->drawFPS(x, y);
-}
-
-void pd_display_setRefreshRate(float rate)
-{
-    _pd->display->setRefreshRate(rate);
-}
-
-void pd_system_getButtonState(PDButtons *current, PDButtons *pressed, PDButtons *released)
-{
-    _pd->system->getButtonState(current, pressed, released);
-}
-
-void pd_graphics_clear(LCDColor color)
-{
-    _pd->graphics->clear(color);
-}
-
-void pd_graphics_fillRect(int x, int y, int w, int h, LCDColor color)
-{
-    _pd->graphics->fillRect(x, y, w, h, color);
-}
-
-void pd_graphics_drawRect(int x, int y, int w, int h, LCDColor color)
-{
-    _pd->graphics->drawRect(x, y, w, h, color);
-}
-
-float pd_system_getCrankChange()
-{
-    return _pd->system->getCrankChange();
-}
 
 void pd_system_logToConsole(const char *fmt)
 {
