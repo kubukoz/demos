@@ -571,12 +571,12 @@ object aliases:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
-  type LCDColor = uintptr_t
+  type LCDColor = USize
   object LCDColor:
-    given _tag: Tag[LCDColor] = uintptr_t._tag
-    inline def apply(inline o: uintptr_t): LCDColor = o
+    given _tag: Tag[LCDColor] = Tag.USize
+    inline def apply(inline o: USize): LCDColor = o
     extension (v: LCDColor)
-      inline def value: uintptr_t = v
+      inline def value: USize = v
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h

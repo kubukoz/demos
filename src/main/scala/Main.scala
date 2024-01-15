@@ -146,7 +146,7 @@ object Main {
       .graphics
       .!
       .clear(
-        uintptr_t(LCDSolidColor.kColorWhite.value)
+        LCDSolidColor.kColorWhite.value
       )
 
     // zoned {
@@ -164,7 +164,7 @@ object Main {
           y,
           w.toInt,
           h.toInt,
-          uintptr_t(LCDSolidColor.kColorBlack.value),
+          LCDSolidColor.kColorBlack.value,
         )
     else {
       pd.!
@@ -175,12 +175,12 @@ object Main {
           y,
           w.toInt,
           h.toInt,
-          uintptr_t(LCDSolidColor.kColorBlack.value),
+          LCDSolidColor.kColorBlack.value,
         )
     }
 
     if (!state) {
-      pd.!.graphics.!.fillRect(0, LCD_ROWS - 50, 50, 50, uintptr_t(LCDSolidColor.kColorBlack.value))
+      pd.!.graphics.!.fillRect(0, LCD_ROWS - 50, 50, 50, LCDSolidColor.kColorBlack.value)
     }
     1
   }
