@@ -165,12 +165,14 @@ int scalanative_unwind_get_context(void *context)
 
 long long scalanative_atomic_load_llong(long long *atm)
 {
+    pd_log_error("scalanative_atomic_load_llong");
     exit(26);
     return 0;
 }
 
 bool scalanative_atomic_compare_exchange_strong_llong(long long *atm, long long *expected, long long desired)
 {
+    pd_log_error("scalanative_atomic_compare_exchange_strong_llong");
     exit(27);
     return false;
 }
