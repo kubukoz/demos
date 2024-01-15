@@ -4,6 +4,7 @@ import pdapi.all._
 import pdapi.enumerations.PDButtons.kButtonA
 import pdapi.enumerations.PDSystemEvent.kEventInit
 import scalanative.unsafe._
+import scalanative.unsigned._
 
 import scala.util.Random
 import pdapi.enumerations.PDButtons.kButtonB
@@ -80,7 +81,8 @@ object Main {
   }
 
   @extern
-  def pd_system_logToConsole(msg: CString): Unit = extern
+  @name("pd_system_logToConsole")
+  def printToConsole(msg: CString): Unit = extern
 
   @extern
   def pd_log_error(msg: CString): Unit = extern
@@ -97,10 +99,10 @@ object Main {
     pd.!.system.!.getButtonState(current, pressed, released)
 
     if (pressed.!.is(kButtonA)) {
-      pd_system_logToConsole(c"Button A is pressed")
+      printToConsole(c"Button A is pressed")
 
       if (Random.nextInt(10) > 8)
-        pd_system_logToConsole(c"RANDOM EVENT ON BUTTONS!")
+        printToConsole(c"RANDOM EVENT ON BUTTONS!")
 
       state = !state
     }
@@ -144,8 +146,12 @@ object Main {
       .graphics
       .!
       .clear(
-        LCDColor(uintptr_t(LCDSolidColor.kColorWhite.value))
+        uintptr_t(LCDSolidColor.kColorWhite.value)
       )
+
+    // zoned {
+    //   printToConsole(toCString(s"kColorWhite is ackshually ${LCDSolidColor.kColorWhite}"))
+    // }
 
     pd.!.system.!.drawFPS(0, 0)
 
@@ -158,7 +164,7 @@ object Main {
           y,
           w.toInt,
           h.toInt,
-          LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+          uintptr_t(LCDSolidColor.kColorBlack.value),
         )
     else {
       pd.!
@@ -169,12 +175,12 @@ object Main {
           y,
           w.toInt,
           h.toInt,
-          LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)),
+          uintptr_t(LCDSolidColor.kColorBlack.value),
         )
     }
 
     if (!state) {
-      pd.!.graphics.!.fillRect(0, 0, 50, 50, LCDColor(uintptr_t(LCDSolidColor.kColorBlack.value)))
+      pd.!.graphics.!.fillRect(0, LCD_ROWS - 50, 50, 50, uintptr_t(LCDSolidColor.kColorBlack.value))
     }
     1
   }

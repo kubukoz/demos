@@ -26,10 +26,10 @@ static int gameTick(void *userdata)
 
     PDButtons pressed;
     pd->system->getButtonState(NULL, &pressed, NULL);
-    if (pressed & kButtonB)
-    {
-        pd->system->logToConsole("getCrankChange native: %p", pd->system->getCrankChange);
-    }
+
+    // if (pressed & kButtonB)
+    // {
+    // }
 
     return sn_update(pd);
 };
