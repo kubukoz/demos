@@ -8,7 +8,5 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 		ScalaNativeInit();
 	}
 
-	sn_event(pd, event, arg);
-
-	return 0;
+	return sn_event(pd, event, arg);
 }

@@ -50,7 +50,7 @@ object Main {
     pd: Ptr[PlaydateAPI],
     event: PDSystemEvent,
     arg: UInt,
-  ) = {
+  ): Int = {
 
     val f: CFuncPtr1[Ptr[Byte], CInt] = update
 
@@ -58,6 +58,8 @@ object Main {
 
     if (event == kEventInit)
       pd.!.system.!.setUpdateCallback(ptr, pd.asInstanceOf[Ptr[Byte]])
+
+    0
   }
 
   def update(
