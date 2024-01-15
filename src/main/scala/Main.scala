@@ -11,6 +11,7 @@ import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.CharBuffer
 import scala.scalanative.unsigned.UInt
+import scala.util.NotGiven
 
 object Main {
 
@@ -49,7 +50,7 @@ object Main {
 
   }
 
-  inline def zoned[T](f: Zone ?=> T): T = Zone { implicit z =>
+  inline def zoned[T](f: Zone ?=> T)(using NotGiven[Zone]): T = Zone { implicit z =>
     f(
       using z
     )
@@ -123,7 +124,6 @@ object Main {
   def update(
     pd: Ptr[PlaydateAPI]
   ): Int = {
-    pd_system_drawFPS(0, 0)
 
     val current = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
     val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
@@ -141,7 +141,7 @@ object Main {
     }
 
     if (pressed.!.is(kButtonB)) {
-      Zone { implicit z =>
+      zoned {
         pd_system_logToConsole(
           toCString(
             s"State dump: w=$w, h=$h, x=$x, y=$y, state=$state, dirX=$dirX, dirY=$dirY"
@@ -185,6 +185,8 @@ object Main {
     pd_graphics_clear(
       LCDColor(uintptr_t(LCDSolidColor.kColorWhite.value))
     )
+
+    pd_system_drawFPS(0, 0)
 
     if (state)
       pd_graphics_fillRect(
