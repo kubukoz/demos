@@ -1,5 +1,3 @@
-import bindgen.interface.Binding
-
 def crossPlugin(
   x: sbt.librarymanagement.ModuleID
 ) = compilerPlugin(x.cross(CrossVersion.full))
@@ -18,6 +16,8 @@ val commonSettings = Seq(
   Compile / doc / sources := Nil,
 )
 
+val playOutput = taskKey[Unit]("Play written output")
+
 val app = crossProject(JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
   .settings(commonSettings)
@@ -32,17 +32,28 @@ val app = crossProject(JVMPlatform, NativePlatform)
   .nativeConfigure(
     _.settings(
       libraryDependencies ++= Seq(
-        "com.armanbilge" %%% "epollcat" % "0.1.6"
-      )
-      // bindgenBinary := file(sys.env("BINDGEN_PATH")),
-      // bindgenBindings := Seq(
-      //   Binding
-      //     .builder(file(sys.env("SQLITE_PATH")), "libsqlite")
-      //     .withLinkName("sqlite3")
-      //     .build
-      // ),
+        "com.armanbilge" %%% "epollcat" % "0.1.6",
+        "com.lihaoyi" %%% "os-lib" % "0.9.3",
+      ),
+      nativeConfig ~= {
+
+        _.withCompileOptions(
+          Seq("-I/Users/kubukoz/projects/demos/lib")
+        )
+          .withLinkingOptions(
+            Seq(
+              "-L/Users/kubukoz/projects/demos/lib",
+              "-rpath",
+              "/Users/kubukoz/projects/demos/lib",
+            )
+          )
+      },
+      playOutput := {
+        import sys.process._
+
+        "open out.wav".!!
+      },
     )
-    // .enablePlugins(BindgenPlugin)
   )
 
 val root = project
