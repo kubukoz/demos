@@ -15,10 +15,18 @@ object Main {
     val data = args.head.getBytes()
     val (waveformBuffer, waveformSize) = encodeToSamples(data.at(0), data.size.toULong)
 
+    val (output, outputSize) = decodeSamples(waveformBuffer, waveformSize)
+
+    val bytesAgain = Array.ofDim[Byte](outputSize)
+    for (i <- 0 until outputSize)
+      bytesAgain(i) = output(i)
+
+    println("decoded: " + new String(bytesAgain))
+
     Zone { implicit z =>
       writeWav(
         data = waveformBuffer,
-        dataBytes = waveformSize,
+        dataBytes = waveformSize.toUInt,
       )
     }
   }
@@ -30,10 +38,12 @@ object Main {
     import ggwave.all._
     import ggwave.constants._
 
+    ggwave_setLogFile(null)
+
     val params = ggwave_getDefaultParameters()
-    params.operatingMode = GGWAVE_OPERATING_MODE_TX.toInt
-    params.sampleFormatInp = ggwave_SampleFormat.GGWAVE_SAMPLE_FORMAT_U8
-    params.sampleFormatOut = ggwave_SampleFormat.GGWAVE_SAMPLE_FORMAT_U8
+    params.operatingMode = GGWAVE_OPERATING_MODE_RX_AND_TX.toInt
+    params.sampleFormatInp = ggwave_SampleFormat.GGWAVE_SAMPLE_FORMAT_I16
+    params.sampleFormatOut = ggwave_SampleFormat.GGWAVE_SAMPLE_FORMAT_I16
 
     ggwave_init(params)
   }
@@ -43,7 +53,7 @@ object Main {
     payloadSize: CSize,
   ): (
     Ptr[Byte],
-    CSize,
+    Int,
   ) = Zone { implicit z =>
     import ggwave.all._
 
@@ -71,7 +81,32 @@ object Main {
 
       require(outputCode >= 0, s"output code must be >=0, was: $outputCode")
 
-      (waveformBuffer, bufferSize.toUInt)
+      (waveformBuffer, bufferSize)
+    } finally ggwave_free(ggw)
+  }
+
+  def decodeSamples(
+    waveformBuffer: Ptr[Byte],
+    waveformSize: Int,
+  ): (
+    Ptr[Byte],
+    Int,
+  ) = Zone { implicit z =>
+    import ggwave.all._
+
+    val ggw = makeGGW()
+
+    // 256 is the max size
+    val result = alloc[Byte](256)
+
+    try {
+      val resultSize = ggwave_decode(
+        instance = ggw,
+        waveformBuffer = waveformBuffer,
+        waveformSize = waveformSize.toInt,
+        payloadBuffer = result,
+      )
+      (result, resultSize)
     } finally ggwave_free(ggw)
   }
 
@@ -89,7 +124,7 @@ object Main {
     fmt.container = drwav_container.drwav_container_riff
     fmt.channels = drwav_uint32(1.toUInt)
     fmt.sampleRate = drwav_uint32(48000.toUInt)
-    fmt.bitsPerSample = drwav_uint32(8.toUInt)
+    fmt.bitsPerSample = drwav_uint32(16.toUInt)
     // DR_WAVE_FORMAT_PCM
     fmt.format = drwav_uint32(1.toUInt)
 
