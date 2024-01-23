@@ -8,4 +8,8 @@ object millbuild extends MillBuildRootModule {
     List(ivy"com.lihaoyi::upickle:3.1.4")
   }
 
+  override def runIvyDeps = T {
+    List(ivy"com.lihaoyi::upickle:3.1.4")
+  }
+
 }
