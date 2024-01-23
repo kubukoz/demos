@@ -17,7 +17,7 @@ object predef:
 object enumerations:
   import predef.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   opaque type ggwave_Filter = CUnsignedInt
   object ggwave_Filter extends CEnumU[ggwave_Filter]:
@@ -38,7 +38,7 @@ object enumerations:
       inline def is(b: ggwave_Filter): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   opaque type ggwave_ProtocolId = CUnsignedInt
   object ggwave_ProtocolId extends CEnumU[ggwave_ProtocolId]:
@@ -99,7 +99,7 @@ object enumerations:
       inline def is(b: ggwave_ProtocolId): Boolean = (a & b) == b
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   opaque type ggwave_SampleFormat = CUnsignedInt
   object ggwave_SampleFormat extends CEnumU[ggwave_SampleFormat]:
@@ -131,7 +131,7 @@ object aliases:
   import _root_.ggwave.aliases.*
   import _root_.ggwave.structs.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   opaque type ggwave_Instance = CInt
   object ggwave_Instance: 
@@ -146,7 +146,7 @@ object structs:
   import _root_.ggwave.aliases.*
   import _root_.ggwave.structs.*
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   opaque type ggwave_Parameters = CStruct9[CInt, Float, Float, Float, CInt, Float, ggwave_SampleFormat, ggwave_SampleFormat, CInt]
   object ggwave_Parameters:
@@ -196,52 +196,52 @@ private[ggwave] object extern_functions:
   private[ggwave] def __sn_wrap_ggwave_ggwave_init(parameters : Ptr[ggwave_Parameters]): ggwave_Instance = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_decode(instance : ggwave_Instance, waveformBuffer : Ptr[Byte], waveformSize : CInt, payloadBuffer : Ptr[Byte]): CInt = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_encode(instance : ggwave_Instance, payloadBuffer : Ptr[Byte], payloadSize : CInt, protocolId : ggwave_ProtocolId, volume : CInt, waveformBuffer : Ptr[Byte], query : CInt): CInt = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_free(instance : ggwave_Instance): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_ndecode(instance : ggwave_Instance, waveformBuffer : Ptr[Byte], waveformSize : CInt, payloadBuffer : Ptr[Byte], payloadSize : CInt): CInt = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_rxDurationFrames(instance : ggwave_Instance): CInt = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_rxProtocolSetFreqStart(protocolId : ggwave_ProtocolId, freqStart : CInt): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_rxToggleProtocol(protocolId : ggwave_ProtocolId, state : CInt): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_setLogFile(fptr : Ptr[Byte]): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_txProtocolSetFreqStart(protocolId : ggwave_ProtocolId, freqStart : CInt): Unit = extern
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_txToggleProtocol(protocolId : ggwave_ProtocolId, state : CInt): Unit = extern
 
@@ -255,7 +255,7 @@ object functions:
   export extern_functions.*
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_getDefaultParameters()(using Zone): ggwave_Parameters = 
     val __ptr_0: Ptr[ggwave_Parameters] = alloc[ggwave_Parameters](1)
@@ -263,13 +263,13 @@ object functions:
     !(__ptr_0 + 0)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_getDefaultParameters()(__return : Ptr[ggwave_Parameters]): Unit = 
     __sn_wrap_ggwave_ggwave_getDefaultParameters(__return)
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_init(parameters : ggwave_Parameters)(using Zone): ggwave_Instance = 
     val __ptr_0: Ptr[ggwave_Parameters] = alloc[ggwave_Parameters](1)
@@ -277,7 +277,7 @@ object functions:
     __sn_wrap_ggwave_ggwave_init((__ptr_0 + 0))
 
   /**
-   * [bindgen] header: /Users/kubukoz/projects/ggwave/include/ggwave/ggwave.h
+   * [bindgen] header: ./lib/ggwave.h
   */
   def ggwave_init(parameters : Ptr[ggwave_Parameters]): ggwave_Instance = 
     __sn_wrap_ggwave_ggwave_init(parameters)

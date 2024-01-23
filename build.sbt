@@ -42,9 +42,7 @@ val app = crossProject(JVMPlatform, NativePlatform)
         )
           .withLinkingOptions(
             Seq(
-              "-L/Users/kubukoz/projects/demos/lib",
-              "-rpath",
-              "/Users/kubukoz/projects/demos/lib",
+              s"-L/Users/kubukoz/projects/demos/lib"
             )
           )
       },
