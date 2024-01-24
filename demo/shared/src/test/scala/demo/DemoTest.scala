@@ -1,7 +1,7 @@
 package demo
 
 import cats.effect.IO
-import weaver.*
+import weaver._
 
 object DemoTest extends SimpleIOSuite {
 
