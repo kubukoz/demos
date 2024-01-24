@@ -5,9 +5,7 @@ import weaver.*
 
 object DemoTest extends SimpleIOSuite {
 
-  test("envelope serialization round trip") {
-    for deserializer <- IO.unit
-    _ <- IO.raiseError(new Throwable("woop woop")).as(success)
-    yield expect(true)
+  test("this should fail rather than hang") {
+    IO.unit *> IO.raiseError(new Throwable("woop woop")).as(success)
   }
 }
