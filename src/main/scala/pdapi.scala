@@ -7,6 +7,12 @@ import _root_.scala.scalanative.libc.*
 import _root_.scala.scalanative.*
 
 object predef:
+  private[pdapi] trait CEnum[T](using eq: T =:= Int):
+    given Tag[T] = Tag.Int.asInstanceOf[Tag[T]]
+    extension (inline t: T)
+     inline def int: CInt = eq.apply(t)
+     inline def uint: CUnsignedInt = eq.apply(t).toUInt
+     inline def value: CInt = eq.apply(t)
   private[pdapi] trait CEnumU[T](using eq: T =:= UInt):
     given Tag[T] = Tag.UInt.asInstanceOf[Tag[T]]
     extension (inline t: T)
@@ -335,10 +341,10 @@ object enumerations:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api.h
   */
-  opaque type PDSystemEvent = CUnsignedInt
-  object PDSystemEvent extends CEnumU[PDSystemEvent]:
-    given _tag: Tag[PDSystemEvent] = Tag.UInt
-    inline def define(inline a: Int): PDSystemEvent = a.toUInt
+  opaque type PDSystemEvent = Int
+  object PDSystemEvent extends CEnum[PDSystemEvent]:
+    given _tag: Tag[PDSystemEvent] = Tag.Int
+    inline def define(inline a: Int): PDSystemEvent = a.toInt
     val kEventInit = define(0)
     val kEventInitLua = define(1)
     val kEventLock = define(2)
@@ -572,7 +578,7 @@ object aliases:
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
   */
-  type LCDColor = USize
+  type LCDColor = Size
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h

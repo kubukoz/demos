@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.CharBuffer
 import scala.scalanative.unsigned.UInt
 import scala.util.NotGiven
+import pdapi.enumerations.PDSystemEvent.kEventResume
 
 object Main {
 
@@ -73,10 +74,13 @@ object Main {
   def event(
     pd: Ptr[PlaydateAPI],
     event: PDSystemEvent,
-    arg: UInt,
   ): Int = {
-    if (event == kEventInit)
-      pd.!.display.!.setRefreshRate(50.0f)
+    if (event == kEventInit) {
+      pd_log_error(c"this was an init event");
+      // pd.!.display.!.setRefreshRate(50.0f)
+      pd_display_setRefreshRate(50.0f)
+    }
+
     0
   }
 
@@ -84,8 +88,45 @@ object Main {
   @name("pd_system_logToConsole")
   def printToConsole(msg: CString): Unit = extern
 
+  @extern def pd_system_getButtonState(
+    current: Ptr[PDButtons],
+    pressed: Ptr[PDButtons],
+    released: Ptr[PDButtons],
+  ): Unit = extern
+
+  @extern def pd_graphics_fillRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    color: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_drawRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    color: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_clear(
+    color: Int
+  ): Unit = extern
+
   @extern
   def pd_log_error(msg: CString): Unit = extern
+
+  @extern def pd_system_getCrankChange(): Float = extern
+
+  @extern def pd_system_drawFPS(
+    x: Int,
+    y: Int,
+  ): Unit = extern
+
+  @extern def pd_display_setRefreshRate(
+    rate: Float
+  ): Unit = extern
 
   @exported("sn_update")
   def update(
@@ -96,19 +137,25 @@ object Main {
     val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
     val released = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
 
-    pd.!.system.!.getButtonState(current, pressed, released)
+    // pd.!.system.!.getButtonState(current, pressed, released)
+    pd_system_getButtonState(current, pressed, released)
 
     if (pressed.!.is(kButtonA)) {
       printToConsole(c"Button A is pressed")
 
-      if (Random.nextInt(10) > 8)
-        printToConsole(c"RANDOM EVENT ON BUTTONS!")
+      //   if (Random.nextInt(10) > 8)
+      //     printToConsole(c"RANDOM EVENT ON BUTTONS!")
 
       state = !state
     }
 
-    // if (pressed.!.is(kButtonB)) {
-    // }
+    if (pressed.!.is(kButtonB)) {
+      pd_log_error(c"Button B is pressed")
+      // roughly 500k are enough to crash the game
+      List.fill(100_000)(new Foo(1, 2))
+      // val e = new Exception("aa")
+      // e.printStackTrace()
+    }
 
     if (dirX == DirectionX.Left) {
       x -= VelocityX
@@ -136,64 +183,57 @@ object Main {
     }
     y = 0 max ((LCD_ROWS - h.toInt) min y.toInt)
 
-    val crankDelta = pd.!.system.!.getCrankChange()
+    val crankDelta = pd_system_getCrankChange()
+    // val crankDelta = pd.!.system.!.getCrankChange()
 
     if (crankDelta != 0) {
       w += crankDelta.toInt
     }
 
     // Not using colors from generated bindings because there's something wrong about their types
-    val kColorWhite = 1.toUInt
-    val kColorBlack = 0.toUInt
+    val kColorWhite = 1
+    val kColorBlack = 0
 
-    // pd.!
-    //   .graphics
-    //   .!
-    //   .clear(
-    //     kColorWhite
-    //   )
+    pd_graphics_clear(
+      kColorWhite
+    )
 
     // zoned {
     //   printToConsole(toCString(s"kColorWhite is ackshually ${LCDSolidColor.kColorWhite}"))
     // }
 
-    pd.!.system.!.drawFPS(0, 0)
+    pd_system_drawFPS(0, 0)
 
-    // if (state)
-    //   pd.!
-    //     .graphics
-    //     .!
-    //     .fillRect(
-    //       x,
-    //       y,
-    //       w.toInt,
-    //       h.toInt,
-    //       kColorBlack,
-    //     )
-    // else {
-    // pd.!
-    //   .graphics
-    //   .!
-    //   .drawRect(
-    //     x,
-    //     y,
-    //     w.toInt,
-    //     h.toInt,
-    //     kColorBlack,
-    //   )
-    // }
+    if (state)
+      pd_graphics_fillRect(
+        x,
+        y,
+        w.toInt,
+        h.toInt,
+        kColorBlack,
+      )
+    else {
+      pd_graphics_drawRect(
+        x,
+        y,
+        w.toInt,
+        h.toInt,
+        kColorBlack,
+      )
+    }
 
     if (!state) {
-      pd.!
+      pd_graphics_fillRect
+      /* pd.!
         .graphics
         .!
-        .fillRect(
-          0,
-          LCD_ROWS - 50,
-          50,
-          50,
-          kColorBlack,
-        )
+        .fillRect */ (
+        0,
+        LCD_ROWS - 50,
+        50,
+        50,
+        kColorBlack,
+      )
     }
     1
   }

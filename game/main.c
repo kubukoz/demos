@@ -36,6 +36,7 @@ static int gameTick(void *userdata)
 
 void log_old_errors(void);
 void truncate_errors(void);
+void pd_log_error(char *str);
 
 int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 {
@@ -51,33 +52,39 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
         pd->system->setUpdateCallback(gameTick, pd);
     }
 
-    log_old_errors();
+    // log_old_errors();
 
+    pd_log_error("eventHandler before terminate check");
     if (event == kEventTerminate)
     {
         _pd->system->logToConsole("App exiting normally, truncating errors...");
         truncate_errors();
     }
 
+    pd_log_error("eventHandler logging event");
     pd->system->logToConsole("Event: %d", event);
 
-    return sn_event(pd, event, arg);
+    pd_log_error("eventHandler calling sn_event");
+    return sn_event(pd, event);
 }
 
 // error reporting
 
 void pd_log_error(char *str)
 {
-    _pd->system->logToConsole("[ERROR] %s", str);
+    int ts = _pd->system->getCurrentTimeMilliseconds();
+    _pd->system->logToConsole("[ERROR][t=%u] %s", ts, str);
     SDFile *file = _pd->file->open("jk-errors.txt", kFileAppend);
     _pd->file->write(file, str, strlen(str));
     _pd->file->write(file, "\n", strlen("\n"));
     _pd->file->close(file);
 }
 
-void __error(char *str)
+int errno = 0;
+
+int *__error(void)
 {
-    pd_log_error(str);
+    return &errno;
 }
 
 void log_old_errors()
@@ -112,9 +119,45 @@ void pd_system_logToConsole(const char *fmt)
     _pd->system->logToConsole(fmt);
 }
 
+void pd_display_setRefreshRate(float rate)
+{
+    _pd->display->setRefreshRate(rate);
+}
+
+void pd_system_getButtonState(PDButtons *pressed, PDButtons *held, PDButtons *released)
+{
+    _pd->system->getButtonState(pressed, held, released);
+}
+
+void pd_graphics_fillRect(int x, int y, int w, int h, LCDColor color)
+{
+    _pd->graphics->fillRect(x, y, w, h, color);
+}
+
+void pd_graphics_drawRect(int x, int y, int w, int h, LCDColor color)
+{
+    _pd->graphics->drawRect(x, y, w, h, color);
+}
+
+void pd_graphics_clear(LCDColor color)
+{
+    _pd->graphics->clear(color);
+}
+
+float pd_system_getCrankChange()
+{
+    return _pd->system->getCrankChange();
+}
+
+void pd_system_drawFPS(int x, int y)
+{
+    _pd->system->drawFPS(x, y);
+}
+
 // more polyfills
 
-size_t scalanative_unwind_sizeof_context()
+size_t
+scalanative_unwind_sizeof_context()
 {
     pd_log_error("scalanative_unwind_sizeof_context");
     exit(19);

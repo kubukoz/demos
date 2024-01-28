@@ -132,6 +132,7 @@ val root = project
       _.withBuildTarget(BuildTarget.libraryStatic)
         .withTargetTriple("arm-none-eabi")
         .withGC(GC.none)
+        // .withGC(GC.immix)
         .withCompileOptions(
           Seq(
             "-g3",
@@ -151,11 +152,13 @@ val root = project
             "-fdata-sections",
             "-DTARGET_PLAYDATE=1",
             "-DTARGET_EXTENSION=1",
+            "-DDEBUG_PRINT=1",
             "-D_LIBCPP_HAS_THREAD_API_PTHREAD=1",
             "-MD",
             "-MP",
             s"-I${playdateSdk / "C_API"}",
             "-march=armv7-m",
+            "-m32",
             // "-v",
           )
         )
