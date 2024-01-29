@@ -57,8 +57,7 @@ object MainGame {
   val VelocityX = 500
   val VelocityY = 100
 
-  def update(state: GameState, ctx: GameContext): GameState = {
-
+  def update(ctx: GameContext): GameState => GameState = {
     val updateMode: GameState => GameState =
       state =>
         if (ctx.buttons.pressed.a)
@@ -126,10 +125,13 @@ object MainGame {
           updateMode,
           updatePosition,
           updateSize,
-          updateCrank,
+          updateCrank, {
+            if (ctx.buttons.pressed.b)
+              Zone.open().close()
+            x => x
+          },
         )
       )
-      .apply(state)
   }
 
   def config: GameConfig = GameConfig(fps = 50)
@@ -307,7 +309,7 @@ object Main {
     pd: Ptr[PlaydateAPI]
   ): Int = {
     val ctx: GameContext = deriveContext(pd)
-    val newState = game.update(state, ctx)
+    val newState = game.update(ctx)(state)
     val actions = game.render(newState)
 
     state = newState
