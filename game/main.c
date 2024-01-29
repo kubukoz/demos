@@ -149,9 +149,33 @@ float pd_system_getCrankChange()
     return _pd->system->getCrankChange();
 }
 
+bool pd_system_isCrankDocked()
+{
+    return _pd->system->isCrankDocked();
+}
+
+int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStringEncoding encoding, int tracking)
+{
+    return _pd->graphics->getTextWidth(font, text, len, encoding, tracking);
+}
+
+void pd_graphics_drawText(const char *text, size_t len, PDStringEncoding encoding, int x, int y)
+{
+    _pd->graphics->drawText(text, len, encoding, x, y);
+}
 void pd_system_drawFPS(int x, int y)
 {
     _pd->system->drawFPS(x, y);
+}
+
+float pd_system_getElapsedTime()
+{
+    return _pd->system->getElapsedTime();
+}
+
+void pd_system_resetElapsedTime()
+{
+    _pd->system->resetElapsedTime();
 }
 
 // more polyfills

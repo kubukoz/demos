@@ -12,35 +12,276 @@ import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 import java.nio.CharBuffer
 import scala.scalanative.unsigned.UInt
+import scala.scalanative.unsafe._
+import scala.scalanative.libc.string._
 import scala.util.NotGiven
 import pdapi.enumerations.PDSystemEvent.kEventResume
+import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
+
+enum DirectionX {
+  case Left, Right
+}
+
+enum DirectionY {
+  case Up, Down
+}
+
+case class GameState(
+  x: Float,
+  y: Float,
+  w: Float,
+  h: Float,
+  dirX: DirectionX,
+  dirY: DirectionY,
+  state: Boolean,
+  boundsWidth: Int,
+  boundsHeight: Int,
+  crankDocked: Boolean,
+)
+
+object MainGame {
+
+  def init(ctx: GameContext): GameState = GameState(
+    x = 50,
+    y = 50,
+    w = 10,
+    h = 10,
+    dirX = DirectionX.Right,
+    dirY = DirectionY.Down,
+    state = true,
+    boundsWidth = ctx.screen.width,
+    boundsHeight = ctx.screen.height,
+    crankDocked = ctx.crank.docked,
+  )
+
+  val VelocityX = 500
+  val VelocityY = 100
+
+  def update(state: GameState, ctx: GameContext): GameState = {
+
+    val updateMode: GameState => GameState =
+      state =>
+        if (ctx.buttons.pressed.a)
+          state.copy(state = !state.state)
+        else
+          state
+
+    val updatePosition: GameState => GameState =
+      state => {
+        val x =
+          if (state.dirX == DirectionX.Left)
+            state.x - VelocityX * ctx.delta
+          else
+            state.x + VelocityX * ctx.delta
+
+        val y =
+          if (state.dirY == DirectionY.Up)
+            state.y - VelocityY * ctx.delta
+          else
+            state.y + VelocityY * ctx.delta
+
+        val dirX =
+          if (x < 0)
+            DirectionX.Right
+          else if (x > ctx.screen.width - state.w)
+            DirectionX.Left
+          else
+            state.dirX
+
+        val dirY =
+          if (y < 0)
+            DirectionY.Down
+          else if (y > ctx.screen.height - state.h)
+            DirectionY.Up
+          else
+            state.dirY
+
+        state.copy(
+          x = 0f max ((ctx.screen.width - state.w) min x),
+          y = 0f max ((ctx.screen.height - state.h) min y),
+          dirX = dirX,
+          dirY = dirY,
+        )
+      }
+
+    val updateSize =
+      (state: GameState) => {
+        val crankDelta = ctx.crank.change
+
+        state.copy(
+          w = (state.w + crankDelta).toInt,
+          h = (state.h + crankDelta).toInt,
+        )
+      }
+
+    val updateCrank =
+      (state: GameState) =>
+        state.copy(
+          crankDocked = ctx.crank.docked
+        )
+
+    Function
+      .chain(
+        Seq(
+          updateMode,
+          updatePosition,
+          updateSize,
+          updateCrank,
+        )
+      )
+      .apply(state)
+  }
+
+  def config: GameConfig = GameConfig(fps = 50)
+
+  def render(state: GameState): Render = {
+    import Render._
+
+    val dot = Rect(
+      x = state.x.toInt,
+      y = state.y.toInt,
+      w = state.w.toInt,
+      h = state.h.toInt,
+      color = Color.Black,
+      fill =
+        if (state.state)
+          Fill.Fill
+        else
+          Fill.Draw,
+    )
+
+    val extraDot =
+      Render.cond(!state.state) {
+        Rect(0, state.boundsHeight - 50, 50, 50, Color.Black, Fill.Fill)
+      }
+
+    val str =
+      if (state.crankDocked)
+        c"Crank docked"
+      else
+        c"Crank in use"
+
+    val crankText =
+      Render.withTextWidth(str) { w =>
+        Text(
+          state.boundsWidth - w - 20,
+          0,
+          str,
+        )
+      }
+
+    Clear(Color.White) |+|
+      FPS(0, 0) |+|
+      dot |+|
+      extraDot |+|
+      crankText
+  }
+
+}
+
+enum Fill {
+  case Fill
+  case Draw
+}
+
+enum Color {
+  case Black
+  case White
+
+  def toInt: Int =
+    this match {
+      case Black => 0
+      case White => 1
+    }
+
+}
+
+enum Render {
+  case FPS(x: Int, y: Int)
+  case Combine(a: Render, b: Render)
+  case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill)
+  case Text(x: Int, y: Int, text: CString)
+  case Empty
+  case Clear(color: Color)
+  case WithTextWidth(s: CString, f: Int => Render)
+
+  def isEmpty: Boolean = this == Empty
+
+  def |+|(another: Render): Render =
+    (this, another) match {
+      case (Empty, _) => another
+      case (_, Empty) => this
+      case _          => Combine(this, another)
+    }
+
+}
+
+object Render {
+
+  def withTextWidth(s: CString)(f: Int => Render): Render = Render.WithTextWidth(s, f)
+
+  def renderIf(
+    cond: Boolean
+  )(
+    ifTrue: Render,
+    ifFalse: Render,
+  ): Render =
+    if (cond)
+      ifTrue
+    else
+      ifFalse
+
+  def cond(condition: Boolean)(ifTrue: Render): Render = renderIf(condition)(ifTrue, Empty)
+}
+
+case class ButtonState(
+  a: Boolean,
+  b: Boolean,
+)
+
+case class Buttons(
+  current: ButtonState,
+  pressed: ButtonState,
+  released: ButtonState,
+)
+
+case class Crank(
+  change: Float,
+  docked: Boolean,
+)
+
+case class Screen(
+  width: Int,
+  height: Int,
+)
+
+object Screen {
+
+  val native: Screen = Screen(
+    width = 400,
+    height = 240,
+  )
+
+}
+
+case class GameContext(
+  buttons: Buttons,
+  crank: Crank,
+  delta: Float,
+  screen: Screen,
+)
+
+case class GameConfig(fps: Int)
 
 object Main {
 
-  var x = 50
-  var y = 50
+  val game = MainGame
 
-  val VelocityX = 5
-  val VelocityY = 2
+  var state: GameState = null
 
-  enum DirectionX {
-    case Left, Right
-  }
-
-  enum DirectionY {
-    case Up, Down
-  }
-
-  var dirX = DirectionX.Left
-  var dirY = DirectionY.Down
-
-  val LCD_COLUMNS = 400
-  val LCD_ROWS = 240
-
-  var w = 10.0f
-  val h = 10.0f
-
-  var state = true
+  var pressed: Ptr[PDButtons] = null
+  var current: Ptr[PDButtons] = null
+  var released: Ptr[PDButtons] = null
 
   extension [A](
     inline ptr: Ptr[A]
@@ -52,41 +293,116 @@ object Main {
 
   }
 
-  inline def zoned[T](f: Zone ?=> T)(using NotGiven[Zone]): T = Zone { implicit z =>
-    f(
-      using z
-    )
-  }
-
-  @exported("foo") def foo(i: Int): Int =
-    // val x = Math.pow(i, 2).toInt + 1
-    // x + i * 2
-    // 42
-    // (1 to 100).sum
-    // ("a" * i).map(_.toInt).sum
-    (1 to i).sum
-
-  class Foo(a: Int, b: Int) {
-    def y = a + b
-  }
-
-  @exported("sn_event")
-  def event(
-    pd: Ptr[PlaydateAPI],
-    event: PDSystemEvent,
-  ): Int = {
+  def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     if (event == kEventInit) {
-      pd_log_error(c"this was an init event");
-      // pd.!.display.!.setRefreshRate(50.0f)
-      pd_display_setRefreshRate(50.0f)
+      state = game.init(deriveContext(pd))
+      val cfg = game.config
+      pd_display_setRefreshRate(cfg.fps)
     }
 
     0
   }
 
-  @extern
-  @name("pd_system_logToConsole")
-  def printToConsole(msg: CString): Unit = extern
+  def updateNative(
+    pd: Ptr[PlaydateAPI]
+  ): Int = {
+    val ctx: GameContext = deriveContext(pd)
+    val newState = game.update(state, ctx)
+    val actions = game.render(newState)
+
+    state = newState
+    if (actions.isEmpty) 0
+    else {
+      executeActions(pd, actions)
+
+      1
+    }
+  }
+
+  def executeActions(
+    pd: Ptr[PlaydateAPI],
+    actions: Render,
+  ): Unit =
+    actions match {
+      case Render.Empty     => ()
+      case Render.Clear(c)  => pd_graphics_clear(c.toInt)
+      case Render.FPS(x, y) => pd_system_drawFPS(x, y)
+      case Render.WithTextWidth(str, f) =>
+        val len = strlen(str)
+        val width = pd_graphics_getTextWidth(null, str, len, kUTF8Encoding)
+        executeActions(pd, f(width))
+
+      case Render.Text(x, y, str) =>
+        // Zone { case given Zone =>
+        //   val str = toCString(text)
+        pd_graphics_drawText(
+          str,
+          strlen(str),
+          kUTF8Encoding,
+          x,
+          y,
+        )
+      // }
+      case Render.Combine(a, b) =>
+        executeActions(pd, a)
+        executeActions(pd, b)
+      case Render.Rect(x, y, w, h, color, fill) =>
+        fill match {
+          case Fill.Fill =>
+            pd_graphics_fillRect(
+              x,
+              y,
+              w,
+              h,
+              color.toInt,
+            )
+          case Fill.Draw =>
+            pd_graphics_drawRect(
+              x,
+              y,
+              w,
+              h,
+              color.toInt,
+            )
+        }
+    }
+
+  def deriveButtons(buttons: Ptr[PDButtons]): ButtonState = ButtonState(
+    a = buttons.!.is(kButtonA),
+    b = buttons.!.is(kButtonB),
+  )
+
+  def deriveContext(pd: Ptr[PlaydateAPI]): GameContext = {
+    // todo: maybe these can be optimized into fields somehow?
+    val current = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
+    val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
+    val released = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
+
+    pd_system_getButtonState(current, pressed, released)
+
+    val buttons = Buttons(
+      current = deriveButtons(current),
+      pressed = deriveButtons(pressed),
+      released = deriveButtons(released),
+    )
+
+    val crank = Crank(
+      change = pd_system_getCrankChange(),
+      docked = pd_system_isCrankDocked(),
+    )
+
+    val delta = pd_system_getElapsedTime()
+    pd_system_resetElapsedTime()
+
+    val screen = Screen.native
+
+    GameContext(
+      buttons = buttons,
+      crank = crank,
+      delta = delta,
+      screen = screen,
+    )
+  }
 
   @extern def pd_system_getButtonState(
     current: Ptr[PDButtons],
@@ -114,12 +430,30 @@ object Main {
     color: Int
   ): Unit = extern
 
-  @extern
-  def pd_log_error(msg: CString): Unit = extern
-
   @extern def pd_system_getCrankChange(): Float = extern
 
+  @extern def pd_system_isCrankDocked(): Boolean = extern
+
+  @extern def pd_system_getElapsedTime(): Float = extern
+
+  @extern def pd_system_resetElapsedTime(): Unit = extern
+
   @extern def pd_system_drawFPS(
+    x: Int,
+    y: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_getTextWidth(
+    font: Ptr[LCDFont],
+    text: CString,
+    len: CSize,
+    encoding: PDStringEncoding,
+  ): Int = extern
+
+  @extern def pd_graphics_drawText(
+    text: CString,
+    len: CSize,
+    encoding: PDStringEncoding,
     x: Int,
     y: Int,
   ): Unit = extern
@@ -128,114 +462,19 @@ object Main {
     rate: Float
   ): Unit = extern
 
+  @extern
+  @name("pd_system_logToConsole")
+  def printToConsole(msg: CString): Unit = extern
+
+  @exported("sn_event")
+  def event(
+    pd: Ptr[PlaydateAPI],
+    event: PDSystemEvent,
+  ): Int = eventNative(pd, event)
+
   @exported("sn_update")
   def update(
     pd: Ptr[PlaydateAPI]
-  ): Int = {
-
-    val current = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
-    val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
-    val released = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
-
-    // pd.!.system.!.getButtonState(current, pressed, released)
-    pd_system_getButtonState(current, pressed, released)
-
-    if (pressed.!.is(kButtonA)) {
-      printToConsole(c"Button A is pressed")
-
-      //   if (Random.nextInt(10) > 8)
-      //     printToConsole(c"RANDOM EVENT ON BUTTONS!")
-
-      state = !state
-    }
-
-    if (pressed.!.is(kButtonB)) {
-      pd_log_error(c"Button B is pressed")
-      // roughly 500k are enough to crash the game
-      List.fill(100_000)(new Foo(1, 2))
-      // val e = new Exception("aa")
-      // e.printStackTrace()
-    }
-
-    if (dirX == DirectionX.Left) {
-      x -= VelocityX
-      if (x < 0) {
-        dirX = DirectionX.Right
-      }
-    } else {
-      x += VelocityX
-      if (x > LCD_COLUMNS - w) {
-        dirX = DirectionX.Left
-      }
-    }
-    x = 0 max ((LCD_COLUMNS - w.toInt) min x.toInt)
-
-    if (dirY == DirectionY.Up) {
-      y -= VelocityY
-      if (y < 0) {
-        dirY = DirectionY.Down
-      }
-    } else {
-      y += VelocityY
-      if (y > (LCD_ROWS - h)) {
-        dirY = DirectionY.Up
-      }
-    }
-    y = 0 max ((LCD_ROWS - h.toInt) min y.toInt)
-
-    val crankDelta = pd_system_getCrankChange()
-    // val crankDelta = pd.!.system.!.getCrankChange()
-
-    if (crankDelta != 0) {
-      w += crankDelta.toInt
-    }
-
-    // Not using colors from generated bindings because there's something wrong about their types
-    val kColorWhite = 1
-    val kColorBlack = 0
-
-    pd_graphics_clear(
-      kColorWhite
-    )
-
-    // zoned {
-    //   printToConsole(toCString(s"kColorWhite is ackshually ${LCDSolidColor.kColorWhite}"))
-    // }
-
-    pd_system_drawFPS(0, 0)
-
-    if (state)
-      pd_graphics_fillRect(
-        x,
-        y,
-        w.toInt,
-        h.toInt,
-        kColorBlack,
-      )
-    else {
-      pd_graphics_drawRect(
-        x,
-        y,
-        w.toInt,
-        h.toInt,
-        kColorBlack,
-      )
-    }
-
-    if (!state) {
-      pd_graphics_fillRect
-      /* pd.!
-        .graphics
-        .!
-        .fillRect */ (
-        0,
-        LCD_ROWS - 50,
-        50,
-        50,
-        kColorBlack,
-      )
-    }
-    1
-  }
+  ): Int = updateNative(pd)
 
 }

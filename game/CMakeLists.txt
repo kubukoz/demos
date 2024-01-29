@@ -23,4 +23,3 @@ add_playdate_application(HelloWorld)
 target_sources(HelloWorld PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
 
 target_link_libraries(HelloWorld pdcpp_core ${CMAKE_CURRENT_SOURCE_DIR}/libroot.a)
-target_include_directories(HelloWorld PRIVATE /Users/kubukoz/projects/native-demos/headers)
