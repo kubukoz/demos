@@ -154,7 +154,14 @@ object MainGame {
 
     val extraDot =
       Render.cond(!state.state) {
-        Rect(0, state.boundsHeight - 50, 50, 50, Color.Black, Fill.Fill)
+        Rect(
+          x = 0,
+          y = state.boundsHeight - 50,
+          w = 50,
+          h = 50,
+          color = Color.Black,
+          fill = Fill.Fill,
+        )
       }
 
     val str =

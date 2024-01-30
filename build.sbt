@@ -131,8 +131,8 @@ val root = project
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
         .withTargetTriple("arm-none-eabi")
-        .withGC(GC.none)
-        // .withGC(GC.immix)
+        // .withGC(GC.none)
+        .withGC(GC.immix)
         .withCompileOptions(
           Seq(
             "-g3",
