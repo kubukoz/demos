@@ -15,57 +15,60 @@ PlaydateAPI *_pd;
 
 LCDFont *font;
 
-void pd_scalanative_init(PlaydateAPI *pd)
-{
-    _pd = pd;
-}
+void pd_log_error(char *str);
 
-static int gameTick(void *userdata)
+int allocationCount = 256 * 1024;
+
+static int update(void *userdata)
 {
     PlaydateAPI *pd = userdata;
-
     PDButtons pressed;
     pd->system->getButtonState(NULL, &pressed, NULL);
 
-    // if (pressed & kButtonB)
-    // {
-    // }
+    if (pressed & kButtonUp)
+    {
+        allocationCount *= 2;
+        if (allocationCount <= 0)
+            allocationCount = 1;
+    }
+    if (pressed & kButtonDown)
+    {
+        allocationCount /= 2;
+    }
 
-    return sn_update(pd);
+    char txt[100];
+    int megas = allocationCount >= 1024 * 1024;
+    int number = megas ? (allocationCount / 1024 / 1024) : (allocationCount / 1024);
+    char symbol = megas ? 'M' : 'K';
+    sprintf(txt, "Current allocation count: %d (%d%c)", allocationCount, number, symbol);
+
+    pd->graphics->clear(kColorWhite);
+    pd->graphics->drawText(txt, strlen(txt), kUTF8Encoding, 50, 100);
+
+    if (pressed & kButtonA)
+    {
+        pd->system->logToConsole("Calling Scala with %d allocations", allocationCount);
+        foo(allocationCount);
+    }
+
+    return 1;
 };
-
-void log_old_errors(void);
-void truncate_errors(void);
-void pd_log_error(char *str);
 
 int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 {
 
-    // This is required, otherwise linker errors abound
+    // This is required, otherwise linker errors abound <- this comes from playdate-cpp, not me
     eventHandler_pdnewlib(pd, event, arg);
 
     if (event == kEventInit)
     {
-        pd_scalanative_init(pd);
+        _pd = pd;
         ScalaNativeInit();
 
-        pd->system->setUpdateCallback(gameTick, pd);
+        pd->system->setUpdateCallback(update, pd);
     }
 
-    // log_old_errors();
-
-    pd_log_error("eventHandler before terminate check");
-    if (event == kEventTerminate)
-    {
-        _pd->system->logToConsole("App exiting normally, truncating errors...");
-        truncate_errors();
-    }
-
-    pd_log_error("eventHandler logging event");
-    pd->system->logToConsole("Event: %d", event);
-
-    pd_log_error("eventHandler calling sn_event");
-    return sn_event(pd, event);
+    return 0;
 }
 
 // error reporting
@@ -73,8 +76,8 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 void pd_log_error(char *str)
 {
     int ts = _pd->system->getCurrentTimeMilliseconds();
-    _pd->system->logToConsole("[ERROR][t=%u] %s", ts, str);
-    SDFile *file = _pd->file->open("jk-errors.txt", kFileAppend);
+    _pd->system->logToConsole("[t=%u] %s", ts, str);
+    SDFile *file = _pd->file->open("jk-logs.txt", kFileAppend);
     _pd->file->write(file, str, strlen(str));
     _pd->file->write(file, "\n", strlen("\n"));
     _pd->file->close(file);
@@ -85,97 +88,6 @@ int errno = 0;
 int *__error(void)
 {
     return &errno;
-}
-
-void log_old_errors()
-{
-    SDFile *file = _pd->file->open("jk-errors.txt", kFileReadData);
-    char buf[256];
-    int read = 0;
-    _pd->system->logToConsole("============== REPLAYING LOGS =================");
-
-    while ((read = _pd->file->read(file, buf, 256)) != 0)
-    {
-        char str[256 + 1];
-        memcpy(str, buf, read);
-        str[read] = '\0';
-        _pd->system->logToConsole("%s", str);
-    }
-
-    _pd->system->logToConsole("============== REPLAY DONE =================");
-    _pd->file->close(file);
-}
-
-void truncate_errors()
-{
-    SDFile *file = _pd->file->open("jk-errors.txt", kFileWrite);
-    _pd->file->close(file);
-}
-
-// PD API forwarders
-
-void pd_system_logToConsole(const char *fmt)
-{
-    _pd->system->logToConsole(fmt);
-}
-
-void pd_display_setRefreshRate(float rate)
-{
-    _pd->display->setRefreshRate(rate);
-}
-
-void pd_system_getButtonState(PDButtons *pressed, PDButtons *held, PDButtons *released)
-{
-    _pd->system->getButtonState(pressed, held, released);
-}
-
-void pd_graphics_fillRect(int x, int y, int w, int h, LCDColor color)
-{
-    _pd->graphics->fillRect(x, y, w, h, color);
-}
-
-void pd_graphics_drawRect(int x, int y, int w, int h, LCDColor color)
-{
-    _pd->graphics->drawRect(x, y, w, h, color);
-}
-
-void pd_graphics_clear(LCDColor color)
-{
-    _pd->graphics->clear(color);
-}
-
-float pd_system_getCrankChange()
-{
-    return _pd->system->getCrankChange();
-}
-
-bool pd_system_isCrankDocked()
-{
-    return _pd->system->isCrankDocked();
-}
-
-int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStringEncoding encoding, int tracking)
-{
-    return _pd->graphics->getTextWidth(font, text, len, encoding, tracking);
-}
-
-void pd_graphics_drawText(const char *text, size_t len, PDStringEncoding encoding, int x, int y)
-{
-    _pd->graphics->drawText(text, len, encoding, x, y);
-}
-void pd_system_drawFPS(int x, int y)
-{
-    _pd->system->drawFPS(x, y);
-}
-
-float pd_system_getElapsedTime()
-{
-    return _pd->system->getElapsedTime();
-}
-
-void pd_system_resetElapsedTime()
-{
-    _pd->system->resetElapsedTime();
 }
 
 // more polyfills
