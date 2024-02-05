@@ -40,25 +40,32 @@ def pdutil(
   println(cmd.!!)
 }
 
-def runOnPlaydate(buildPdxPath: File) = {
-  import scala.annotation.tailrec
+import scala.annotation.tailrec
+
+@tailrec
+def waitUntil(b: => Boolean): Unit =
+  if (b) ()
+  else {
+    Thread.sleep(1000)
+    waitUntil(b)
+  }
+
+def waitForVolume() = {
   import sys.process._
-
-  @tailrec
-  def waitUntil(b: => Boolean): Unit =
-    if (b) ()
-    else {
-      Thread.sleep(1000)
-      waitUntil(b)
-    }
-
-  println("booting into datadisk")
-  pdutil("datadisk")
 
   println("waiting for volume...")
   waitUntil {
     "ls /Volumes/PLAYDATE/Games".! == 0
   }
+
+}
+
+def runOnPlaydate(buildPdxPath: File) = {
+  import sys.process._
+
+  println("booting into datadisk")
+  pdutil("datadisk")
+  waitForVolume()
 
   println("replacing game")
   val pdxFileName = buildPdxPath.name
@@ -116,6 +123,24 @@ val playdateRunImpl =
     )
   }
 
+val playdateCopyCrashLogs = taskKey[Unit]("Copy crash logs from the connected Playdate device")
+
+val playdateCopyCrashLogsImpl =
+  playdateCopyCrashLogs := {
+    import sys.process._
+
+    println("booting into datadisk")
+    pdutil("datadisk")
+
+    waitForVolume()
+
+    IO.copyFile(
+      file(s"/Volumes/PLAYDATE/crashlog.txt"),
+      file("crashlog.txt"),
+      CopyOptions().withOverwrite(true),
+    )
+  }
+
 val pdutilDatadisk = taskKey[Unit]("Boot into datadisk mode")
 
 val pdutilDatadiskImpl =
@@ -167,6 +192,7 @@ val root = project
     playdateBuildImpl,
     playdateRunImpl,
     pdutilDatadiskImpl,
+    playdateCopyCrashLogsImpl,
   )
 
 // resolvers ++= Resolver.sonatypeOssRepos("snapshots")
