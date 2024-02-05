@@ -17,7 +17,7 @@ LCDFont *font;
 
 void pd_log_error(char *str);
 
-int allocationCount = 256 * 1024;
+int allocationCount = 16 * 1024;
 
 static int update(void *userdata)
 {
@@ -76,7 +76,7 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 void pd_log_error(char *str)
 {
     int ts = _pd->system->getCurrentTimeMilliseconds();
-    _pd->system->logToConsole("[t=%u] %s", ts, str);
+    _pd->system->logToConsole("[t=%u] %s\n", ts, str);
     SDFile *file = _pd->file->open("jk-logs.txt", kFileAppend);
     _pd->file->write(file, str, strlen(str));
     _pd->file->write(file, "\n", strlen("\n"));
