@@ -177,6 +177,7 @@ val root = project
             "-fdata-sections",
             "-DTARGET_PLAYDATE=1",
             "-DTARGET_EXTENSION=1",
+            "-DPD_DEBUG=1",
             "-DDEBUG_PRINT=1",
             "-D_LIBCPP_HAS_THREAD_API_PTHREAD=1",
             "-MD",

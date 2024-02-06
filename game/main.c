@@ -15,7 +15,9 @@ PlaydateAPI *_pd;
 
 LCDFont *font;
 
-void pd_log_error(char *str);
+#ifdef PD_DEBUG
+void pd_log_error(char *str, ...);
+#endif
 
 int allocationCount = 16 * 1024;
 
@@ -73,7 +75,7 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 
 // error reporting
 
-void pd_log_error(char *str)
+void pd_log_error_internal(char *str)
 {
     int ts = _pd->system->getCurrentTimeMilliseconds();
     _pd->system->logToConsole("[t=%u] %s\n", ts, str);
@@ -81,6 +83,16 @@ void pd_log_error(char *str)
     _pd->file->write(file, str, strlen(str));
     _pd->file->write(file, "\n", strlen("\n"));
     _pd->file->close(file);
+}
+
+void pd_log_error(char *str, ...)
+{
+    char buffer[128];
+    va_list args;
+    va_start(args, str);
+    vsprintf(buffer, str, args);
+    va_end(args);
+    pd_log_error_internal(buffer);
 }
 
 int errno = 0;
@@ -95,63 +107,63 @@ int *__error(void)
 size_t
 scalanative_unwind_sizeof_context()
 {
-    pd_log_error("scalanative_unwind_sizeof_context");
+    // pd_log_error("scalanative_unwind_sizeof_context");
     exit(19);
     return 0;
 }
 
 size_t scalanative_unwind_sizeof_cursor()
 {
-    pd_log_error("scalanative_unwind_sizeof_cursor");
+    // pd_log_error("scalanative_unwind_sizeof_cursor");
     exit(20);
     return 0;
 }
 
 int scalanative_unwind_init_local(void *cursor, void *context)
 {
-    pd_log_error("scalanative_unwind_init_local");
+    // pd_log_error("scalanative_unwind_init_local");
     exit(21);
     return 0;
 }
 
 int scalanative_unwind_step(void *cursor)
 {
-    pd_log_error("scalanative_unwind_step");
+    // pd_log_error("scalanative_unwind_step");
     exit(22);
     return 0;
 }
 
 int scalanative_unw_reg_ip()
 {
-    pd_log_error("scalanative_unw_reg_ip");
+    // pd_log_error("scalanative_unw_reg_ip");
     exit(23);
     return 0;
 }
 
 int scalanative_unwind_get_reg(void *cursor, int regnum, size_t *valp)
 {
-    pd_log_error("scalanative_unwind_get_reg");
+    // pd_log_error("scalanative_unwind_get_reg");
     exit(24);
     return 0;
 }
 
 int scalanative_unwind_get_context(void *context)
 {
-    pd_log_error("scalanative_unwind_get_context");
+    // pd_log_error("scalanative_unwind_get_context");
     exit(25);
     return 0;
 }
 
 long long scalanative_atomic_load_llong(long long *atm)
 {
-    pd_log_error("scalanative_atomic_load_llong");
+    // pd_log_error("scalanative_atomic_load_llong");
     exit(26);
     return 0;
 }
 
 bool scalanative_atomic_compare_exchange_strong_llong(long long *atm, long long *expected, long long desired)
 {
-    pd_log_error("scalanative_atomic_compare_exchange_strong_llong");
+    // pd_log_error("scalanative_atomic_compare_exchange_strong_llong");
     exit(27);
     return false;
 }
