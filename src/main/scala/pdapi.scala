@@ -551,7 +551,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]): AddScoreCallback = o
     extension (v: AddScoreCallback)
       inline def value: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -573,7 +573,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr2[Ptr[PDBoardsList], Ptr[CUnsignedChar], Unit]): BoardsListCallback = o
     extension (v: BoardsListCallback)
       inline def value: CFuncPtr2[Ptr[PDBoardsList], Ptr[CUnsignedChar], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_gfx.h
@@ -660,7 +660,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit]): PersonalBestCallback = o
     extension (v: PersonalBestCallback)
       inline def value: CFuncPtr2[Ptr[PDScore], Ptr[CUnsignedChar], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -692,7 +692,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr2[Ptr[PDScoresList], Ptr[CUnsignedChar], Unit]): ScoresCallback = o
     extension (v: ScoresCallback)
       inline def value: CFuncPtr2[Ptr[PDScoresList], Ptr[CUnsignedChar], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -704,7 +704,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr2[Ptr[SoundSequence], Ptr[Byte], Unit]): SequenceFinishedCallback = o
     extension (v: SequenceFinishedCallback)
       inline def value: CFuncPtr2[Ptr[SoundSequence], Ptr[Byte], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -740,7 +740,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr1[Ptr[lua_State], CInt]): lua_CFunction = o
     extension (v: lua_CFunction)
       inline def value: CFuncPtr1[Ptr[lua_State], CInt] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_lua.h
@@ -762,7 +762,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr1[Ptr[Byte], Unit]): signalDeallocFunc = o
     extension (v: signalDeallocFunc)
       inline def value: CFuncPtr1[Ptr[Byte], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -774,7 +774,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr3[Ptr[Byte], CInt, CInt, Unit]): signalNoteOffFunc = o
     extension (v: signalNoteOffFunc)
       inline def value: CFuncPtr3[Ptr[Byte], CInt, CInt, Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -786,7 +786,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr4[Ptr[Byte], MIDINote, Float, Float, Unit]): signalNoteOnFunc = o
     extension (v: signalNoteOnFunc)
       inline def value: CFuncPtr4[Ptr[Byte], MIDINote, Float, Float, Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -798,7 +798,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr3[Ptr[Byte], Ptr[CInt], Ptr[Float], Float]): signalStepFunc = o
     extension (v: signalStepFunc)
       inline def value: CFuncPtr3[Ptr[Byte], Ptr[CInt], Ptr[Float], Float] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   type size_t = libc.stddef.size_t
   object size_t:
@@ -827,7 +827,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr1[Ptr[Byte], Unit]): synthDeallocFunc = o
     extension (v: synthDeallocFunc)
       inline def value: CFuncPtr1[Ptr[Byte], Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -839,7 +839,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr4[Ptr[Byte], MIDINote, Float, Float, Unit]): synthNoteOnFunc = o
     extension (v: synthNoteOnFunc)
       inline def value: CFuncPtr4[Ptr[Byte], MIDINote, Float, Float, Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -851,7 +851,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr2[Ptr[Byte], CInt, Unit]): synthReleaseFunc = o
     extension (v: synthReleaseFunc)
       inline def value: CFuncPtr2[Ptr[Byte], CInt, Unit] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -863,7 +863,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr6[Ptr[Byte], Ptr[int32_t], Ptr[int32_t], CInt, uint32_t, int32_t, CInt]): synthRenderFunc = o
     extension (v: synthRenderFunc)
       inline def value: CFuncPtr6[Ptr[Byte], Ptr[int32_t], Ptr[int32_t], CInt, uint32_t, int32_t, CInt] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   /**
    * [bindgen] header: /Users/kubukoz/Developer/PlaydateSDK/C_API/pd_api/pd_api_sound.h
@@ -875,7 +875,7 @@ object aliases:
     inline def apply(inline o: CFuncPtr3[Ptr[Byte], CInt, Float, CInt]): synthSetParameterFunc = o
     extension (v: synthSetParameterFunc)
       inline def value: CFuncPtr3[Ptr[Byte], CInt, Float, CInt] = v
-      inline def toPtr: Ptr[Byte] = CFuncPtr.toPtr(v)
+      inline def toPtr: Ptr[_] = CFuncPtr.toPtr(v)
 
   type uint16_t = scala.scalanative.unsigned.UShort
   object uint16_t:

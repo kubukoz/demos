@@ -112,10 +112,8 @@ val playdateBuildImpl =
     buildBase / "HelloWorld.pdx"
   }
 
-val playdateRun = taskKey[Unit]("Copy the game to the connected Playdate device and run it")
-
 val playdateRunImpl =
-  playdateRun := {
+  run := {
     val pdx = playdateBuild.value
 
     runOnPlaydate(
