@@ -170,6 +170,10 @@ int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStri
     return _pd->graphics->getTextWidth(font, text, len, encoding, tracking);
 }
 
+int pd_graphics_getTextTracking()
+{
+    return _pd->graphics->getTextTracking();
+}
 void pd_graphics_drawText(const char *text, size_t len, PDStringEncoding encoding, int x, int y)
 {
     _pd->graphics->drawText(text, len, encoding, x, y);

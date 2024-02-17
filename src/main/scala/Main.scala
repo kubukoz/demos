@@ -17,6 +17,7 @@ import scala.scalanative.libc.string._
 import scala.util.NotGiven
 import pdapi.enumerations.PDSystemEvent.kEventResume
 import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
+import scala.scalanative.posix.sys.stat
 
 enum DirectionX {
   case Left, Right
@@ -44,8 +45,8 @@ object MainGame {
   def init(ctx: GameContext): GameState = GameState(
     x = 50,
     y = 50,
-    w = 10,
-    h = 10,
+    w = 50,
+    h = 50,
     dirX = DirectionX.Right,
     dirY = DirectionY.Down,
     state = true,
@@ -125,11 +126,7 @@ object MainGame {
           updateMode,
           updatePosition,
           updateSize,
-          updateCrank, {
-            if (ctx.buttons.pressed.b)
-              Zone.open().close()
-            x => x
-          },
+          updateCrank,
         )
       )
   }
@@ -166,16 +163,18 @@ object MainGame {
 
     val str =
       if (state.crankDocked)
-        c"Crank docked"
+        "Crank docked"
       else
-        c"Crank in use"
+        "Crank in use"
 
     val crankText =
       Render.withTextWidth(str) { w =>
+        val marginRight = 20
+
         Text(
-          state.boundsWidth - w - 20,
-          0,
-          str,
+          x = state.boundsWidth - w - marginRight,
+          y = 10,
+          text = str,
         )
       }
 
@@ -209,10 +208,10 @@ enum Render {
   case FPS(x: Int, y: Int)
   case Combine(a: Render, b: Render)
   case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill)
-  case Text(x: Int, y: Int, text: CString)
+  case Text(x: Int, y: Int, text: String)
   case Empty
   case Clear(color: Color)
-  case WithTextWidth(s: CString, f: Int => Render)
+  case WithTextWidth(s: String, f: Int => Render)
 
   def isEmpty: Boolean = this == Empty
 
@@ -227,7 +226,7 @@ enum Render {
 
 object Render {
 
-  def withTextWidth(s: CString)(f: Int => Render): Render = Render.WithTextWidth(s, f)
+  def withTextWidth(s: String)(f: Int => Render): Render = Render.WithTextWidth(s, f)
 
   def renderIf(
     cond: Boolean
@@ -320,7 +319,8 @@ object Main {
     val actions = game.render(newState)
 
     state = newState
-    if (actions.isEmpty) 0
+    if (actions.isEmpty)
+      0
     else {
       executeActions(pd, actions)
 
@@ -336,22 +336,32 @@ object Main {
       case Render.Empty     => ()
       case Render.Clear(c)  => pd_graphics_clear(c.toInt)
       case Render.FPS(x, y) => pd_system_drawFPS(x, y)
-      case Render.WithTextWidth(str, f) =>
-        val len = strlen(str)
-        val width = pd_graphics_getTextWidth(null, str, len, kUTF8Encoding)
+      case Render.WithTextWidth(text, f) =>
+        val width = Zone {
+          val str = toCString(text)
+          val len = strlen(str)
+          pd_graphics_getTextWidth(
+            font = null,
+            text = str,
+            len = len,
+            encoding = kUTF8Encoding,
+            tracking = pd_graphics_getTextTracking(),
+          )
+        }
+
         executeActions(pd, f(width))
 
-      case Render.Text(x, y, str) =>
-        // Zone { case given Zone =>
-        //   val str = toCString(text)
-        pd_graphics_drawText(
-          str,
-          strlen(str),
-          kUTF8Encoding,
-          x,
-          y,
-        )
-      // }
+      case Render.Text(x, y, text) =>
+        Zone {
+          val str = toCString(text)
+          pd_graphics_drawText(
+            str,
+            strlen(str),
+            kUTF8Encoding,
+            x,
+            y,
+          )
+        }
       case Render.Combine(a, b) =>
         executeActions(pd, a)
         executeActions(pd, b)
@@ -457,7 +467,10 @@ object Main {
     text: CString,
     len: CSize,
     encoding: PDStringEncoding,
+    tracking: Int,
   ): Int = extern
+
+  @extern def pd_graphics_getTextTracking(): Int = extern
 
   @extern def pd_graphics_drawText(
     text: CString,

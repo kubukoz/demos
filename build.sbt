@@ -44,7 +44,8 @@ import scala.annotation.tailrec
 
 @tailrec
 def waitUntil(b: => Boolean): Unit =
-  if (b) ()
+  if (b)
+    ()
   else {
     Thread.sleep(1000)
     waitUntil(b)
