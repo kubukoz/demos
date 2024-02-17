@@ -75,7 +75,7 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 
 // error reporting
 
-void pd_log_error_internal(char *str)
+void pd_log_error_raw(char *str)
 {
     int ts = _pd->system->getCurrentTimeMilliseconds();
     _pd->system->logToConsole("[t=%u] %s\n", ts, str);
@@ -87,12 +87,12 @@ void pd_log_error_internal(char *str)
 
 void pd_log_error(char *str, ...)
 {
-    char buffer[128];
+    char buffer[256];
     va_list args;
     va_start(args, str);
     vsprintf(buffer, str, args);
     va_end(args);
-    pd_log_error_internal(buffer);
+    pd_log_error_raw(buffer);
 }
 
 int errno = 0;
