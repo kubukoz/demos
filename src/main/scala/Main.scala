@@ -34,7 +34,7 @@ case class Assets(
 )
 
 case class GameState(
-  szczur: Szczur,
+  szczur: Rat,
   assets: Assets,
 )
 
@@ -51,7 +51,7 @@ object Radians {
   def fromDegrees(degrees: Float): Radians = Radians(degrees * Math.PI.toFloat / 180)
 }
 
-case class Szczur(
+case class Rat(
   y: Float,
   rotation: Radians,
 )
@@ -59,10 +59,10 @@ case class Szczur(
 extension (d: Double) def clamp(min: Double, max: Double): Double = d.max(min).min(max)
 
 object MainGame {
-  val szczurWidth = 32
-  val szczurHeight = 32
-  val szczurMarginX = 20
-  val szczurMarginY = 20
+  val ratWidth = 32
+  val ratHeight = 32
+  val ratMarginX = 20
+  val ratMarginY = 20
 
   def init(ctx: GameContext): GameState = {
     val bitmap = Zone {
@@ -71,8 +71,8 @@ object MainGame {
     }
 
     GameState(
-      szczur = Szczur(
-        y = ctx.screen.height / 2 - szczurHeight / 2,
+      szczur = Rat(
+        y = ctx.screen.height / 2 - ratHeight / 2,
         rotation = Radians(0),
       ),
       assets = Assets(
@@ -83,7 +83,7 @@ object MainGame {
 
   def update(ctx: GameContext): GameState => GameState = {
 
-    val rotateSzczur: GameState => GameState =
+    val rotateRat: GameState => GameState =
       state => {
         val newRotation =
           (
@@ -96,20 +96,20 @@ object MainGame {
         state.copy(szczur = state.szczur.copy(rotation = newRotation))
       }
 
-    val moveSzczur: GameState => GameState =
+    val moveRat: GameState => GameState =
       state => {
         val newY = (state.szczur.y + Math.sin(state.szczur.rotation.value) * ctx.delta * 200)
-          .clamp(20, ctx.screen.height - szczurHeight - szczurMarginY)
+          .clamp(20, ctx.screen.height - ratHeight - ratMarginY)
 
         state.copy(szczur = state.szczur.copy(y = newY.toFloat))
       }
 
-    val equalizeSzczur: GameState => GameState =
+    val equalizeRat: GameState => GameState =
       state => {
         val newRotation =
-          if state.szczur.y == szczurMarginY || state
+          if state.szczur.y == ratMarginY || state
               .szczur
-              .y == ctx.screen.height - szczurHeight - szczurMarginY
+              .y == ctx.screen.height - ratHeight - ratMarginY
           then state.szczur.rotation * 0.9
           else state.szczur.rotation
 
@@ -118,9 +118,9 @@ object MainGame {
 
     Function.chain(
       List(
-        rotateSzczur,
-        moveSzczur,
-        equalizeSzczur,
+        rotateRat,
+        moveRat,
+        equalizeRat,
       )
     )
   }
@@ -130,25 +130,16 @@ object MainGame {
   def render(state: GameState): Render = {
     import Render._
 
-    val szczur = /* Render
-      .Rect(
-        x = 50,
-        y = state.szczur.y.toInt,
-        w = szczurWidth,
-        h = szczurHeight,
-        color = Color.Black,
-        fill = Fill.Fill,
-      ) */
-      Render.Bitmap(
-        x = szczurMarginX + szczurWidth / 2,
-        y = state.szczur.y.toInt + szczurHeight / 2,
-        bitmap = state.assets.arrow,
-        rotation = state.szczur.rotation,
-        centerX = 0.5,
-        centerY = 0.5,
-        xscale = 1.0,
-        yscale = 1.0,
-      )
+    val rat = Render.Bitmap(
+      x = ratMarginX + ratWidth / 2,
+      y = state.szczur.y.toInt + ratHeight / 2,
+      bitmap = state.assets.arrow,
+      rotation = state.szczur.rotation,
+      centerX = 0.5,
+      centerY = 0.5,
+      xscale = 1.0,
+      yscale = 1.0,
+    )
     // .rotated(state.szczur.rotation)
 
     val debug = Render.Text(
@@ -159,7 +150,7 @@ object MainGame {
 
     Clear(Color.White) |+|
       FPS(0, 0) |+|
-      szczur |+|
+      rat |+|
       debug
   }
 
