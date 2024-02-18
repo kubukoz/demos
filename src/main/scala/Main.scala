@@ -18,6 +18,8 @@ import scala.util.NotGiven
 import pdapi.enumerations.PDSystemEvent.kEventResume
 import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
 import scala.scalanative.posix.sys.stat
+import demo.Main.pd_graphics_loadBitmap
+import pdapi.enumerations.LCDLineCapStyle.kLineCapStyleButt
 
 enum DirectionX {
   case Left, Right
@@ -27,108 +29,106 @@ enum DirectionY {
   case Up, Down
 }
 
-case class GameState(
-  x: Float,
-  y: Float,
-  w: Float,
-  h: Float,
-  dirX: DirectionX,
-  dirY: DirectionY,
-  state: Boolean,
-  boundsWidth: Int,
-  boundsHeight: Int,
-  crankDocked: Boolean,
+case class Assets(
+  arrow: Ptr[LCDBitmap]
 )
 
+case class GameState(
+  szczur: Szczur,
+  assets: Assets,
+)
+
+case class Radians(value: Float) {
+  def -(other: Radians): Radians = Radians(value - other.value)
+  def +(other: Radians): Radians = Radians(value + other.value)
+  def *(other: Float): Radians = Radians(value * other)
+
+  def clamp(min: Radians, max: Radians): Radians = Radians(value.max(min.value).min(max.value))
+  def toDegrees: Float = value * 180 / Math.PI.toFloat
+}
+
+object Radians {
+  def fromDegrees(degrees: Float): Radians = Radians(degrees * Math.PI.toFloat / 180)
+}
+
+case class Szczur(
+  y: Float,
+  rotation: Radians,
+)
+
+extension (d: Double) def clamp(min: Double, max: Double): Double = d.max(min).min(max)
+
 object MainGame {
+  val szczurWidth = 32
+  val szczurHeight = 32
+  val szczurMarginX = 20
+  val szczurMarginY = 20
 
-  def init(ctx: GameContext): GameState = GameState(
-    x = 50,
-    y = 50,
-    w = 50,
-    h = 50,
-    dirX = DirectionX.Right,
-    dirY = DirectionY.Down,
-    state = true,
-    boundsWidth = ctx.screen.width,
-    boundsHeight = ctx.screen.height,
-    crankDocked = ctx.crank.docked,
-  )
+  def init(ctx: GameContext): GameState = {
+    val bitmap = Zone {
+      val outErr = stackalloc[CString]()
+      pd_graphics_loadBitmap(toCString("arrow.png"), outErr)
+    }
 
-  val VelocityX = 500
-  val VelocityY = 100
+    GameState(
+      szczur = Szczur(
+        y = ctx.screen.height / 2 - szczurHeight / 2,
+        rotation = Radians(0),
+      ),
+      assets = Assets(
+        arrow = bitmap
+      ),
+    )
+  }
 
   def update(ctx: GameContext): GameState => GameState = {
-    val updateMode: GameState => GameState =
-      state =>
-        if (ctx.buttons.pressed.a)
-          state.copy(state = !state.state)
-        else
-          state
 
-    val updatePosition: GameState => GameState =
+    val rotateSzczur: GameState => GameState =
       state => {
-        val x =
-          if (state.dirX == DirectionX.Left)
-            state.x - VelocityX * ctx.delta
-          else
-            state.x + VelocityX * ctx.delta
-
-        val y =
-          if (state.dirY == DirectionY.Up)
-            state.y - VelocityY * ctx.delta
-          else
-            state.y + VelocityY * ctx.delta
-
-        val dirX =
-          if (x < 0)
-            DirectionX.Right
-          else if (x > ctx.screen.width - state.w)
-            DirectionX.Left
-          else
-            state.dirX
-
-        val dirY =
-          if (y < 0)
-            DirectionY.Down
-          else if (y > ctx.screen.height - state.h)
-            DirectionY.Up
-          else
-            state.dirY
-
-        state.copy(
-          x = 0f max ((ctx.screen.width - state.w) min x),
-          y = 0f max ((ctx.screen.height - state.h) min y),
-          dirX = dirX,
-          dirY = dirY,
-        )
+        val newRotation =
+          (
+            state.szczur.rotation + Radians.fromDegrees(ctx.crank.change)
+          )
+            .clamp(
+              min = Radians.fromDegrees(-60),
+              max = Radians.fromDegrees(60),
+            )
+        state.copy(szczur = state.szczur.copy(rotation = newRotation))
       }
 
-    val updateSize =
-      (state: GameState) => {
-        val crankDelta = ctx.crank.change
+    val moveSzczur: GameState => GameState =
+      state => {
+        val newY = (state.szczur.y + Math.sin(state.szczur.rotation.value) * ctx.delta * 200)
+          .clamp(20, ctx.screen.height - szczurHeight - szczurMarginY)
 
-        state.copy(
-          w = (state.w + crankDelta).toInt,
-          h = (state.h + crankDelta).toInt,
-        )
+        state.copy(szczur = state.szczur.copy(y = newY.toFloat))
       }
 
-    val updateCrank =
-      (state: GameState) =>
-        state.copy(
-          crankDocked = ctx.crank.docked
-        )
+    val equalizeSzczur: GameState => GameState =
+      state => {
 
-    Function
-      .chain(
-        Seq(
-          updateMode,
-          updatePosition,
-          updateSize,
-          updateCrank,
-        )
+        val newRotation =
+          if (
+            state.szczur.y == szczurMarginY || state
+              .szczur
+              .y == ctx.screen.height - szczurHeight - szczurMarginY
+          ) {
+            state.szczur.rotation * 0.9
+          } else {
+            state.szczur.rotation
+          }
+
+        state.copy(szczur = state.szczur.copy(rotation = newRotation))
+
+      }
+
+    Function.chain(
+      List(
+        rotateSzczur,
+        moveSzczur,
+        equalizeSzczur,
       )
+    )
   }
 
   def config: GameConfig = GameConfig(fps = 50)
@@ -136,53 +136,37 @@ object MainGame {
   def render(state: GameState): Render = {
     import Render._
 
-    val dot = Rect(
-      x = state.x.toInt,
-      y = state.y.toInt,
-      w = state.w.toInt,
-      h = state.h.toInt,
-      color = Color.Black,
-      fill =
-        if (state.state)
-          Fill.Fill
-        else
-          Fill.Draw,
+    val szczur = /* Render
+      .Rect(
+        x = 50,
+        y = state.szczur.y.toInt,
+        w = szczurWidth,
+        h = szczurHeight,
+        color = Color.Black,
+        fill = Fill.Fill,
+      ) */
+      Render.Bitmap(
+        x = szczurMarginX + szczurWidth / 2,
+        y = state.szczur.y.toInt + szczurHeight / 2,
+        bitmap = state.assets.arrow,
+        rotation = state.szczur.rotation,
+        centerX = 0.5,
+        centerY = 0.5,
+        xscale = 1.0,
+        yscale = 1.0,
+      )
+    // .rotated(state.szczur.rotation)
+
+    val debug = Render.Text(
+      x = 10,
+      y = 10,
+      s"Rotation: ${state.szczur.rotation.value}, y: ${state.szczur.y}",
     )
-
-    val extraDot =
-      Render.cond(!state.state) {
-        Rect(
-          x = 0,
-          y = state.boundsHeight - 50,
-          w = 50,
-          h = 50,
-          color = Color.Black,
-          fill = Fill.Fill,
-        )
-      }
-
-    val str =
-      if (state.crankDocked)
-        "Crank docked"
-      else
-        "Crank in use"
-
-    val crankText =
-      Render.withTextWidth(str) { w =>
-        val marginRight = 20
-
-        Text(
-          x = state.boundsWidth - w - marginRight,
-          y = 10,
-          text = str,
-        )
-      }
 
     Clear(Color.White) |+|
       FPS(0, 0) |+|
-      dot |+|
-      extraDot |+|
-      crankText
+      szczur |+|
+      debug
   }
 
 }
@@ -208,6 +192,18 @@ enum Render {
   case FPS(x: Int, y: Int)
   case Combine(a: Render, b: Render)
   case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill)
+
+  case Bitmap(
+    x: Int,
+    y: Int,
+    bitmap: Ptr[LCDBitmap],
+    rotation: Radians,
+    centerX: Float,
+    centerY: Float,
+    xscale: Float,
+    yscale: Float,
+  )
+
   case Text(x: Int, y: Int, text: String)
   case Empty
   case Clear(color: Color)
@@ -336,6 +332,18 @@ object Main {
       case Render.Empty     => ()
       case Render.Clear(c)  => pd_graphics_clear(c.toInt)
       case Render.FPS(x, y) => pd_system_drawFPS(x, y)
+      case Render.Bitmap(x, y, bitmap, rotation, centerX, centerY, xscale, yscale) =>
+        pd_graphics_drawRotatedBitmap(
+          bitmap = bitmap,
+          x = x,
+          y = y,
+          rotation = rotation.toDegrees,
+          centerx = centerX,
+          centery = centerY,
+          xscale = xscale,
+          yscale = yscale,
+        )
+
       case Render.WithTextWidth(text, f) =>
         val width = Zone {
           val str = toCString(text)
@@ -462,6 +470,22 @@ object Main {
     y: Int,
   ): Unit = extern
 
+  @extern def pd_graphics_drawRotatedBitmap(
+    bitmap: Ptr[LCDBitmap],
+    x: Int,
+    y: Int,
+    rotation: Float,
+    centerx: Float,
+    centery: Float,
+    xscale: Float,
+    yscale: Float,
+  ): Unit = extern
+
+  @extern def pd_graphics_loadBitmap(
+    path: CString,
+    outErr: Ptr[CString],
+  ): Ptr[LCDBitmap] = extern
+
   @extern def pd_graphics_getTextWidth(
     font: Ptr[LCDFont],
     text: CString,
@@ -471,6 +495,12 @@ object Main {
   ): Int = extern
 
   @extern def pd_graphics_getTextTracking(): Int = extern
+
+  @extern def pd_graphics_pushContext(
+    ctx: Ptr[LCDBitmap]
+  ): Unit = extern
+
+  @extern def pd_graphics_popContext(): Unit = extern
 
   @extern def pd_graphics_drawText(
     text: CString,

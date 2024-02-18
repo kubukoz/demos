@@ -165,9 +165,29 @@ bool pd_system_isCrankDocked()
     return _pd->system->isCrankDocked();
 }
 
+LCDBitmap *pd_graphics_loadBitmap(const char *path, const char **outErr)
+{
+    return _pd->graphics->loadBitmap(path, outErr);
+}
+
 int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStringEncoding encoding, int tracking)
 {
     return _pd->graphics->getTextWidth(font, text, len, encoding, tracking);
+}
+
+void pd_graphics_drawRotatedBitmap(LCDBitmap *bitmap, int x, int y, float rotation, float centerx, float centery, float xscale, float yscale)
+{
+    return _pd->graphics->drawRotatedBitmap(bitmap, x, y, rotation, centerx, centery, xscale, yscale);
+}
+
+void pd_graphics_pushContext(LCDBitmap *ctx)
+{
+    _pd->graphics->pushContext(ctx);
+}
+
+void pd_graphics_popContext()
+{
+    _pd->graphics->popContext();
 }
 
 int pd_graphics_getTextTracking()
