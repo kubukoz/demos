@@ -106,20 +106,14 @@ object MainGame {
 
     val equalizeSzczur: GameState => GameState =
       state => {
-
         val newRotation =
-          if (
-            state.szczur.y == szczurMarginY || state
+          if state.szczur.y == szczurMarginY || state
               .szczur
               .y == ctx.screen.height - szczurHeight - szczurMarginY
-          ) {
-            state.szczur.rotation * 0.9
-          } else {
-            state.szczur.rotation
-          }
+          then state.szczur.rotation * 0.9
+          else state.szczur.rotation
 
         state.copy(szczur = state.szczur.copy(rotation = newRotation))
-
       }
 
     Function.chain(

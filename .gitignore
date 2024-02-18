@@ -7,3 +7,4 @@ node_modules/
 .smithy.lsp.log
 
 .vscode/c_cpp_properties.json
+crashlog.txt
