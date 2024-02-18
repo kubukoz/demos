@@ -28,7 +28,7 @@ case class GameState(
   assets: GameAssets,
 )
 
-case class Radians(value: Float) {
+case class Radians private (value: Float) {
   def -(other: Radians): Radians = Radians(value - other.value)
   def +(other: Radians): Radians = Radians(value + other.value)
   def *(other: Float): Radians = Radians(value * other)
@@ -39,6 +39,7 @@ case class Radians(value: Float) {
 
 object Radians {
   def fromDegrees(degrees: Float): Radians = Radians(degrees * Math.PI.toFloat / 180)
+  val Zero: Radians = Radians(0)
 }
 
 case class Rat(
@@ -117,7 +118,7 @@ object MainGame {
     GameState(
       rat = Rat(
         y = ctx.screen.height / 2 - ratHeight / 2,
-        rotation = Radians(0),
+        rotation = Radians.Zero,
       ),
       assets = GameAssets(
         arrow = arrow
@@ -148,6 +149,16 @@ object MainGame {
         state.copy(rat = state.rat.copy(y = newY.toFloat))
       }
 
+    val equalizeRatRotation: GameState => GameState =
+      state => {
+        val newRotation =
+          if Math.abs(state.rat.rotation.value) < 0.03
+          then Radians.Zero
+          else state.rat.rotation
+
+        state.copy(rat = state.rat.copy(rotation = newRotation))
+      }
+
     val equalizeRat: GameState => GameState =
       state => {
         val newRotation =
@@ -164,6 +175,7 @@ object MainGame {
       List(
         rotateRat,
         moveRat,
+        equalizeRatRotation,
         equalizeRat,
       )
     )
