@@ -170,6 +170,11 @@ LCDBitmap *pd_graphics_loadBitmap(const char *path, const char **outErr)
     return _pd->graphics->loadBitmap(path, outErr);
 }
 
+void pd_graphics_freeBitmap(LCDBitmap *bitmap)
+{
+    _pd->graphics->freeBitmap(bitmap);
+}
+
 int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStringEncoding encoding, int tracking)
 {
     return _pd->graphics->getTextWidth(font, text, len, encoding, tracking);

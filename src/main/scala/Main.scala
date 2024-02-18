@@ -20,6 +20,7 @@ import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
 import scala.scalanative.posix.sys.stat
 import demo.Main.pd_graphics_loadBitmap
 import pdapi.enumerations.LCDLineCapStyle.kLineCapStyleButt
+import pdapi.enumerations.PDSystemEvent.kEventTerminate
 
 enum DirectionX {
   case Left, Right
@@ -34,7 +35,7 @@ case class Assets(
 )
 
 case class GameState(
-  szczur: Rat,
+  rat: Rat,
   assets: Assets,
 )
 
@@ -58,25 +59,77 @@ case class Rat(
 
 extension (d: Double) def clamp(min: Double, max: Double): Double = d.max(min).min(max)
 
+enum Resource[A] {
+  case Pure[A](a: A) extends Resource[A]
+  case Make[A](alloc: () => A, cleanup: A => Unit) extends Resource[A]
+  case FlatMap[B, A](resource: Resource[B], f: B => Resource[A]) extends Resource[A]
+
+  def map[B](f: A => B): Resource[B] = flatMap(a => Resource.pure(f(a)))
+
+  def flatMap[B](f: A => Resource[B]): Resource[B] = FlatMap(this, f)
+
+  def compile(): (A, () => Unit) = {
+    def loop[B](resource: Resource[B]): (B, () => Unit) =
+      resource match {
+        case Pure(a) => (a, () => ())
+
+        case Make(alloc, cleanup) =>
+          val a = alloc()
+          (a, () => cleanup(a))
+
+        case FlatMap(resource, f) =>
+          val (b, cleanup) = loop(resource)
+          val (a, cleanup2) = loop(f(b))
+
+          (
+            a,
+            () => {
+              cleanup2()
+              cleanup()
+            },
+          )
+      }
+
+    loop(this)
+  }
+
+}
+
+object Resource {
+  def pure[A](a: A): Resource[A] = Resource.Pure(a)
+  def make[A](alloc: => A)(cleanup: A => Unit): Resource[A] = Resource.Make(() => alloc, cleanup)
+}
+
+object Assets {
+
+  def bitmap(path: String): Resource[Ptr[LCDBitmap]] =
+    Resource.make {
+      Zone {
+        val outErr = alloc[CString]()
+        pd_graphics_loadBitmap(toCString(path), outErr)
+      }
+    } { ptr =>
+      Main.pd_graphics_freeBitmap(ptr)
+    }
+
+}
+
 object MainGame {
   val ratWidth = 32
   val ratHeight = 32
   val ratMarginX = 20
   val ratMarginY = 20
 
-  def init(ctx: GameContext): GameState = {
-    val bitmap = Zone {
-      val outErr = stackalloc[CString]()
-      pd_graphics_loadBitmap(toCString("arrow.png"), outErr)
-    }
+  def config: GameConfig = GameConfig(fps = 50)
 
+  def init(ctx: GameContext): Resource[GameState] = Assets.bitmap("arrow.png").map { arrow =>
     GameState(
-      szczur = Rat(
+      rat = Rat(
         y = ctx.screen.height / 2 - ratHeight / 2,
         rotation = Radians(0),
       ),
       assets = Assets(
-        arrow = bitmap
+        arrow = arrow
       ),
     )
   }
@@ -87,33 +140,33 @@ object MainGame {
       state => {
         val newRotation =
           (
-            state.szczur.rotation + Radians.fromDegrees(ctx.crank.change)
+            state.rat.rotation + Radians.fromDegrees(ctx.crank.change)
           )
             .clamp(
               min = Radians.fromDegrees(-60),
               max = Radians.fromDegrees(60),
             )
-        state.copy(szczur = state.szczur.copy(rotation = newRotation))
+        state.copy(rat = state.rat.copy(rotation = newRotation))
       }
 
     val moveRat: GameState => GameState =
       state => {
-        val newY = (state.szczur.y + Math.sin(state.szczur.rotation.value) * ctx.delta * 200)
+        val newY = (state.rat.y + Math.sin(state.rat.rotation.value) * ctx.delta * 300)
           .clamp(20, ctx.screen.height - ratHeight - ratMarginY)
 
-        state.copy(szczur = state.szczur.copy(y = newY.toFloat))
+        state.copy(rat = state.rat.copy(y = newY.toFloat))
       }
 
     val equalizeRat: GameState => GameState =
       state => {
         val newRotation =
-          if state.szczur.y == ratMarginY || state
-              .szczur
+          if state.rat.y == ratMarginY || state
+              .rat
               .y == ctx.screen.height - ratHeight - ratMarginY
-          then state.szczur.rotation * 0.9
-          else state.szczur.rotation
+          then state.rat.rotation * 0.9
+          else state.rat.rotation
 
-        state.copy(szczur = state.szczur.copy(rotation = newRotation))
+        state.copy(rat = state.rat.copy(rotation = newRotation))
       }
 
     Function.chain(
@@ -125,16 +178,14 @@ object MainGame {
     )
   }
 
-  def config: GameConfig = GameConfig(fps = 50)
-
   def render(state: GameState): Render = {
     import Render._
 
     val rat = Render.Bitmap(
       x = ratMarginX + ratWidth / 2,
-      y = state.szczur.y.toInt + ratHeight / 2,
+      y = state.rat.y.toInt + ratHeight / 2,
       bitmap = state.assets.arrow,
-      rotation = state.szczur.rotation,
+      rotation = state.rat.rotation,
       centerX = 0.5,
       centerY = 0.5,
       xscale = 1.0,
@@ -145,7 +196,7 @@ object MainGame {
     val debug = Render.Text(
       x = 10,
       y = 10,
-      s"Rotation: ${state.szczur.rotation.value}, y: ${state.szczur.y}",
+      s"Rotation: ${state.rat.rotation.value}, y: ${state.rat.y}",
     )
 
     Clear(Color.White) |+|
@@ -267,6 +318,7 @@ object Main {
   val game = MainGame
 
   var state: GameState = null
+  var cleanupState: () => Unit = null
 
   var pressed: Ptr[PDButtons] = null
   var current: Ptr[PDButtons] = null
@@ -283,10 +335,22 @@ object Main {
   }
 
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
-    if (event == kEventInit) {
-      state = game.init(deriveContext(pd))
-      val cfg = game.config
-      pd_display_setRefreshRate(cfg.fps)
+    event.match {
+      case `kEventInit` =>
+        game.init(deriveContext(pd)).compile() match {
+          case (state, cleanupState) =>
+            this.state = state
+            this.cleanupState = cleanupState
+        }
+
+        val cfg = game.config
+        pd_display_setRefreshRate(cfg.fps)
+
+      case `kEventTerminate` =>
+        cleanupState()
+        state = null
+        cleanupState = null
+      case _ => ()
     }
 
     0
@@ -470,6 +534,10 @@ object Main {
     path: CString,
     outErr: Ptr[CString],
   ): Ptr[LCDBitmap] = extern
+
+  @extern def pd_graphics_freeBitmap(
+    bitmap: Ptr[LCDBitmap]
+  ): Unit = extern
 
   @extern def pd_graphics_getTextWidth(
     font: Ptr[LCDFont],
