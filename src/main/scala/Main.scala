@@ -30,13 +30,13 @@ enum DirectionY {
   case Up, Down
 }
 
-case class Assets(
+case class GameAssets(
   arrow: Ptr[LCDBitmap]
 )
 
 case class GameState(
   rat: Rat,
-  assets: Assets,
+  assets: GameAssets,
 )
 
 case class Radians(value: Float) {
@@ -100,7 +100,7 @@ object Resource {
   def make[A](alloc: => A)(cleanup: A => Unit): Resource[A] = Resource.Make(() => alloc, cleanup)
 }
 
-object Assets {
+object GameAssets {
 
   def bitmap(path: String): Resource[Ptr[LCDBitmap]] =
     Resource.make {
@@ -122,13 +122,13 @@ object MainGame {
 
   def config: GameConfig = GameConfig(fps = 50)
 
-  def init(ctx: GameContext): Resource[GameState] = Assets.bitmap("arrow.png").map { arrow =>
+  def init(ctx: GameContext): Resource[GameState] = GameAssets.bitmap("arrow.png").map { arrow =>
     GameState(
       rat = Rat(
         y = ctx.screen.height / 2 - ratHeight / 2,
         rotation = Radians(0),
       ),
-      assets = Assets(
+      assets = GameAssets(
         arrow = arrow
       ),
     )
@@ -191,7 +191,7 @@ object MainGame {
       xscale = 1.0,
       yscale = 1.0,
     )
-    // .rotated(state.szczur.rotation)
+    // .rotated(state.rat.rotation)
 
     val debug = Render.Text(
       x = 10,
