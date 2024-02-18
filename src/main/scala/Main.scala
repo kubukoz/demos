@@ -169,7 +169,7 @@ object MainGame {
     )
   }
 
-  def render(state: GameState): Render = {
+  def render(ctx: GameContext, state: GameState): Render = {
     import Render._
 
     val rat = Render.Bitmap(
@@ -190,9 +190,23 @@ object MainGame {
       s"Rotation: ${state.rat.rotation.value}, y: ${state.rat.y}",
     )
 
+    val crankIndicator =
+      Render.cond(ctx.crank.docked) {
+        val text = "Use the crank!"
+
+        Render.withTextWidth(text) { w =>
+          Render.Text(
+            x = ctx.screen.width - w - 10,
+            y = ctx.screen.height - 24 - 10,
+            text = text,
+          )
+        }
+      }
+
     Clear(Color.White) |+|
       FPS(0, 0) |+|
       rat |+|
+      crankIndicator |+|
       debug
   }
 
@@ -348,7 +362,7 @@ object Main {
   ): Int = {
     val ctx: GameContext = deriveContext(pd)
     val newState = game.update(ctx)(state)
-    val actions = game.render(newState)
+    val actions = game.render(ctx, newState)
 
     state = newState
     if (actions.isEmpty)
