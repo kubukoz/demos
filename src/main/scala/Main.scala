@@ -8,7 +8,6 @@ import scalanative.unsafe._
 import pdapi.enumerations.PDButtons.kButtonB
 import scala.scalanative.libc.string._
 import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
-import demo.Main.pd_graphics_loadBitmap
 import pdapi.enumerations.PDSystemEvent.kEventTerminate
 
 enum DirectionX {
@@ -90,21 +89,111 @@ object Resource {
   def make[A](alloc: => A)(cleanup: A => Unit): Resource[A] = Resource.Make(() => alloc, cleanup)
 }
 
-object GameAssets {
+object Assets {
 
   def bitmap(path: String): Resource[Ptr[LCDBitmap]] =
     Resource.make {
       Zone {
         val outErr = alloc[CString]()
-        pd_graphics_loadBitmap(toCString(path), outErr)
+        pdapiBindings.pd_graphics_loadBitmap(toCString(path), outErr)
       }
     } { ptr =>
-      Main.pd_graphics_freeBitmap(ptr)
+      pdapiBindings.pd_graphics_freeBitmap(ptr)
     }
 
 }
 
-object pdapiBindings {}
+// todo move stuff from main
+object pdapiBindings {
+
+  @extern def pd_system_getButtonState(
+    current: Ptr[PDButtons],
+    pressed: Ptr[PDButtons],
+    released: Ptr[PDButtons],
+  ): Unit = extern
+
+  @extern def pd_graphics_fillRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    color: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_drawRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    color: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_clear(
+    color: Int
+  ): Unit = extern
+
+  @extern def pd_system_getCrankChange(): Float = extern
+
+  @extern def pd_system_isCrankDocked(): Boolean = extern
+
+  @extern def pd_system_getElapsedTime(): Float = extern
+
+  @extern def pd_system_resetElapsedTime(): Unit = extern
+
+  @extern def pd_system_drawFPS(
+    x: Int,
+    y: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_drawRotatedBitmap(
+    bitmap: Ptr[LCDBitmap],
+    x: Int,
+    y: Int,
+    rotation: Float,
+    centerx: Float,
+    centery: Float,
+    xscale: Float,
+    yscale: Float,
+  ): Unit = extern
+
+  @extern def pd_graphics_loadBitmap(
+    path: CString,
+    outErr: Ptr[CString],
+  ): Ptr[LCDBitmap] = extern
+
+  @extern def pd_graphics_freeBitmap(
+    bitmap: Ptr[LCDBitmap]
+  ): Unit = extern
+
+  @extern def pd_graphics_getTextWidth(
+    font: Ptr[LCDFont],
+    text: CString,
+    len: CSize,
+    encoding: PDStringEncoding,
+    tracking: Int,
+  ): Int = extern
+
+  @extern def pd_graphics_getTextTracking(): Int = extern
+
+  @extern def pd_graphics_pushContext(
+    ctx: Ptr[LCDBitmap]
+  ): Unit = extern
+
+  @extern def pd_graphics_popContext(): Unit = extern
+
+  @extern def pd_graphics_drawText(
+    text: CString,
+    len: CSize,
+    encoding: PDStringEncoding,
+    x: Int,
+    y: Int,
+  ): Unit = extern
+
+  @extern def pd_display_setRefreshRate(
+    rate: Float
+  ): Unit = extern
+
+}
 
 object MainGame {
   val ratWidth = 32
@@ -114,7 +203,7 @@ object MainGame {
 
   def config: GameConfig = GameConfig(fps = 50)
 
-  def init(ctx: GameContext): Resource[GameState] = GameAssets.bitmap("arrow.png").map { arrow =>
+  def init(ctx: GameContext): Resource[GameState] = Assets.bitmap("arrow.png").map { arrow =>
     GameState(
       rat = Rat(
         y = ctx.screen.height / 2 - ratHeight / 2,
@@ -347,6 +436,8 @@ object Main {
 
   }
 
+  import pdapiBindings._
+
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     event.match {
       case `kEventInit` =>
@@ -492,97 +583,6 @@ object Main {
       screen = screen,
     )
   }
-
-  @extern def pd_system_getButtonState(
-    current: Ptr[PDButtons],
-    pressed: Ptr[PDButtons],
-    released: Ptr[PDButtons],
-  ): Unit = extern
-
-  @extern def pd_graphics_fillRect(
-    x: Int,
-    y: Int,
-    w: Int,
-    h: Int,
-    color: Int,
-  ): Unit = extern
-
-  @extern def pd_graphics_drawRect(
-    x: Int,
-    y: Int,
-    w: Int,
-    h: Int,
-    color: Int,
-  ): Unit = extern
-
-  @extern def pd_graphics_clear(
-    color: Int
-  ): Unit = extern
-
-  @extern def pd_system_getCrankChange(): Float = extern
-
-  @extern def pd_system_isCrankDocked(): Boolean = extern
-
-  @extern def pd_system_getElapsedTime(): Float = extern
-
-  @extern def pd_system_resetElapsedTime(): Unit = extern
-
-  @extern def pd_system_drawFPS(
-    x: Int,
-    y: Int,
-  ): Unit = extern
-
-  @extern def pd_graphics_drawRotatedBitmap(
-    bitmap: Ptr[LCDBitmap],
-    x: Int,
-    y: Int,
-    rotation: Float,
-    centerx: Float,
-    centery: Float,
-    xscale: Float,
-    yscale: Float,
-  ): Unit = extern
-
-  @extern def pd_graphics_loadBitmap(
-    path: CString,
-    outErr: Ptr[CString],
-  ): Ptr[LCDBitmap] = extern
-
-  @extern def pd_graphics_freeBitmap(
-    bitmap: Ptr[LCDBitmap]
-  ): Unit = extern
-
-  @extern def pd_graphics_getTextWidth(
-    font: Ptr[LCDFont],
-    text: CString,
-    len: CSize,
-    encoding: PDStringEncoding,
-    tracking: Int,
-  ): Int = extern
-
-  @extern def pd_graphics_getTextTracking(): Int = extern
-
-  @extern def pd_graphics_pushContext(
-    ctx: Ptr[LCDBitmap]
-  ): Unit = extern
-
-  @extern def pd_graphics_popContext(): Unit = extern
-
-  @extern def pd_graphics_drawText(
-    text: CString,
-    len: CSize,
-    encoding: PDStringEncoding,
-    x: Int,
-    y: Int,
-  ): Unit = extern
-
-  @extern def pd_display_setRefreshRate(
-    rate: Float
-  ): Unit = extern
-
-  @extern
-  @name("pd_system_logToConsole")
-  def printToConsole(msg: CString): Unit = extern
 
   @exported("sn_event")
   def event(
