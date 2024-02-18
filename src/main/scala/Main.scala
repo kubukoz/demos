@@ -4,22 +4,11 @@ import pdapi.all._
 import pdapi.enumerations.PDButtons.kButtonA
 import pdapi.enumerations.PDSystemEvent.kEventInit
 import scalanative.unsafe._
-import scalanative.unsigned._
 
-import scala.util.Random
 import pdapi.enumerations.PDButtons.kButtonB
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import java.nio.CharBuffer
-import scala.scalanative.unsigned.UInt
-import scala.scalanative.unsafe._
 import scala.scalanative.libc.string._
-import scala.util.NotGiven
-import pdapi.enumerations.PDSystemEvent.kEventResume
 import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
-import scala.scalanative.posix.sys.stat
 import demo.Main.pd_graphics_loadBitmap
-import pdapi.enumerations.LCDLineCapStyle.kLineCapStyleButt
 import pdapi.enumerations.PDSystemEvent.kEventTerminate
 
 enum DirectionX {
@@ -113,6 +102,8 @@ object GameAssets {
     }
 
 }
+
+object pdapiBindings {}
 
 object MainGame {
   val ratWidth = 32
@@ -315,14 +306,10 @@ case class GameConfig(fps: Int)
 
 object Main {
 
-  val game = MainGame
+  private val game = MainGame
 
-  var state: GameState = null
-  var cleanupState: () => Unit = null
-
-  var pressed: Ptr[PDButtons] = null
-  var current: Ptr[PDButtons] = null
-  var released: Ptr[PDButtons] = null
+  private var state: GameState = null
+  private var cleanupState: () => Unit = null
 
   extension [A](
     inline ptr: Ptr[A]

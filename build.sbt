@@ -152,6 +152,7 @@ val root = project
   .enablePlugins(ScalaNativePlugin)
   .settings(
     scalaVersion := "3.3.1",
+    scalacOptions += "-Wunused:all",
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
         .withTargetTriple("arm-none-eabi")
