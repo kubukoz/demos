@@ -9,6 +9,7 @@ import pdapi.enumerations.PDButtons.kButtonB
 import scala.scalanative.libc.string._
 import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
 import pdapi.enumerations.PDSystemEvent.kEventTerminate
+import scala.util.Random
 
 enum DirectionX {
   case Left, Right
@@ -22,9 +23,26 @@ case class GameAssets(
   arrow: Ptr[LCDBitmap]
 )
 
+enum TramDirection {
+  case Horizontal
+  case Vertical
+}
+
+enum Obstacle {
+  case Tram(direction: TramDirection, offsetX: Float, offsetY: Float)
+
+  def moveX(diff: Float): Obstacle =
+    this match {
+      case Tram(direction, offsetX, offsetY) => Tram(direction, offsetX + diff, offsetY)
+    }
+
+}
+
 case class GameState(
   rat: Rat,
+  obstacles: List[Obstacle],
   assets: GameAssets,
+  offsetX: Float,
 )
 
 case class Radians private (value: Float) {
@@ -201,7 +219,36 @@ object MainGame {
   val ratMarginX = 20
   val ratMarginY = 20
 
+  val tramWidth = 10
+  val tramLength = 100
+
   def config: GameConfig = GameConfig(fps = 50)
+
+  private def generateObstacles(dice: Dice): List[Obstacle] = {
+    // SN issue? ranges (0 until 10) seem to crash. So does List.iterate with about 100 items.
+
+    // generate obstacles whose distance from the previous one is at least 50 pixels, and at most 200 pixels from the previous one.
+
+    val offsets =
+      dice
+        .rollN(fromInclusive = 1, untilExclusive = 4, n = 10)
+        .map(_ * 50)
+        .scanLeft(200)(_ + _ + tramWidth)
+        .tail
+
+    println("generated offsets: " + offsets)
+
+    offsets
+      .zipWithIndex
+      .map { (offsetX, index) =>
+        val offsetY = if index % 2 == 0 then 10 else 120
+        Obstacle.Tram(
+          direction = TramDirection.Vertical,
+          offsetX = offsetX,
+          offsetY = offsetY,
+        )
+      }
+  }
 
   def init(ctx: GameContext): Resource[GameState] = Assets.bitmap("arrow.png").map { arrow =>
     GameState(
@@ -212,10 +259,20 @@ object MainGame {
       assets = GameAssets(
         arrow = arrow
       ),
+      obstacles = generateObstacles(ctx.dice),
+      offsetX = 0,
     )
   }
 
   def update(ctx: GameContext): GameState => GameState = {
+
+    val updateOffset: GameState => GameState =
+      state => {
+        val pixelsPerSecond = 100
+
+        val newOffset = state.offsetX + ctx.delta * pixelsPerSecond
+        state.copy(offsetX = newOffset)
+      }
 
     val rotateRat: GameState => GameState =
       state => {
@@ -238,15 +295,15 @@ object MainGame {
         state.copy(rat = state.rat.copy(y = newY.toFloat))
       }
 
-    val equalizeRatRotation: GameState => GameState =
-      state => {
-        val newRotation =
-          if Math.abs(state.rat.rotation.value) < 0.03
-          then Radians.Zero
-          else state.rat.rotation
+    // val equalizeRatRotation: GameState => GameState =
+    //   state => {
+    //     val newRotation =
+    //       if Math.abs(state.rat.rotation.value) < 0.03
+    //       then Radians.Zero
+    //       else state.rat.rotation
 
-        state.copy(rat = state.rat.copy(rotation = newRotation))
-      }
+    //     state.copy(rat = state.rat.copy(rotation = newRotation))
+    //   }
 
     val equalizeRat: GameState => GameState =
       state => {
@@ -260,12 +317,45 @@ object MainGame {
         state.copy(rat = state.rat.copy(rotation = newRotation))
       }
 
+    val recycleObstacles: GameState => GameState =
+      state => {
+        // remove any obstacles whose right side is off the screen.
+        val newObstacles = state.obstacles.filter { case Obstacle.Tram(_, offsetX, _) =>
+          offsetX + tramWidth > state.offsetX
+        }
+
+        state.copy(obstacles = newObstacles)
+      }
+
+    val addObstacles: GameState => GameState =
+      state => {
+
+        // If the last obstacle is less than 50 pixels from the screen right, or if there are no obstacles at all, generate new obstacles and append to the current list.
+        val newObstacles =
+          state.obstacles ++ state
+            .obstacles
+            .lastOption
+            .filter { case Obstacle.Tram(_, offsetX, _) =>
+              val positionOnScreen = offsetX - state.offsetX
+              positionOnScreen < ctx.screen.width + 50
+            }
+            .toList
+            .flatMap { case Obstacle.Tram(_, offsetX, _) =>
+              generateObstacles(ctx.dice).map(_.moveX(offsetX + tramWidth))
+            }
+
+        state.copy(obstacles = newObstacles)
+      }
+
     Function.chain(
       List(
+        updateOffset,
         rotateRat,
         moveRat,
-        equalizeRatRotation,
+        // equalizeRatRotation,
         equalizeRat,
+        recycleObstacles,
+        addObstacles,
       )
     )
   }
@@ -284,6 +374,24 @@ object MainGame {
       yscale = 1.0,
     )
     // .rotated(state.rat.rotation)
+
+    val obstacles =
+      state
+        .obstacles
+        .map { case Obstacle.Tram(direction, offsetX, offsetY) =>
+          direction match {
+            case TramDirection.Vertical =>
+              Render.Rect(
+                x = (offsetX - state.offsetX).toInt,
+                y = offsetY.toInt,
+                w = tramWidth,
+                h = tramLength,
+                color = Color.Black,
+                fill = Fill.Fill,
+              )
+          }
+        }
+        .combineAll
 
     val debug = Render.Text(
       x = 10,
@@ -307,6 +415,7 @@ object MainGame {
     Clear(Color.White) |+|
       FPS(0, 0) |+|
       rat |+|
+      obstacles |+|
       crankIndicator |+|
       debug
   }
@@ -378,6 +487,8 @@ object Render {
       ifFalse
 
   def cond(condition: Boolean)(ifTrue: Render): Render = renderIf(condition)(ifTrue, Empty)
+
+  extension (l: List[Render]) def combineAll: Render = l.foldLeft(Render.Empty)(_ |+| _)
 }
 
 case class ButtonState(
@@ -410,11 +521,33 @@ object Screen {
 
 }
 
+// Another brilliant idea from Indigo!
+trait Dice {
+  def rollN(fromInclusive: Int, untilExclusive: Int, n: Int): List[Int]
+}
+
+object Dice {
+
+  case class DiceImpl(seed: Int) extends Dice {
+
+    def rollN(fromInclusive: Int, untilExclusive: Int, n: Int): List[Int] = withRandom { rand =>
+      val range = untilExclusive - fromInclusive
+      List.fill(n)(rand.nextInt(range) + fromInclusive)
+    }
+
+    private def withRandom[A](f: Random => A): A = f(new Random(seed))
+
+  }
+
+  def fromRandom(seed: Int): Dice = new DiceImpl(seed)
+}
+
 case class GameContext(
   buttons: Buttons,
   crank: Crank,
   delta: Float,
   screen: Screen,
+  dice: Dice,
 )
 
 case class GameConfig(fps: Int)
@@ -581,6 +714,7 @@ object Main {
       crank = crank,
       delta = delta,
       screen = screen,
+      dice = Dice.fromRandom(Random.nextInt()),
     )
   }
 

@@ -75,10 +75,10 @@ void pd_log_error_raw(char *str)
 {
     int ts = _pd->system->getCurrentTimeMilliseconds();
     _pd->system->logToConsole("[t=%u] %s\n", ts, str);
-    SDFile *file = _pd->file->open("jk-logs.txt", kFileAppend);
-    _pd->file->write(file, str, strlen(str));
-    _pd->file->write(file, "\n", strlen("\n"));
-    _pd->file->close(file);
+    // SDFile *file = _pd->file->open("jk-logs.txt", kFileAppend);
+    // _pd->file->write(file, str, strlen(str));
+    // _pd->file->write(file, "\n", strlen("\n"));
+    // _pd->file->close(file);
 }
 
 void pd_log_error(char *str, ...)
