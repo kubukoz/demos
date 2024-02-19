@@ -72,6 +72,7 @@ case class GameState(
   offsetX: Float,
   score: Score,
   scoring: Boolean,
+  boost: Boolean,
 )
 
 case class Radians private (value: Float) {
@@ -335,13 +336,24 @@ object MainGame {
       offsetX = 0,
       score = Score.Init,
       scoring = false,
+      boost = false,
     )
 
   def update(ctx: GameContext): GameState => GameState = {
 
+    val setBoost: GameState => GameState =
+      state => {
+        val newBoost = ctx.buttons.pressed.a || ctx.buttons.current.a
+        state.copy(boost = newBoost)
+      }
+
     val movement: GameState => GameState =
       state => {
-        val pixelsPerSecond = 100
+        val pixelsPerSecond =
+          if (state.boost)
+            300
+          else
+            100
 
         val newOffset = state.offsetX + ctx.delta * pixelsPerSecond
 
@@ -438,6 +450,7 @@ object MainGame {
 
     Function.chain(
       List(
+        setBoost,
         movement,
         rotateRat,
         moveRat,
