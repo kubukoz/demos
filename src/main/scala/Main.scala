@@ -323,8 +323,8 @@ object MainGame {
       scoreSample <- Assets.sample("score.pda")
       scorePlayer <- Assets.samplePlayer(
         sample = scoreSample,
-        volumeLeft = 1,
-        volumeRight = 1,
+        volumeLeft = 0.1,
+        volumeRight = 0.1,
       )
     } yield GameState(
       rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
