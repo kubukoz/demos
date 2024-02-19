@@ -10,6 +10,21 @@ import scala.scalanative.libc.string._
 import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
 import pdapi.enumerations.PDSystemEvent.kEventTerminate
 import scala.util.Random
+import util._
+
+object util {
+
+  extension [A](
+    inline ptr: Ptr[A]
+  ) {
+
+    inline def !(
+      using inline tag: Tag[A]
+    ): A = !ptr
+
+  }
+
+}
 
 enum DirectionX {
   case Left, Right
@@ -20,7 +35,8 @@ enum DirectionY {
 }
 
 case class GameAssets(
-  arrow: Ptr[LCDBitmap]
+  arrow: Ptr[LCDBitmap],
+  scorePlayer: Ptr[SamplePlayer],
 )
 
 enum TramDirection {
@@ -38,11 +54,24 @@ enum Obstacle {
 
 }
 
+case class Score(value: Int) {
+  def +(other: Score): Score = Score(value + other.value)
+}
+
+object Score {
+  val Init: Score = Score(0)
+  val passedTram: Score = Score(10)
+
+  extension (l: List[Score]) def combineAll: Score = l.foldLeft(Score.Init)(_ + _)
+}
+
 case class GameState(
   rat: Rat,
   obstacles: List[Obstacle],
   assets: GameAssets,
   offsetX: Float,
+  score: Score,
+  scoring: Boolean,
 )
 
 case class Radians private (value: Float) {
@@ -108,21 +137,58 @@ object Resource {
 }
 
 object Assets {
+  import pdapiBindings._
 
   def bitmap(path: String): Resource[Ptr[LCDBitmap]] =
     Resource.make {
       Zone {
         val outErr = alloc[CString]()
-        pdapiBindings.pd_graphics_loadBitmap(toCString(path), outErr)
+        pd_graphics_loadBitmap(toCString(path), outErr)
       }
-    } { ptr =>
-      pdapiBindings.pd_graphics_freeBitmap(ptr)
+    }(pd_graphics_freeBitmap(_))
+
+  // note: path must contain .pda file extension.
+  def sample(path: String): Resource[Ptr[AudioSample]] =
+    Resource.make {
+      Zone(pd_sound_sample_load(toCString(path)))
+    }(pd_sound_sample_freeSample(_))
+
+  def samplePlayer(sample: Ptr[AudioSample], volumeLeft: Float, volumeRight: Float)
+    : Resource[Ptr[SamplePlayer]] = Resource
+    .make {
+      pd_sound_sampleplayer_newPlayer()
+    }(pd_sound_sampleplayer_freePlayer(_))
+    .map { player =>
+      pd_sound_sampleplayer_setSample(player, sample)
+      pd_sound_sampleplayer_setVolume(player, volumeLeft, volumeRight)
+      player
     }
 
 }
 
-// todo move stuff from main
 object pdapiBindings {
+
+  @extern def pd_sound_sampleplayer_newPlayer(): Ptr[SamplePlayer] = extern
+
+  @extern def pd_sound_sample_load(path: CString): Ptr[AudioSample] = extern
+
+  @extern def pd_sound_sampleplayer_freePlayer(player: Ptr[SamplePlayer]): Unit = extern
+
+  @extern def pd_sound_sample_freeSample(sample: Ptr[AudioSample]): Unit = extern
+
+  @extern def pd_sound_sampleplayer_setSample(
+    player: Ptr[SamplePlayer],
+    sample: Ptr[AudioSample],
+  ): Unit = extern
+
+  @extern def pd_sound_sampleplayer_setVolume(
+    player: Ptr[SamplePlayer],
+    left: Float,
+    right: Float,
+  ): Unit = extern
+
+  @extern def pd_sound_sampleplayer_play(player: Ptr[SamplePlayer], repeat: Int, rate: Float)
+    : Unit = extern
 
   @extern def pd_system_getButtonState(
     current: Ptr[PDButtons],
@@ -250,28 +316,51 @@ object MainGame {
       }
   }
 
-  def init(ctx: GameContext): Resource[GameState] = Assets.bitmap("arrow.png").map { arrow =>
-    GameState(
-      rat = Rat(
-        y = ctx.screen.height / 2 - ratHeight / 2,
-        rotation = Radians.Zero,
-      ),
+  def init(ctx: GameContext): Resource[GameState] =
+    for {
+      arrow <- Assets.bitmap("arrow.png")
+      scoreSample <- Assets.sample("score.pda")
+      scorePlayer <- Assets.samplePlayer(
+        sample = scoreSample,
+        volumeLeft = 1,
+        volumeRight = 1,
+      )
+    } yield GameState(
+      rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
       assets = GameAssets(
-        arrow = arrow
+        arrow = arrow,
+        scorePlayer = scorePlayer,
       ),
       obstacles = generateObstacles(ctx.dice),
       offsetX = 0,
+      score = Score.Init,
+      scoring = false,
     )
-  }
 
   def update(ctx: GameContext): GameState => GameState = {
 
-    val updateOffset: GameState => GameState =
+    val movement: GameState => GameState =
       state => {
         val pixelsPerSecond = 100
 
         val newOffset = state.offsetX + ctx.delta * pixelsPerSecond
-        state.copy(offsetX = newOffset)
+
+        val passThreshold = ratMarginX + ratWidth
+        val scoreGains =
+          state
+            .obstacles
+            .filter { case Obstacle.Tram(_, offsetX, _) =>
+              offsetX + tramWidth - passThreshold > state.offsetX &&
+              offsetX + tramWidth - passThreshold <= newOffset
+            }
+            .map { case t: Obstacle.Tram => Score.passedTram }
+            .combineAll
+
+        state.copy(
+          offsetX = newOffset,
+          score = state.score + scoreGains,
+          scoring = scoreGains != Score.Init,
+        )
       }
 
     val rotateRat: GameState => GameState =
@@ -349,7 +438,7 @@ object MainGame {
 
     Function.chain(
       List(
-        updateOffset,
+        movement,
         rotateRat,
         moveRat,
         // equalizeRatRotation,
@@ -412,12 +501,27 @@ object MainGame {
         }
       }
 
+    val score = {
+      val text = "Score: " + state.score.value
+      Render.withTextWidth(text) { w =>
+        Render.Text(
+          x = ctx.screen.width - w - 10,
+          y = 10,
+          text = text,
+        )
+      } |+|
+        Render.cond(state.scoring) {
+          Render.Play(state.assets.scorePlayer)
+        }
+    }
+
     Clear(Color.White) |+|
       FPS(0, 0) |+|
       rat |+|
       obstacles |+|
       crankIndicator |+|
-      debug
+      debug |+|
+      score
   }
 
 }
@@ -459,6 +563,7 @@ enum Render {
   case Empty
   case Clear(color: Color)
   case WithTextWidth(s: String, f: Int => Render)
+  case Play(sample: Ptr[SamplePlayer])
 
   def isEmpty: Boolean = this == Empty
 
@@ -559,16 +664,6 @@ object Main {
   private var state: GameState = null
   private var cleanupState: () => Unit = null
 
-  extension [A](
-    inline ptr: Ptr[A]
-  ) {
-
-    inline def !(
-      using inline tag: Tag[A]
-    ): A = !ptr
-
-  }
-
   import pdapiBindings._
 
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
@@ -615,9 +710,10 @@ object Main {
     actions: Render,
   ): Unit =
     actions match {
-      case Render.Empty     => ()
-      case Render.Clear(c)  => pd_graphics_clear(c.toInt)
-      case Render.FPS(x, y) => pd_system_drawFPS(x, y)
+      case Render.Empty        => ()
+      case Render.Clear(c)     => pd_graphics_clear(c.toInt)
+      case Render.FPS(x, y)    => pd_system_drawFPS(x, y)
+      case Render.Play(sample) => pd_sound_sampleplayer_play(sample, 1, 1)
       case Render.Bitmap(x, y, bitmap, rotation, centerX, centerY, xscale, yscale) =>
         pd_graphics_drawRotatedBitmap(
           bitmap = bitmap,

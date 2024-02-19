@@ -165,6 +165,41 @@ bool pd_system_isCrankDocked()
     return _pd->system->isCrankDocked();
 }
 
+SamplePlayer *pd_sound_sampleplayer_newPlayer()
+{
+    return _pd->sound->sampleplayer->newPlayer();
+}
+
+AudioSample *pd_sound_sample_load(const char *path)
+{
+    return _pd->sound->sample->load(path);
+}
+
+void pd_sound_sampleplayer_freePlayer(SamplePlayer *player)
+{
+    _pd->sound->sampleplayer->freePlayer(player);
+}
+
+void pd_sound_sample_freeSample(AudioSample *sample)
+{
+    _pd->sound->sample->freeSample(sample);
+}
+
+void pd_sound_sampleplayer_setSample(SamplePlayer *player, AudioSample *sample)
+{
+    _pd->sound->sampleplayer->setSample(player, sample);
+}
+
+void pd_sound_sampleplayer_setVolume(SamplePlayer *player, float left, float right)
+{
+    _pd->sound->sampleplayer->setVolume(player, left, right);
+}
+
+int pd_sound_sampleplayer_play(SamplePlayer *player, int repeat, float rate)
+{
+    return _pd->sound->sampleplayer->play(player, repeat, rate);
+}
+
 LCDBitmap *pd_graphics_loadBitmap(const char *path, const char **outErr)
 {
     return _pd->graphics->loadBitmap(path, outErr);
