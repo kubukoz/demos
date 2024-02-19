@@ -478,15 +478,15 @@ object Render {
   def renderIf(
     cond: Boolean
   )(
-    ifTrue: Render,
-    ifFalse: Render,
+    ifTrue: => Render,
+    ifFalse: => Render,
   ): Render =
     if (cond)
       ifTrue
     else
       ifFalse
 
-  def cond(condition: Boolean)(ifTrue: Render): Render = renderIf(condition)(ifTrue, Empty)
+  def cond(condition: Boolean)(ifTrue: => Render): Render = renderIf(condition)(ifTrue, Empty)
 
   extension (l: List[Render]) def combineAll: Render = l.foldLeft(Render.Empty)(_ |+| _)
 }
