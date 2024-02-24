@@ -11,6 +11,7 @@ import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
 import pdapi.enumerations.PDSystemEvent.kEventTerminate
 import scala.util.Random
 import util._
+import pdapi.structs.LCDBitmap
 
 object util {
 
@@ -36,6 +37,7 @@ enum DirectionY {
 
 case class GameAssets(
   arrow: Ptr[LCDBitmap],
+  tram: Ptr[LCDBitmap],
   scorePlayer: Ptr[SamplePlayer],
 )
 
@@ -250,6 +252,29 @@ object pdapiBindings {
     bitmap: Ptr[LCDBitmap]
   ): Unit = extern
 
+  @extern def pd_graphics_getBitmapData(
+    bitmap: Ptr[LCDBitmap],
+    width: Ptr[Int],
+    height: Ptr[Int],
+    rowbytes: Ptr[Int],
+    mask: Ptr[Ptr[CUnsignedChar]],
+    data: Ptr[Ptr[CUnsignedChar]],
+  ): Unit = extern
+
+  @extern def pd_graphics_newBitmap(
+    width: Int,
+    height: Int,
+    bgcolor: Int,
+  ): Ptr[LCDBitmap] = extern
+
+  @extern def pd_graphics_drawScaledBitmap(
+    bitmap: Ptr[LCDBitmap],
+    x: Int,
+    y: Int,
+    xscale: Float,
+    yscale: Float,
+  ): Unit = extern
+
   @extern def pd_graphics_getTextWidth(
     font: Ptr[LCDFont],
     text: CString,
@@ -281,13 +306,16 @@ object pdapiBindings {
 }
 
 object MainGame {
-  val ratWidth = 32
-  val ratHeight = 32
+  val ratScale = 1.0f
+  val ratAssetWidth = 32
+  val ratAssetHeight = 13
+  val ratWidth = (ratAssetWidth * ratScale).toInt
+  val ratHeight = (ratAssetHeight * ratScale).toInt
   val ratMarginX = 20
   val ratMarginY = 20
 
-  val tramWidth = 10
-  val tramLength = 100
+  val tramWidth = 32
+  val tramLength = 128
 
   def config: GameConfig = GameConfig(fps = 50)
 
@@ -319,7 +347,8 @@ object MainGame {
 
   def init(ctx: GameContext): Resource[GameState] =
     for {
-      arrow <- Assets.bitmap("arrow.png")
+      arrow <- Assets.bitmap("szczur.png")
+      tram <- Assets.bitmap("tram.png")
       scoreSample <- Assets.sample("score.pda")
       scorePlayer <- Assets.samplePlayer(
         sample = scoreSample,
@@ -330,6 +359,7 @@ object MainGame {
       rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
       assets = GameAssets(
         arrow = arrow,
+        tram = tram,
         scorePlayer = scorePlayer,
       ),
       obstacles = generateObstacles(ctx.dice),
@@ -472,8 +502,8 @@ object MainGame {
       rotation = state.rat.rotation,
       centerX = 0.5,
       centerY = 0.5,
-      xscale = 1.0,
-      yscale = 1.0,
+      xscale = ratScale,
+      yscale = ratScale,
     )
     // .rotated(state.rat.rotation)
 
@@ -483,13 +513,23 @@ object MainGame {
         .map { case Obstacle.Tram(direction, offsetX, offsetY) =>
           direction match {
             case TramDirection.Vertical =>
-              Render.Rect(
+              // Render.Rect(
+              //   x = (offsetX - state.offsetX).toInt,
+              //   y = offsetY.toInt,
+              //   w = tramWidth,
+              //   h = tramLength,
+              //   color = Color.Black,
+              //   fill = Fill.Fill,
+              // )
+              Render.Bitmap(
                 x = (offsetX - state.offsetX).toInt,
                 y = offsetY.toInt,
-                w = tramWidth,
-                h = tramLength,
-                color = Color.Black,
-                fill = Fill.Fill,
+                bitmap = state.assets.tram,
+                rotation = Radians.Zero,
+                centerX = 0,
+                centerY = 0,
+                xscale = 1.0,
+                yscale = 1.0,
               )
           }
         }

@@ -205,9 +205,24 @@ LCDBitmap *pd_graphics_loadBitmap(const char *path, const char **outErr)
     return _pd->graphics->loadBitmap(path, outErr);
 }
 
+void pd_graphics_newBitmap(int width, int height, LCDColor bgcolor)
+{
+    _pd->graphics->newBitmap(width, height, bgcolor);
+}
+
+void pd_graphics_getBitmapData(LCDBitmap *bitmap, int *width, int *height, int *rowbytes, uint8_t **mask, uint8_t **data)
+{
+    _pd->graphics->getBitmapData(bitmap, width, height, rowbytes, mask, data);
+}
+
 void pd_graphics_freeBitmap(LCDBitmap *bitmap)
 {
     _pd->graphics->freeBitmap(bitmap);
+}
+
+void pd_graphics_drawScaledBitmap(LCDBitmap *bitmap, int x, int y, float xscale, float yscale)
+{
+    _pd->graphics->drawScaledBitmap(bitmap, x, y, xscale, yscale);
 }
 
 int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStringEncoding encoding, int tracking)
