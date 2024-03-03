@@ -710,7 +710,7 @@ object MainGame {
       obstacles |+|
       rat |+|
       crankIndicator.unless(isGameOver) |+|
-      debug |+|
+      // debug |+|
       score.unless(isGameOver) |+|
       events |+|
       gameOver
