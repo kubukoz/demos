@@ -706,14 +706,14 @@ object MainGame {
       }
 
     Clear(Color.White) |+|
-      FPS(0, 0) |+|
       obstacles |+|
       rat |+|
       crankIndicator.unless(isGameOver) |+|
       // debug |+|
       score.unless(isGameOver) |+|
       events |+|
-      gameOver
+      gameOver |+|
+      FPS(0, 0)
   }
 
 }
