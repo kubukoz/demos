@@ -12,6 +12,7 @@ import pdapi.enumerations.PDSystemEvent.kEventTerminate
 import scala.util.Random
 import util._
 import pdapi.structs.LCDBitmap
+import language.strictEquality
 
 object util {
 
@@ -41,8 +42,8 @@ case class GameAssets(
   scorePlayer: Ptr[SamplePlayer],
 )
 
-enum TramDirection {
-  case Horizontal
+enum TramDirection derives CanEqual {
+  // case Horizontal
   case Vertical
 }
 
@@ -56,8 +57,11 @@ enum Obstacle {
 
 }
 
-case class Score(value: Int) {
+case class Score(value: Int) derives CanEqual {
   def +(other: Score): Score = Score(value + other.value)
+  def *(other: Int): Score = Score(value * other)
+  def >(other: Score): Boolean = value > other.value
+  def max(other: Score): Score = Score(value.max(other.value))
 }
 
 object Score {
@@ -67,6 +71,11 @@ object Score {
   extension (l: List[Score]) def combineAll: Score = l.foldLeft(Score.Init)(_ + _)
 }
 
+enum GameMode derives CanEqual {
+  case Playing // (score: Score, scoring: Boolean, boost: Boolean)
+  case GameOver
+}
+
 case class GameState(
   rat: Rat,
   obstacles: List[Obstacle],
@@ -74,7 +83,9 @@ case class GameState(
   offsetX: Float,
   score: Score,
   scoring: Boolean,
+  highScore: Score,
   boost: Boolean,
+  mode: GameMode,
 )
 
 case class Radians private (value: Float) {
@@ -369,21 +380,35 @@ object MainGame {
         tram = tram,
         scorePlayer = scorePlayer,
       )
-    } yield GameState(
-      rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
-      assets = assets,
-      obstacles = generateObstacles(ctx.dice),
-      offsetX = 0,
-      score = Score.Init,
-      scoring = false,
-      boost = false,
-    )
+      // todo: read from file
+      highScore = Score(0)
+    } yield initState(assets, ctx, highScore = highScore)
+
+  def initState(assets: GameAssets, ctx: GameContext, highScore: Score): GameState = GameState(
+    rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
+    assets = assets,
+    obstacles = generateObstacles(ctx.dice),
+    offsetX = 0,
+    score = Score.Init,
+    scoring = false,
+    highScore = highScore,
+    boost = false,
+    mode = GameMode.Playing,
+  )
+
+  extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
 
   def update(ctx: GameContext): GameState => GameState = {
 
+    val getMode: GameState => GameMode = _.mode
     val setBoost: GameState => GameState =
       state => {
-        val newBoost = ctx.buttons.pressed.a || ctx.buttons.current.a
+        // edge-triggered button state. If we're holding the button, we simply don't toggle whatever was there before
+        val newBoost =
+          if ctx.buttons.pressed.a then true
+          else if ctx.buttons.released.a then false
+          else state.boost
+
         state.copy(boost = newBoost)
       }
 
@@ -488,18 +513,41 @@ object MainGame {
         state.copy(obstacles = newObstacles)
       }
 
-    Function.chain(
-      List(
-        setBoost,
-        movement,
-        rotateRat,
-        moveRat,
-        // equalizeRatRotation,
-        equalizeRat,
-        recycleObstacles,
-        addObstacles,
-      )
-    )
+    val playAgain: GameState => GameState =
+      state =>
+        if ctx.buttons.pressed.a then
+          initState(state.assets, ctx, highScore = state.highScore max state.score)
+        else state
+
+    val gameOver: GameState => GameState =
+      state =>
+        if (state.score > Score.passedTram * 1)
+          state.copy(mode = GameMode.GameOver, scoring = false)
+        else
+          state
+
+    getMode.flatMap {
+      case GameMode.GameOver =>
+        Function.chain(
+          List(
+            playAgain
+          )
+        )
+
+      case GameMode.Playing =>
+        Function.chain(
+          List(
+            setBoost,
+            movement,
+            rotateRat,
+            moveRat,
+            equalizeRat,
+            recycleObstacles,
+            addObstacles,
+            gameOver,
+          )
+        )
+    }
   }
 
   def render(ctx: GameContext, state: GameState): Render = {
@@ -578,23 +626,58 @@ object MainGame {
         }
     }
 
+    val isGameOver = state.mode == GameMode.GameOver
+
+    val gameOver =
+      Render.cond(isGameOver) {
+
+        val w = 200
+        val h = 100
+        val rect: Render.Rect = Render.Rect(
+          x = (ctx.screen.width - w) / 2,
+          y = (ctx.screen.height - h) / 2,
+          w = w,
+          h = h,
+          color = Color.White,
+          fill = Fill.Fill,
+        )
+
+        rect |+|
+          rect.copy(fill = Fill.Draw, color = Color.Black) |+| {
+            val text =
+              s"""Game over!
+                 |Final score: ${state.score.value}
+                 |Last high score: ${state.highScore.value}
+                 |Press A to try again!""".stripMargin
+
+            Render.withTextWidth(text) { w =>
+              Render.Text(
+                x = (ctx.screen.width - w) / 2,
+                y = (ctx.screen.height - 80) / 2,
+                text = text,
+              )
+            }
+          }
+      }
+
     Clear(Color.White) |+|
       FPS(0, 0) |+|
-      rat |+|
       obstacles |+|
-      crankIndicator |+|
+      rat |+|
+      crankIndicator.unless(isGameOver) |+|
       debug |+|
-      score
+      score.unless(isGameOver) |+|
+      gameOver
   }
 
 }
 
-enum Fill {
+enum Fill derives CanEqual {
   case Fill
   case Draw
 }
 
-enum Color {
+enum Color derives CanEqual {
   case Black
   case White
 
@@ -606,7 +689,7 @@ enum Color {
 
 }
 
-enum Render {
+enum Render derives CanEqual {
   case FPS(x: Int, y: Int)
   case Combine(a: Render, b: Render)
   case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill)
@@ -657,6 +740,7 @@ object Render {
   def cond(condition: Boolean)(ifTrue: => Render): Render = renderIf(condition)(ifTrue, Empty)
 
   extension (l: List[Render]) def combineAll: Render = l.foldLeft(Render.Empty)(_ |+| _)
+  extension (r: => Render) def unless(condition: Boolean): Render = cond(!condition)(r)
 }
 
 case class ButtonState(
@@ -728,6 +812,8 @@ object Main {
   private var cleanupState: () => Unit = null
 
   import pdapiBindings._
+
+  given CanEqual[PDSystemEvent, PDSystemEvent] = CanEqual.derived
 
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     event.match {
