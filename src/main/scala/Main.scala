@@ -635,11 +635,11 @@ object MainGame {
         }
         .combineAll
 
-    val debug = Render.Text(
-      x = 10,
-      y = 10,
-      s"Rotation: ${state.rat.rotation.value}, y: ${state.rat.y}",
-    )
+    // val debug = Render.Text(
+    //   x = 10,
+    //   y = 10,
+    //   s"Rotation: ${state.rat.rotation.value}, y: ${state.rat.y}",
+    // )
 
     val crankIndicator =
       Render.cond(ctx.crank.docked) {
