@@ -62,6 +62,7 @@ case class Score(value: Int) derives CanEqual {
   def *(other: Int): Score = Score(value * other)
   def >(other: Score): Boolean = value > other.value
   def max(other: Score): Score = Score(value.max(other.value))
+  def nonZero: Boolean = value != 0
 }
 
 object Score {
@@ -82,11 +83,20 @@ case class GameState(
   assets: GameAssets,
   offsetX: Float,
   score: Score,
-  scoring: Boolean,
   highScore: Score,
   boost: Boolean,
   mode: GameMode,
-)
+  // Vector is broken, apparently
+  events: List[GameEvent],
+) {
+
+  def addEvents(newEvents: List[GameEvent]): GameState = copy(events = events ++ newEvents)
+
+}
+
+enum GameEvent derives CanEqual {
+  case Scored
+}
 
 case class Radians private (value: Float) {
   def -(other: Radians): Radians = Radians(value - other.value)
@@ -316,6 +326,12 @@ object pdapiBindings {
 
 }
 
+case class Box(left: Int, right: Int, top: Int, bottom: Int) {
+  def overlaps(other: Box): Boolean =
+    left < other.right && right > other.left && top < other.bottom && bottom > other.top
+  def contract(by: Int): Box = Box(left + by, right - by, top + by, bottom - by)
+}
+
 object MainGame {
   val ratScale = 1.0f
   val ratAssetWidth = 32
@@ -390,16 +406,17 @@ object MainGame {
     obstacles = generateObstacles(ctx.dice),
     offsetX = 0,
     score = Score.Init,
-    scoring = false,
     highScore = highScore,
     boost = false,
     mode = GameMode.Playing,
+    events = Nil,
   )
 
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
 
   def update(ctx: GameContext): GameState => GameState = {
 
+    val clearEvents: GameState => GameState = state => state.copy(events = Nil)
     val getMode: GameState => GameMode = _.mode
     val setBoost: GameState => GameState =
       state => {
@@ -433,11 +450,16 @@ object MainGame {
             .map { case t: Obstacle.Tram => Score.passedTram }
             .combineAll
 
-        state.copy(
-          offsetX = newOffset,
-          score = state.score + scoreGains,
-          scoring = scoreGains != Score.Init,
-        )
+        state
+          .copy(
+            offsetX = newOffset,
+            score = state.score + scoreGains,
+          )
+          .addEvents(
+            if scoreGains.nonZero
+            then GameEvent.Scored :: Nil
+            else Nil
+          )
       }
 
     val rotateRat: GameState => GameState =
@@ -521,12 +543,10 @@ object MainGame {
 
     val gameOver: GameState => GameState =
       state =>
-        if (state.score > Score.passedTram * 1)
-          state.copy(mode = GameMode.GameOver, scoring = false)
-        else
-          state
+        if obstacleHit(state) then state.copy(mode = GameMode.GameOver)
+        else state
 
-    getMode.flatMap {
+    clearEvents.andThen(getMode.flatMap {
       case GameMode.GameOver =>
         Function.chain(
           List(
@@ -547,6 +567,28 @@ object MainGame {
             gameOver,
           )
         )
+    })
+  }
+
+  def obstacleHit(state: GameState): Boolean = {
+    val ratBox = Box(
+      left = ratMarginX,
+      right = ratMarginX + ratWidth,
+      top = state.rat.y.toInt,
+      bottom = state.rat.y.toInt + ratHeight,
+    )
+      // to make the game less frustrating
+      .contract(5)
+
+    state.obstacles.exists { case Obstacle.Tram(direction, offsetX, offsetY) =>
+      val rect: Box = Box(
+        left = (offsetX - state.offsetX).toInt,
+        right = (offsetX - state.offsetX + tramWidth).toInt,
+        top = offsetY.toInt,
+        bottom = (offsetY + tramLength).toInt,
+      )
+
+      rect.overlaps(ratBox)
     }
   }
 
@@ -620,11 +662,14 @@ object MainGame {
           y = 10,
           text = text,
         )
-      } |+|
-        Render.cond(state.scoring) {
-          Render.Play(state.assets.scorePlayer)
-        }
+      }
     }
+
+    val events =
+      state
+        .events
+        .map { case GameEvent.Scored => Render.Play(state.assets.scorePlayer) }
+        .combineAll
 
     val isGameOver = state.mode == GameMode.GameOver
 
@@ -667,6 +712,7 @@ object MainGame {
       crankIndicator.unless(isGameOver) |+|
       debug |+|
       score.unless(isGameOver) |+|
+      events |+|
       gameOver
   }
 
