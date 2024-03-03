@@ -89,7 +89,7 @@ case class GameState(
   mode: GameMode,
   // Vector is broken, apparently
   events: List[GameEvent],
-) {
+) derives CanEqual {
 
   def addEvents(newEvents: List[GameEvent]): GameState = copy(events = events ++ newEvents)
 
@@ -903,15 +903,20 @@ object Main {
   ): Int = {
     val ctx: GameContext = deriveContext(pd)
     val newState = game.update(ctx)(state)
-    val actions = game.render(ctx, newState)
 
-    state = newState
-    if (actions.isEmpty)
+    if (newState == state)
       0
     else {
-      executeActions(pd, actions)
+      state = newState
+      val actions = game.render(ctx, newState)
 
-      1
+      if (actions.isEmpty)
+        0
+      else {
+        executeActions(pd, actions)
+
+        1
+      }
     }
   }
 
