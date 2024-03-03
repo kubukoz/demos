@@ -316,6 +316,7 @@ object MainGame {
 
   val tramWidth = 32
   val tramLength = 128
+  val tramSpacing = 64
 
   def config: GameConfig = GameConfig(fps = 50)
 
@@ -335,13 +336,21 @@ object MainGame {
 
     offsets
       .zipWithIndex
-      .map { (offsetX, index) =>
-        val offsetY = if index % 2 == 0 then 10 else 120
-        Obstacle.Tram(
+      .flatMap { (offsetX, index) =>
+        val offsetY = if index % 2 == 0 then 10 else -100
+        val t1 = Obstacle.Tram(
           direction = TramDirection.Vertical,
           offsetX = offsetX,
           offsetY = offsetY,
         )
+
+        val t2 = Obstacle.Tram(
+          direction = TramDirection.Vertical,
+          offsetX = offsetX,
+          offsetY = offsetY + tramLength + tramSpacing,
+        )
+
+        t1 :: t2 :: Nil
       }
   }
 
@@ -355,13 +364,14 @@ object MainGame {
         volumeLeft = 0.1,
         volumeRight = 0.1,
       )
-    } yield GameState(
-      rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
       assets = GameAssets(
         arrow = arrow,
         tram = tram,
         scorePlayer = scorePlayer,
-      ),
+      )
+    } yield GameState(
+      rat = Rat(y = ctx.screen.height / 2 - ratHeight / 2, rotation = Radians.Zero),
+      assets = assets,
       obstacles = generateObstacles(ctx.dice),
       offsetX = 0,
       score = Score.Init,
