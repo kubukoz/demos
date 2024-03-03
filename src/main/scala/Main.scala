@@ -40,6 +40,7 @@ case class GameAssets(
   arrow: Ptr[LCDBitmap],
   tram: Ptr[LCDBitmap],
   scorePlayer: Ptr[SamplePlayer],
+  wompPlayer: Ptr[SamplePlayer],
 )
 
 enum TramDirection derives CanEqual {
@@ -96,6 +97,7 @@ case class GameState(
 
 enum GameEvent derives CanEqual {
   case Scored
+  case GameOver
 }
 
 case class Radians private (value: Float) {
@@ -385,16 +387,25 @@ object MainGame {
     for {
       arrow <- Assets.bitmap("szczur.png")
       tram <- Assets.bitmap("tram.png")
-      scoreSample <- Assets.sample("score.pda")
-      scorePlayer <- Assets.samplePlayer(
-        sample = scoreSample,
-        volumeLeft = 0.1,
-        volumeRight = 0.1,
-      )
+      scorePlayer <- Assets.sample("score.pda").flatMap {
+        Assets.samplePlayer(
+          _,
+          volumeLeft = 0.1,
+          volumeRight = 0.1,
+        )
+      }
+      wompPlayer <- Assets.sample("womp.pda").flatMap {
+        Assets.samplePlayer(
+          _,
+          volumeLeft = 0.4,
+          volumeRight = 0.4,
+        )
+      }
       assets = GameAssets(
         arrow = arrow,
         tram = tram,
         scorePlayer = scorePlayer,
+        wompPlayer = wompPlayer,
       )
       // todo: read from file
       highScore = Score(0)
@@ -543,7 +554,8 @@ object MainGame {
 
     val gameOver: GameState => GameState =
       state =>
-        if obstacleHit(state) then state.copy(mode = GameMode.GameOver)
+        if obstacleHit(state) then
+          state.copy(mode = GameMode.GameOver).addEvents(List(GameEvent.GameOver))
         else state
 
     clearEvents.andThen(getMode.flatMap {
@@ -668,7 +680,10 @@ object MainGame {
     val events =
       state
         .events
-        .map { case GameEvent.Scored => Render.Play(state.assets.scorePlayer) }
+        .map {
+          case GameEvent.Scored   => Render.Play(state.assets.scorePlayer)
+          case GameEvent.GameOver => Render.Play(state.assets.wompPlayer)
+        }
         .combineAll
 
     val isGameOver = state.mode == GameMode.GameOver
