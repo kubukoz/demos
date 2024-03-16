@@ -188,7 +188,7 @@ val root = project
             // "-v",
           )
         )
-        .withMultithreadingSupport(false)
+        .withMultithreading(false)
     ),
     playdateBuildImpl,
     playdateRunImpl,
