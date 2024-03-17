@@ -1,17 +1,37 @@
 package demo
 
-import pdapi.all._
-import pdapi.enumerations.PDButtons.kButtonA
-import pdapi.enumerations.PDSystemEvent.kEventInit
 import scalanative.unsafe._
+import scalanative.unsigned._
 
-import pdapi.enumerations.PDButtons.kButtonB
+object primitives {
+
+  opaque type AudioSample = Nothing
+  opaque type PDButtons = CUnsignedInt
+  val kButtonA: PDButtons = 32.toUInt
+  val kButtonB: PDButtons = 16.toUInt
+
+  extension (pdbuttons: PDButtons) {
+    def is(button: PDButtons): Boolean = (pdbuttons & button) != 0
+  }
+
+  given Tag[PDButtons] = Tag.UInt
+
+  opaque type PDStringEncoding = Int
+  val kUTF8Encoding: PDStringEncoding = 1
+  opaque type LCDFont = Nothing
+  opaque type PDSystemEvent = Int
+  val kEventInit: PDSystemEvent = 0
+  val kEventTerminate: PDSystemEvent = 6
+
+  opaque type PlaydateAPI = Nothing
+  opaque type SamplePlayer = Nothing
+  opaque type LCDBitmap = Nothing
+}
+
+import primitives._
+
 import scala.scalanative.libc.string._
-import pdapi.enumerations.PDStringEncoding.kUTF8Encoding
-import pdapi.enumerations.PDSystemEvent.kEventTerminate
 import scala.util.Random
-import util._
-import pdapi.structs.LCDBitmap
 import language.strictEquality
 
 object util {
@@ -27,6 +47,8 @@ object util {
   }
 
 }
+
+import util._
 
 enum DirectionX {
   case Left, Right
