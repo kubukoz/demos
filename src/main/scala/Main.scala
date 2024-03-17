@@ -3,32 +3,170 @@ package demo
 import scalanative.unsafe._
 import scalanative.unsigned._
 
-object primitives {
+object pdapiBindings {
 
-  opaque type AudioSample = Nothing
-  opaque type PDButtons = CUnsignedInt
-  val kButtonA: PDButtons = 32.toUInt
-  val kButtonB: PDButtons = 16.toUInt
+  object primitives {
 
-  extension (pdbuttons: PDButtons) {
-    def is(button: PDButtons): Boolean = (pdbuttons & button) != 0
+    opaque type AudioSample = Nothing
+    opaque type PDButtons = CUnsignedInt
+    val kButtonA: PDButtons = 32.toUInt
+    val kButtonB: PDButtons = 16.toUInt
+
+    extension (pdbuttons: PDButtons) {
+      def is(button: PDButtons): Boolean = (pdbuttons & button) != 0
+    }
+
+    given Tag[PDButtons] = Tag.UInt
+
+    opaque type PDStringEncoding = Int
+    val kUTF8Encoding: PDStringEncoding = 1
+    opaque type LCDFont = Nothing
+    opaque type PDSystemEvent = Int
+    val kEventInit: PDSystemEvent = 0
+    val kEventTerminate: PDSystemEvent = 6
+
+    opaque type PlaydateAPI = Nothing
+    opaque type SamplePlayer = Nothing
+    opaque type LCDBitmap = Nothing
   }
 
-  given Tag[PDButtons] = Tag.UInt
+  import primitives._
 
-  opaque type PDStringEncoding = Int
-  val kUTF8Encoding: PDStringEncoding = 1
-  opaque type LCDFont = Nothing
-  opaque type PDSystemEvent = Int
-  val kEventInit: PDSystemEvent = 0
-  val kEventTerminate: PDSystemEvent = 6
+  @extern def pd_sound_sampleplayer_newPlayer(): Ptr[SamplePlayer] = extern
 
-  opaque type PlaydateAPI = Nothing
-  opaque type SamplePlayer = Nothing
-  opaque type LCDBitmap = Nothing
+  @extern def pd_sound_sample_load(path: CString): Ptr[AudioSample] = extern
+
+  @extern def pd_sound_sampleplayer_freePlayer(player: Ptr[SamplePlayer]): Unit = extern
+
+  @extern def pd_sound_sample_freeSample(sample: Ptr[AudioSample]): Unit = extern
+
+  @extern def pd_sound_sampleplayer_setSample(
+    player: Ptr[SamplePlayer],
+    sample: Ptr[AudioSample],
+  ): Unit = extern
+
+  @extern def pd_sound_sampleplayer_setVolume(
+    player: Ptr[SamplePlayer],
+    left: Float,
+    right: Float,
+  ): Unit = extern
+
+  @extern def pd_sound_sampleplayer_play(player: Ptr[SamplePlayer], repeat: Int, rate: Float)
+    : Unit = extern
+
+  @extern def pd_system_getButtonState(
+    current: Ptr[PDButtons],
+    pressed: Ptr[PDButtons],
+    released: Ptr[PDButtons],
+  ): Unit = extern
+
+  @extern def pd_graphics_fillRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    color: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_drawRect(
+    x: Int,
+    y: Int,
+    w: Int,
+    h: Int,
+    color: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_clear(
+    color: Int
+  ): Unit = extern
+
+  @extern def pd_system_getCrankChange(): Float = extern
+
+  @extern def pd_system_isCrankDocked(): Boolean = extern
+
+  @extern def pd_system_getElapsedTime(): Float = extern
+
+  @extern def pd_system_resetElapsedTime(): Unit = extern
+
+  @extern def pd_system_drawFPS(
+    x: Int,
+    y: Int,
+  ): Unit = extern
+
+  @extern def pd_graphics_drawRotatedBitmap(
+    bitmap: Ptr[LCDBitmap],
+    x: Int,
+    y: Int,
+    rotation: Float,
+    centerx: Float,
+    centery: Float,
+    xscale: Float,
+    yscale: Float,
+  ): Unit = extern
+
+  @extern def pd_graphics_loadBitmap(
+    path: CString,
+    outErr: Ptr[CString],
+  ): Ptr[LCDBitmap] = extern
+
+  @extern def pd_graphics_freeBitmap(
+    bitmap: Ptr[LCDBitmap]
+  ): Unit = extern
+
+  @extern def pd_graphics_getBitmapData(
+    bitmap: Ptr[LCDBitmap],
+    width: Ptr[Int],
+    height: Ptr[Int],
+    rowbytes: Ptr[Int],
+    mask: Ptr[Ptr[CUnsignedChar]],
+    data: Ptr[Ptr[CUnsignedChar]],
+  ): Unit = extern
+
+  @extern def pd_graphics_newBitmap(
+    width: Int,
+    height: Int,
+    bgcolor: Int,
+  ): Ptr[LCDBitmap] = extern
+
+  @extern def pd_graphics_drawScaledBitmap(
+    bitmap: Ptr[LCDBitmap],
+    x: Int,
+    y: Int,
+    xscale: Float,
+    yscale: Float,
+  ): Unit = extern
+
+  @extern def pd_graphics_getTextWidth(
+    font: Ptr[LCDFont],
+    text: CString,
+    len: CSize,
+    encoding: PDStringEncoding,
+    tracking: Int,
+  ): Int = extern
+
+  @extern def pd_graphics_getTextTracking(): Int = extern
+
+  @extern def pd_graphics_pushContext(
+    ctx: Ptr[LCDBitmap]
+  ): Unit = extern
+
+  @extern def pd_graphics_popContext(): Unit = extern
+
+  @extern def pd_graphics_drawText(
+    text: CString,
+    len: CSize,
+    encoding: PDStringEncoding,
+    x: Int,
+    y: Int,
+  ): Unit = extern
+
+  @extern def pd_display_setRefreshRate(
+    rate: Float
+  ): Unit = extern
+
 }
 
-import primitives._
+import pdapiBindings.primitives._
 
 import scala.scalanative.libc.string._
 import scala.util.Random
@@ -211,142 +349,6 @@ object Assets {
       pd_sound_sampleplayer_setVolume(player, volumeLeft, volumeRight)
       player
     }
-
-}
-
-object pdapiBindings {
-
-  @extern def pd_sound_sampleplayer_newPlayer(): Ptr[SamplePlayer] = extern
-
-  @extern def pd_sound_sample_load(path: CString): Ptr[AudioSample] = extern
-
-  @extern def pd_sound_sampleplayer_freePlayer(player: Ptr[SamplePlayer]): Unit = extern
-
-  @extern def pd_sound_sample_freeSample(sample: Ptr[AudioSample]): Unit = extern
-
-  @extern def pd_sound_sampleplayer_setSample(
-    player: Ptr[SamplePlayer],
-    sample: Ptr[AudioSample],
-  ): Unit = extern
-
-  @extern def pd_sound_sampleplayer_setVolume(
-    player: Ptr[SamplePlayer],
-    left: Float,
-    right: Float,
-  ): Unit = extern
-
-  @extern def pd_sound_sampleplayer_play(player: Ptr[SamplePlayer], repeat: Int, rate: Float)
-    : Unit = extern
-
-  @extern def pd_system_getButtonState(
-    current: Ptr[PDButtons],
-    pressed: Ptr[PDButtons],
-    released: Ptr[PDButtons],
-  ): Unit = extern
-
-  @extern def pd_graphics_fillRect(
-    x: Int,
-    y: Int,
-    w: Int,
-    h: Int,
-    color: Int,
-  ): Unit = extern
-
-  @extern def pd_graphics_drawRect(
-    x: Int,
-    y: Int,
-    w: Int,
-    h: Int,
-    color: Int,
-  ): Unit = extern
-
-  @extern def pd_graphics_clear(
-    color: Int
-  ): Unit = extern
-
-  @extern def pd_system_getCrankChange(): Float = extern
-
-  @extern def pd_system_isCrankDocked(): Boolean = extern
-
-  @extern def pd_system_getElapsedTime(): Float = extern
-
-  @extern def pd_system_resetElapsedTime(): Unit = extern
-
-  @extern def pd_system_drawFPS(
-    x: Int,
-    y: Int,
-  ): Unit = extern
-
-  @extern def pd_graphics_drawRotatedBitmap(
-    bitmap: Ptr[LCDBitmap],
-    x: Int,
-    y: Int,
-    rotation: Float,
-    centerx: Float,
-    centery: Float,
-    xscale: Float,
-    yscale: Float,
-  ): Unit = extern
-
-  @extern def pd_graphics_loadBitmap(
-    path: CString,
-    outErr: Ptr[CString],
-  ): Ptr[LCDBitmap] = extern
-
-  @extern def pd_graphics_freeBitmap(
-    bitmap: Ptr[LCDBitmap]
-  ): Unit = extern
-
-  @extern def pd_graphics_getBitmapData(
-    bitmap: Ptr[LCDBitmap],
-    width: Ptr[Int],
-    height: Ptr[Int],
-    rowbytes: Ptr[Int],
-    mask: Ptr[Ptr[CUnsignedChar]],
-    data: Ptr[Ptr[CUnsignedChar]],
-  ): Unit = extern
-
-  @extern def pd_graphics_newBitmap(
-    width: Int,
-    height: Int,
-    bgcolor: Int,
-  ): Ptr[LCDBitmap] = extern
-
-  @extern def pd_graphics_drawScaledBitmap(
-    bitmap: Ptr[LCDBitmap],
-    x: Int,
-    y: Int,
-    xscale: Float,
-    yscale: Float,
-  ): Unit = extern
-
-  @extern def pd_graphics_getTextWidth(
-    font: Ptr[LCDFont],
-    text: CString,
-    len: CSize,
-    encoding: PDStringEncoding,
-    tracking: Int,
-  ): Int = extern
-
-  @extern def pd_graphics_getTextTracking(): Int = extern
-
-  @extern def pd_graphics_pushContext(
-    ctx: Ptr[LCDBitmap]
-  ): Unit = extern
-
-  @extern def pd_graphics_popContext(): Unit = extern
-
-  @extern def pd_graphics_drawText(
-    text: CString,
-    len: CSize,
-    encoding: PDStringEncoding,
-    x: Int,
-    y: Int,
-  ): Unit = extern
-
-  @extern def pd_display_setRefreshRate(
-    rate: Float
-  ): Unit = extern
 
 }
 
