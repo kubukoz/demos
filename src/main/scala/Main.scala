@@ -12,6 +12,12 @@ object pdapiBindings {
     val kButtonA: PDButtons = 32.toUInt
     val kButtonB: PDButtons = 16.toUInt
 
+    opaque type LCDBitmapFlip = Int
+    val kBitmapUnflipped: LCDBitmapFlip = 0
+    val kBitmapFlippedX: LCDBitmapFlip = 1
+    val kBitmapFlippedY: LCDBitmapFlip = 2
+    val kBitmapFlippedXY: LCDBitmapFlip = 3
+
     extension (pdbuttons: PDButtons) {
       def is(button: PDButtons): Boolean = (pdbuttons & button) != 0
     }
@@ -28,6 +34,7 @@ object pdapiBindings {
     opaque type PlaydateAPI = Nothing
     opaque type SamplePlayer = Nothing
     opaque type LCDBitmap = Nothing
+    opaque type LCDSprite = Nothing
   }
 
   import primitives._
@@ -127,6 +134,24 @@ object pdapiBindings {
     height: Int,
     bgcolor: Int,
   ): Ptr[LCDBitmap] = extern
+
+  @extern def pd_sprite_newSprite(
+  ): Ptr[LCDSprite] = extern
+
+  @extern def pd_sprite_freeSprite(sprite: Ptr[LCDSprite]): Unit = extern
+
+  @extern def pd_sprite_addSprite(sprite: Ptr[LCDSprite]): Unit = extern
+
+  @extern def pd_sprite_setTag(sprite: Ptr[LCDSprite], tag: UInt): Unit = extern
+
+  @extern def pd_sprite_setImage(sprite: Ptr[LCDSprite], image: Ptr[LCDBitmap], flip: LCDBitmapFlip)
+    : Unit = extern
+
+  @extern def pd_sprite_setCenter(sprite: Ptr[LCDSprite], x: Float, y: Float): Unit = extern
+
+  @extern def pd_sprite_setVisible(sprite: Ptr[LCDSprite], flag: Int): Unit = extern
+
+  @extern def pd_sprite_moveTo(sprite: Ptr[LCDSprite], x: Float, y: Float): Unit = extern
 
   @extern def pd_graphics_drawScaledBitmap(
     bitmap: Ptr[LCDBitmap],
@@ -324,6 +349,9 @@ object Resource {
 
 object Assets {
   import pdapiBindings._
+
+  val sprite: Resource[Ptr[LCDSprite]] =
+    Resource.make(pd_sprite_newSprite())(pd_sprite_freeSprite(_))
 
   def bitmap(path: String): Resource[Ptr[LCDBitmap]] =
     Resource.make {

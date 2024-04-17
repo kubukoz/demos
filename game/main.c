@@ -205,9 +205,49 @@ LCDBitmap *pd_graphics_loadBitmap(const char *path, const char **outErr)
     return _pd->graphics->loadBitmap(path, outErr);
 }
 
-void pd_graphics_newBitmap(int width, int height, LCDColor bgcolor)
+LCDBitmap *pd_graphics_newBitmap(int width, int height, LCDColor bgcolor)
 {
-    _pd->graphics->newBitmap(width, height, bgcolor);
+    return _pd->graphics->newBitmap(width, height, bgcolor);
+}
+
+LCDSprite *pd_sprite_newSprite()
+{
+    return _pd->sprite->newSprite();
+}
+
+void pd_sprite_freeSprite(LCDSprite *sprite)
+{
+    _pd->sprite->freeSprite(sprite);
+}
+
+void pd_sprite_addSprite(LCDSprite *sprite)
+{
+    _pd->sprite->addSprite(sprite);
+}
+
+void pd_sprite_setTag(LCDSprite *sprite, uint8_t tag)
+{
+    _pd->sprite->setTag(sprite, tag);
+}
+
+void pd_sprite_setImage(LCDSprite *sprite, LCDBitmap *image, LCDBitmapFlip flip)
+{
+    _pd->sprite->setImage(sprite, image, flip);
+}
+
+void pd_sprite_setCenter(LCDSprite *sprite, float x, float y)
+{
+    _pd->sprite->setCenter(sprite, x, y);
+}
+
+void pd_sprite_setVisible(LCDSprite *sprite, int flag)
+{
+    _pd->sprite->setVisible(sprite, flag);
+}
+
+void pd_sprite_moveTo(LCDSprite *sprite, float x, float y)
+{
+    _pd->sprite->moveTo(sprite, x, y);
 }
 
 void pd_graphics_getBitmapData(LCDBitmap *bitmap, int *width, int *height, int *rowbytes, uint8_t **mask, uint8_t **data)
