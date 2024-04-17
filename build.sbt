@@ -151,7 +151,7 @@ val root = project
   .in(file("."))
   .enablePlugins(ScalaNativePlugin)
   .settings(
-    scalaVersion := "3.3.1",
+    scalaVersion := "3.3.3",
     scalacOptions += "-Wunused:all",
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
