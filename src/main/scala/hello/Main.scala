@@ -7,12 +7,9 @@ import cats.effect.IO
 import cats.effect.IOApp
 
 object Main extends IOApp.Simple {
-  def run = SimpleRestJsonBuilder
+  def serverDemo = SimpleRestJsonBuilder
     .routes(
-      new WeatherService[IO] {
-        def getWeather(city: String): IO[GetWeatherOutput] =
-          IO.pure(GetWeatherOutput("bad weather in " + city))
-      }
+      new WeatherService.Default[IO](IO.stub) {}: WeatherService[IO]
     )
     .resource
     .flatMap { routes =>
@@ -21,6 +18,10 @@ object Main extends IOApp.Simple {
         .withHttpApp(routes.orNotFound)
         .build
     }
-    .evalMap { s => IO.println(s.addressIp4s) }
-    .useForever
+    .use { server =>
+      IO.unit
+    }
+    .debug()
+
+  def run = serverDemo
 }
