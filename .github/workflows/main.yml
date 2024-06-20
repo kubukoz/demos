@@ -1,0 +1,10 @@
+on:
+  push:
+
+concurrency:
+  group: ci-${{ github.ref }}
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - run: "sleep 20"
