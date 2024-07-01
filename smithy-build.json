@@ -1,8 +1,20 @@
 {
+  "version": "1.0",
+  "sources": ["src/main/smithy", "target/scala-3.4.2/src_managed/main/smithy"],
   "maven": {
     "dependencies": [
       "com.disneystreaming.alloy:alloy-core:0.3.8",
-      "com.disneystreaming.smithy4s:smithy4s-protocol:0.18.23"
+      "com.disneystreaming.smithy4s:smithy4s-protocol:0.18.23",
+      "com.disneystreaming.alloy:alloy-core:0.3.9"
+    ],
+    "repositories": [
+      {
+        "url": "https://oss.sonatype.org/content/repositories/snapshots",
+        "httpCredentials": "myusername:mypass"
+      },
+      {
+        "url": "https://s01.oss.sonatype.org/content/repositories/snapshots"
+      }
     ]
   }
 }

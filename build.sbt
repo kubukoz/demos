@@ -10,5 +10,6 @@ val root = project
       "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
       "org.http4s" %% "http4s-ember-server" % "0.23.27"
     ),
-    fork := true
+    fork := true,
+    resolvers ++= Resolver.sonatypeOssRepos("snapshots")
   )
