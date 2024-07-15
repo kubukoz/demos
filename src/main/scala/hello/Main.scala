@@ -1,26 +1,21 @@
 package hello
 
-import org.http4s.ember.server.EmberServerBuilder
-import smithy4s.http4s.SimpleRestJsonBuilder
-import hello.WeatherService
 import cats.effect.IO
 import cats.effect.IOApp
+import smithy4s.aws.AwsClient
+import smithy4s.aws.AwsEnvironment
+import org.http4s.ember.client.EmberClientBuilder
+import smithy4s.aws.kernel.AwsRegion
+import com.amazonaws.sagemaker.SageMaker
 
 object Main extends IOApp.Simple {
-  def run = SimpleRestJsonBuilder
-    .routes(
-      new WeatherService[IO] {
-        def getWeather(city: String): IO[GetWeatherOutput] =
-          IO.pure(GetWeatherOutput("bad weather in " + city))
+  def run = EmberClientBuilder.default[IO].build.use { c =>
+    AwsEnvironment
+      .default(c, AwsRegion.US_EAST_1)
+      .use { env =>
+        AwsClient(SageMaker, env).use { sm =>
+          sm.listEndpoints().debug().void
+        }
       }
-    )
-    .resource
-    .flatMap { routes =>
-      EmberServerBuilder
-        .default[IO]
-        .withHttpApp(routes.orNotFound)
-        .build
-    }
-    .evalMap { s => IO.println(s.addressIp4s) }
-    .useForever
+  }
 }
