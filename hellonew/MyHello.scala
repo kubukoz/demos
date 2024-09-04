@@ -9,13 +9,16 @@ import smithy4s.schema.Schema.int
 import smithy4s.schema.Schema.string
 import smithy4s.schema.Schema.struct
 
-final class MyHello(
-  val f1: String,
-  val f2: Int,
-  val f3: Option[String] = None,
-  val f4: Option[Int] = None,
+// no default arguments on the constructor in bincompat-friendly mode
+// (auxiliary constructors would not work then)
+final case class MyHello(
+  f1: String,
+  f2: Int,
+  f3: Option[String],
+  f4: Option[Int],
 ) {
 
+  // setters
   def withF1(f1: String): MyHello = copy(f1 = f1)
   def withF2(f2: Int): MyHello = copy(f2 = f2)
   def withF3(f3: Option[String]): MyHello = copy(f3 = f3)
@@ -27,21 +30,6 @@ final class MyHello(
     f3: Option[String] = this.f3,
     f4: Option[Int] = this.f4,
   ): MyHello = new MyHello(f1, f2, f3, f4)
-
-  override def toString(): String = s"MyHello(f1 = $f1, f2 = $f2, f3 = $f3, f4 = $f4)"
-
-  override def equals(x: Any): Boolean =
-    x match {
-      case that: MyHello =>
-        (this eq that) || (f1 == that.f1 &&
-          f2 == that.f2 &&
-          f3 == that.f3 &&
-          f4 == that.f4)
-      case _ => false
-    }
-
-  override def hashCode(): Int =
-    31 * (31 * (31 * f1.hashCode + f2.hashCode) + f3.hashCode) + f4.hashCode
 }
 
 object MyHello extends ShapeTag.Companion[MyHello] {
@@ -70,4 +58,5 @@ object MyHello extends ShapeTag.Companion[MyHello] {
 
 object Demo extends App {
   println(MyHello("a", 1).withF3(Some("b")).withF4(Some(42)))
+  println(new MyHello("a", 1, None, None).withF3(Some("b")).withF4(Some(42)))
 }
