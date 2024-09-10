@@ -2,23 +2,14 @@ $version: "2"
 
 namespace hello
 
-use alloy#simpleRestJson
-
-@simpleRestJson
-service WeatherService {
-    operations: [GetWeather]
+structure Person {
+  item: String = null
 }
 
-@http(method: "GET", uri: "/weather/{city}")
-@readonly
-operation GetWeather {
-    input := {
-        @required
-        @httpLabel
-        city: String
-    }
-    output := {
-        @required
-        weather: String
-    }
+structure Person2 {
+  item: String
+}
+
+structure Person3 {
+  item: String = ""
 }

@@ -1,14 +1,13 @@
-import smithy4s.codegen.Smithy4sCodegenPlugin
 
 val root = project
   .in(file("."))
   .enablePlugins(Smithy4sCodegenPlugin)
   .settings(
-    scalaVersion := "3.4.2",
+    scalaVersion := "3.5.0",
     libraryDependencies ++= Seq(
-      "com.disneystreaming.smithy4s" %% "smithy4s-core" % smithy4sVersion.value,
-      "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
-      "org.http4s" %% "http4s-ember-server" % "0.23.27"
+      "com.disneystreaming.smithy4s" %% "smithy4s-json" % smithy4sVersion.value,
+      "com.disneystreaming.smithy4s" %% "smithy4s-dynamic" % smithy4sVersion.value,
     ),
+
     fork := true
   )
