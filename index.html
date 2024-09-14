@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <div id="content"></div>
+</html>
+<script>
+  // Request MIDI access
+  navigator
+    .requestMIDIAccess()
+    .then(function (access) {
+      const inputs = Array.from(access.inputs.values());
+      const outputs = Array.from(access.outputs.values());
+
+      console.log("subscribe to inputs", inputs);
+      console.log("subscribe to outputs", outputs);
+
+      const C3 = 48;
+      const C4 = 60;
+      const C5 = 72;
+      const REST = -1;
+
+      const plucks = [
+        C4,
+        REST,
+        REST,
+        REST,
+        //
+        C4 + 3,
+        REST,
+        REST,
+        C4 + 2,
+        //
+        REST,
+        REST,
+        C4,
+        REST,
+        //
+        C4 + 3,
+        REST,
+        C4 + 2,
+        REST,
+      ].map((note) => ({ note, velocity: (0x7f * 3) / 4 }));
+
+      const melody = [
+        C5 + 7,
+        REST,
+        REST,
+        REST,
+        //
+        C5 + 3,
+        REST,
+        C5 + 5,
+        REST,
+        //
+        C5,
+        REST,
+        REST,
+        REST,
+        //
+        REST,
+        REST,
+        REST,
+        REST,
+      ].map((note) => ({ note, velocity: 0x7f }));
+
+      const bass = [
+        C3,
+        REST,
+        REST,
+        REST,
+        //
+        C3,
+        REST,
+        REST,
+        REST,
+        //
+        C3 + 7,
+        REST,
+        REST,
+        REST,
+        //
+        C3 + 7,
+        REST,
+        REST,
+        REST,
+      ].map((note) => ({ note, velocity: 0x7f }));
+
+      const tracks = [plucks, melody, bass];
+
+      const channel = 0x02;
+
+      const output = outputs[0];
+
+      const periodMs = 120;
+
+      let currentNote = 0;
+      let holdAt = -1;
+      let mutes = [false, false, false];
+      let transpose = 0;
+
+      contentElem = document.getElementById("content");
+
+      const updateContent = () => {
+        contentElem.innerText = `${currentNote}`;
+      };
+
+      const play = () => {
+        tracks.forEach((track, i) => {
+          console.log("holdAt is", holdAt);
+          const txp = transpose;
+          // console.log("mutes for this track are",mutes[i])
+          const { note, velocity } = track[holdAt >= 0 ? holdAt : currentNote];
+          if (note != REST && !mutes[i]) {
+            output.send([0x90 + channel, note + txp, velocity]);
+            setTimeout(() => {
+              output.send([0x80 + channel, note + txp, 0]);
+            }, periodMs / 4);
+          }
+        });
+
+        updateContent();
+        currentNote = (currentNote + 1) % tracks[0].length;
+      };
+
+      let intervalHook;
+
+      // h: hold
+      // mute tracks: 1-3
+      window.onkeydown = (e) => {
+        if (e.key === "h" && holdAt < 0) {
+          holdAt = currentNote;
+        } else if (["q", "w", "e"].includes(e.key)) {
+          const track = ["q", "w", "e"].indexOf(e.key);
+          mutes[track] = !mutes[track];
+        } else if (
+          ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)
+        ) {
+          transpose = parseInt(e.key);
+        }
+      };
+      window.onkeyup = (e) => {
+        if (e.key === "h") {
+          holdAt = -1;
+        }
+      };
+
+      window.onkeypress = (e) => {
+        if (e.key === " ") {
+          if (intervalHook) {
+            clearInterval(intervalHook);
+            intervalHook = null;
+          } else intervalHook = setInterval(play, periodMs);
+        }
+      };
+    })
+    .catch(function (err) {
+      console.error("Failed to access MIDI devices:", err);
+    });
+</script>
