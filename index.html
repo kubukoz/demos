@@ -87,10 +87,11 @@
       const tracks = [plucks, melody, bass];
 
       const channel = 0x02;
+      const bpm = 120;
 
       const output = outputs[0];
 
-      const periodMs = 120;
+      const periodMs = Math.floor(60.0/bpm * 1000 / 4);
 
       let currentNote = 0;
       let holdAt = -1;
