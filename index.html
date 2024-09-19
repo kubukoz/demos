@@ -1,8 +1,28 @@
 <!DOCTYPE html>
 <html>
+  MIDI Channel:
+  <select id="midichannel-select">
+    <option>0</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>10</option>
+    <option>11</option>
+    <option>12</option>
+    <option>13</option>
+    <option>14</option>
+    <option>15</option>
+  </select>
   <div id="content"></div>
 </html>
 <script>
+  const midiChannelElem = document.getElementById("midichannel-select");
   // Request MIDI access
   navigator
     .requestMIDIAccess()
@@ -86,12 +106,11 @@
 
       const tracks = [plucks, melody, bass];
 
-      const channel = 0x02;
       const bpm = 120;
 
       const output = outputs[0];
 
-      const periodMs = Math.floor(60.0/bpm * 1000 / 4);
+      const periodMs = Math.floor(((60.0 / bpm) * 1000) / 4);
 
       let currentNote = 0;
       let holdAt = -1;
@@ -105,6 +124,8 @@
       };
 
       const play = () => {
+        const channel = +midiChannelElem.value
+
         tracks.forEach((track, i) => {
           console.log("holdAt is", holdAt);
           const txp = transpose;
@@ -136,6 +157,12 @@
           ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key)
         ) {
           transpose = parseInt(e.key);
+        }
+        // up/down arrow
+        else if (e.key === "ArrowUp") {
+          transpose += 12;
+        } else if (e.key === "ArrowDown") {
+          transpose -= 12;
         }
       };
       window.onkeyup = (e) => {
