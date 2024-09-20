@@ -44,7 +44,8 @@ object SeqApp extends IOWebApp {
           )
           .changes
           .evalMap {
-            case true  => currentNoteRef.get.map(_.some)
+            // we inc by one because we want to hold the next note
+            case true  => currentNoteRef.get.map(_ + 1).map(_.some)
             case false => none[Int].pure[IO]
           }
           .evalMap(holdAtRef.set)
