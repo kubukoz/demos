@@ -24,14 +24,14 @@ object SeqApp extends IOWebApp {
       currentNoteRef <- SignallingRef[IO].of(0).toResource
       holdAtRef <- SignallingRef[IO].of(none[Int]).toResource
       channelRef <- SignallingRef[IO].of(2).toResource
-      pauseRef <- SignallingRef[IO].of(false).toResource
+      playingRef <- SignallingRef[IO].of(false).toResource
       transposeRef <- SignallingRef[IO].of(0).toResource
       _ <- Player.run(
         tracks = data.tracks,
         midiChannel = channelRef,
         holdAtRef = holdAtRef,
         currentNoteRef = currentNoteRef,
-        pauseRef = pauseRef,
+        playingRef = playingRef,
         transposeRef = transposeRef,
       )
       _ <-
@@ -52,7 +52,7 @@ object SeqApp extends IOWebApp {
           .forKey(" ")
           .changes
           .filter(identity)
-          .evalMap(_ => pauseRef.update(!_))
+          .evalMap(_ => playingRef.update(!_))
           .compile
           .drain
           .background
@@ -86,11 +86,11 @@ object SeqApp extends IOWebApp {
       div("current note: ", currentNoteRef.map(_.show)),
       div("hold: ", holdAtRef.map(_.show)),
       div(
-        pauseRef.map { p =>
-          if p
-          then "paused"
+        playingRef.map {
+          if _
+          then "playing"
           else
-            "playing"
+            "paused"
         }
       ),
       div("transpose: ", transposeRef.map(_.show)),
@@ -151,7 +151,7 @@ object Player {
     midiChannel: Ref[IO, Int],
     holdAtRef: Ref[IO, Option[Int]],
     currentNoteRef: Ref[IO, Int],
-    pauseRef: SignallingRef[IO, Boolean],
+    playingRef: SignallingRef[IO, Boolean],
     transposeRef: Ref[IO, Int],
   ): Resource[IO, Unit] = Window[IO]
     .navigator
@@ -165,7 +165,7 @@ object Player {
         .Stream
         .fixedRateStartImmediately[IO](period)
         .zipRight(fs2.Stream.emits(tracks.head.indices).repeat)
-        .pauseWhen(pauseRef)
+        .pauseWhen(playingRef.map(!_))
         .evalTap(currentNoteRef.set)
         .foreach { noteIndex =>
           (midiChannel.get, holdAtRef.get, transposeRef.get)
