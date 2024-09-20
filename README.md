@@ -4,5 +4,5 @@ Feature status:
 - [x] Play/pause
 - [x] Hold
 - [ ] Muting tracks
-- [ ] Transposing by semitone
-- [ ] Transposing by octave
+- [x] Transposing by semitone
+- [x] Transposing by octave

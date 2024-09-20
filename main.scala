@@ -1,4 +1,5 @@
 //> using dep com.armanbilge::calico::0.2.2
+//> using dep dev.optics::monocle-core::3.3.0
 //> using platform js
 //> using jsModuleKind common
 //> using option -no-indent
@@ -24,12 +25,14 @@ object SeqApp extends IOWebApp {
       holdAtRef <- SignallingRef[IO].of(none[Int]).toResource
       channelRef <- SignallingRef[IO].of(2).toResource
       pauseRef <- SignallingRef[IO].of(false).toResource
+      transposeRef <- SignallingRef[IO].of(0).toResource
       _ <- Player.run(
         tracks = data.tracks,
         midiChannel = channelRef,
         holdAtRef = holdAtRef,
         currentNoteRef = currentNoteRef,
         pauseRef = pauseRef,
+        transposeRef = transposeRef,
       )
       _ <-
         KeyStatus
@@ -53,10 +56,35 @@ object SeqApp extends IOWebApp {
           .compile
           .drain
           .background
+      _ <-
+        KeyStatus
+          .forKey("ArrowUp")
+          .filter(identity)
+          .evalMap(_ => transposeRef.update(_ + 12))
+          .compile
+          .drain
+          .background
+      _ <-
+        KeyStatus
+          .forKey("ArrowDown")
+          .filter(identity)
+          .evalMap(_ => transposeRef.update(_ - 12))
+          .compile
+          .drain
+          .background
+      _ <- (0 to 9).toList.traverse_ { key =>
+        KeyStatus
+          .forKey(key.show)
+          .filter(identity)
+          .evalMap(_ => transposeRef.set(key))
+          .compile
+          .drain
+          .background
+      }
     } yield div(
       ChannelSelector.show(channelRef),
-      div("current note: ", currentNoteRef.map(_.toString())),
-      div("hold: ", holdAtRef.map(_.toString())),
+      div("current note: ", currentNoteRef.map(_.show)),
+      div("hold: ", holdAtRef.map(_.show)),
       div(
         pauseRef.map { p =>
           if p
@@ -65,6 +93,7 @@ object SeqApp extends IOWebApp {
             "playing"
         }
       ),
+      div("transpose: ", transposeRef.map(_.show)),
     )
 
   }.flatten
@@ -123,6 +152,7 @@ object Player {
     holdAtRef: Ref[IO, Option[Int]],
     currentNoteRef: Ref[IO, Int],
     pauseRef: SignallingRef[IO, Boolean],
+    transposeRef: Ref[IO, Int],
   ): Resource[IO, Unit] = Window[IO]
     .navigator
     .requestMIDIAccess
@@ -138,19 +168,21 @@ object Player {
         .pauseWhen(pauseRef)
         .evalTap(currentNoteRef.set)
         .foreach { noteIndex =>
-          (midiChannel.get, holdAtRef.get)
-            .flatMapN { (channel, holdAt) =>
+          (midiChannel.get, holdAtRef.get, transposeRef.get)
+            .flatMapN { (channel, holdAt, transpose) =>
               // we play notes of each track in parallel
               // because their Off messages need to be sent at roughly the same time
               // and we can't wait for one note to finish before starting the next
               tracks
                 .parTraverse_ { track =>
-                  track(holdAt.getOrElse(noteIndex)).match {
+                  (track(holdAt.getOrElse(noteIndex)) + transpose) match {
                     case Playable.Play(noteId, velocity) =>
                       IO.uncancelable { poll =>
                         // playing is cancelable, stopping isn't.
                         // (browsers ignore this anyway though)
-                        poll(output.send(MIDI.NoteOn(channel, noteId, velocity).toArray)) *>
+                        poll(
+                          output.send(MIDI.NoteOn(channel, noteId, velocity).toArray)
+                        ) *>
                           IO.sleep(period / 4) *>
                           output.send(MIDI.NoteOff(channel, noteId, 0).toArray)
                       }

@@ -1,11 +1,11 @@
-import fs2.dom.ext.FS2DomExtensions.*
+import monocle.syntax.all.*
 
 enum Playable {
   case Play(noteId: Int, velocity: Int)
   case Rest
 
-  def atVelocity(velocity: Int): Playable = mapPlay(_.copy(velocity = velocity))
-  def +(semitones: Int): Playable = mapPlay(p => p.copy(noteId = p.noteId + semitones))
+  def atVelocity(velocity: Int): Playable = mapPlay(_.focus(_.velocity).set(velocity))
+  def +(semitones: Int): Playable = mapPlay(_.focus(_.noteId).modify(_ + semitones))
 
   def mapPlay(f: Play => Play): Playable =
     this match {
