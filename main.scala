@@ -57,6 +57,14 @@ object SeqApp extends IOWebApp {
       ChannelSelector.show(channelRef),
       div("current note: ", currentNoteRef.map(_.toString())),
       div("hold: ", holdAtRef.map(_.toString())),
+      div(
+        pauseRef.map { p =>
+          if p
+          then "paused"
+          else
+            "playing"
+        }
+      ),
     )
 
   }.flatten
@@ -139,9 +147,13 @@ object Player {
                 .parTraverse_ { track =>
                   track(holdAt.getOrElse(noteIndex)).match {
                     case Playable.Play(noteId, velocity) =>
-                      output.send(IArray(0x90 + channel, noteId, velocity)) *>
-                        IO.sleep(period / 4) *>
-                        output.send(IArray(0x80 + channel, noteId, 0))
+                      IO.uncancelable { poll =>
+                        // playing is cancelable, stopping isn't.
+                        // (browsers ignore this anyway though)
+                        poll(output.send(MIDI.NoteOn(channel, noteId, velocity).toArray)) *>
+                          IO.sleep(period / 4) *>
+                          output.send(MIDI.NoteOff(channel, noteId, 0).toArray)
+                      }
                     case Playable.Rest => IO.unit
                   }
                 }
