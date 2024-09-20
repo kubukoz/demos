@@ -1,6 +1,8 @@
 import monocle.syntax.all.*
+import cats.derived.*
+import cats.kernel.Hash
 
-enum Playable {
+enum Playable derives Hash {
   case Play(noteId: Int, velocity: Int)
   case Rest
 

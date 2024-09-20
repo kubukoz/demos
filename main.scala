@@ -1,34 +1,39 @@
 //> using dep com.armanbilge::calico::0.2.2
 //> using dep dev.optics::monocle-core::3.3.0
+//> using dep org.typelevel::kittens::3.4.0
 //> using platform js
 //> using jsModuleKind common
 //> using option -no-indent
 //> using option -Wunused:all
 import calico.IOWebApp
+import calico.frp.given
 import calico.html.io.*
 import calico.html.io.given
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import cats.effect.kernel.Resource
 import cats.syntax.all.*
+import fs2.concurrent.Signal
 import fs2.concurrent.SignallingRef
 import fs2.dom.*
 import fs2.dom.ext.FS2DomExtensions.*
 
-import scala.concurrent.duration.{span => _, *}
-import fs2.concurrent.Signal
+import scala.concurrent.duration.{span as _, *}
+
+val stepCount = 16
 
 object SeqApp extends IOWebApp {
 
   def render: Resource[IO, HtmlElement[IO]] = {
     for {
+      tracksRef <- SignallingRef[IO].of(data.initTracks).toResource
       currentNoteRef <- SignallingRef[IO].of(0).toResource
       holdAtRef <- SignallingRef[IO].of(none[Int]).toResource
       channelRef <- SignallingRef[IO].of(2).toResource
       playingRef <- SignallingRef[IO].of(false).toResource
       transposeRef <- SignallingRef[IO].of(0).toResource
       _ <- Player.run(
-        tracks = data.tracks,
+        tracksRef = tracksRef,
         midiChannel = channelRef,
         holdAtRef = holdAtRef,
         currentNoteRef = currentNoteRef,
@@ -41,10 +46,10 @@ object SeqApp extends IOWebApp {
           .changes
           .evalMap {
             // we inc by one because we want to hold the next note
-            case true  => currentNoteRef.get.map(_.+(1).%(data.tracks.head.length)).map(_.some)
+            case true  => currentNoteRef.get.map(_.+(1).%(stepCount)).map(_.some)
             case false => none[Int].pure[IO]
           }
-          .evalMap(holdAtRef.set)
+          .foreach(holdAtRef.set)
           .compile
           .drain
           .background
@@ -53,7 +58,7 @@ object SeqApp extends IOWebApp {
           .forKey(" ")
           .changes
           .filter(identity)
-          .evalMap(_ => playingRef.update(!_))
+          .foreach(_ => playingRef.update(!_))
           .compile
           .drain
           .background
@@ -61,7 +66,7 @@ object SeqApp extends IOWebApp {
         KeyStatus
           .forKey("ArrowUp")
           .filter(identity)
-          .evalMap(_ => transposeRef.update(_ + 12))
+          .foreach(_ => transposeRef.update(_ + 12))
           .compile
           .drain
           .background
@@ -69,7 +74,7 @@ object SeqApp extends IOWebApp {
         KeyStatus
           .forKey("ArrowDown")
           .filter(identity)
-          .evalMap(_ => transposeRef.update(_ - 12))
+          .foreach(_ => transposeRef.update(_ - 12))
           .compile
           .drain
           .background
@@ -77,11 +82,12 @@ object SeqApp extends IOWebApp {
         KeyStatus
           .forKey(key.show)
           .filter(identity)
-          .evalMap(_ => transposeRef.set(key))
+          .foreach(_ => transposeRef.set(key))
           .compile
           .drain
           .background
       }
+      editedNoteRef <- SignallingRef[IO].of((0, 0)).toResource
     } yield div(
       ChannelSelector.show(channelRef),
       div("current note: ", currentNoteRef.map(_.show)),
@@ -95,27 +101,73 @@ object SeqApp extends IOWebApp {
         }
       ),
       div("transpose: ", transposeRef.map(_.show)),
-      SequencerView.show(data.tracks, currentNoteRef),
+      SequencerView.show(tracksRef, currentNoteRef, editedNoteRef),
+      NoteEditor.show(editedNoteRef, tracksRef),
     )
 
   }.flatten
 
 }
 
+object NoteEditor {
+
+  def show(
+    editedNoteRef: Signal[IO, (Int, Int)],
+    tracksRef: SignallingRef[IO, List[List[Playable]]],
+  ): Signal[IO, Resource[IO, HtmlDivElement[IO]]] = editedNoteRef.changes.flatMap {
+    case (editedTrack, editedNote) =>
+      tracksRef.map { tracks =>
+        div(
+          "edited note: ",
+          tracks(editedTrack)(editedNote).toString(),
+          button(
+            "clear",
+            onClick --> {
+              _.foreach { _ =>
+                tracksRef.update { tracks =>
+                  tracks
+                    .updated(
+                      editedTrack,
+                      tracks(editedTrack).updated(editedNote, Playable.Rest),
+                    )
+                }
+              }
+            },
+          ),
+          button(
+            "pitch up",
+            onClick --> {
+              _.foreach { _ =>
+                tracksRef.update { tracks =>
+                  tracks
+                    .updated(
+                      editedTrack,
+                      tracks(editedTrack).updated(editedNote, tracks(editedTrack)(editedNote) + 1),
+                    )
+                }
+              }
+            },
+          ),
+        )
+      }
+  }
+
+}
+
 object SequencerView {
 
-  def show(tracks: List[List[Playable]], currentNoteRef: Signal[IO, Int])
-    : Resource[IO, HtmlTableElement[IO]] = table(
+  def show(
+    tracks: Signal[IO, List[List[Playable]]],
+    currentNoteRef: Signal[IO, Int],
+    editedNoteRef: SignallingRef[IO, (Int, Int)],
+  ): Resource[IO, HtmlTableElement[IO]] = table(
     styleAttr := """
                    |border: 2px solid black
                    |""".stripMargin,
     thead(
       tr(
         th("x"),
-        data
-          .tracks
-          .head
-          .indices
+        (0 until stepCount)
           .map(i =>
             th(
               i.show,
@@ -133,22 +185,43 @@ object SequencerView {
                      |""".stripMargin,
     ),
     tbody(
-      data.tracks.map { track =>
+      children[(List[Playable], Int)] { (track, trackIndex) =>
         tr(
-          styleAttr := """
-                         |border: 2px solid black
-                         |""".stripMargin,
-          td(""),
-          track.map { playable =>
+          td(
+            ""
+          ),
+          track.zipWithIndex.map { (playable, noteIndex) =>
             td(
+              styleAttr := """
+                             |border: 2px solid black
+                             |""".stripMargin,
               playable match {
-                case Playable.Rest                   => ""
-                case Playable.Play(noteId, velocity) => show"$noteId @ $velocity"
-              }
+                case Playable.Rest                   => "_"
+                case Playable.Play(noteId, velocity) => "x"
+              },
+              input.withSelf { self =>
+                (
+                  `type` := "radio",
+                  nameAttr := "edit-playable",
+                  value := show"$trackIndex,$noteIndex",
+                  checked <-- editedNoteRef.changes.map { case (editedTrack, editedNote) =>
+                    editedTrack == trackIndex && editedNote == noteIndex
+                  },
+                  onChange --> {
+                    _.foreach { _ =>
+                      self.value.get.flatMap {
+                        case s"$trackIndex,$noteIndex" =>
+                          editedNoteRef.set((trackIndex.toInt, noteIndex.toInt))
+                        case _ => IO.raiseError(new Exception("invalid value of edit-playable"))
+                      }
+                    }
+                  },
+                )
+              },
             )
           },
         )
-      }
+      } <-- tracks.map(_.zipWithIndex)
     ),
   )
 
@@ -183,14 +256,14 @@ object ChannelSelector {
         }.toList,
         value <-- midiChannel.changes.map(_.toString),
         onChange --> {
-          _.evalMap(_ =>
+          _.foreach(_ =>
             self
               .value
               .get
               /* wishful thinking */
               .map(_.toInt)
               .flatMap(midiChannel.set)
-          ).drain
+          )
         },
       )
     },
@@ -201,7 +274,7 @@ object ChannelSelector {
 object Player {
 
   def run(
-    tracks: List[List[Playable]],
+    tracksRef: Signal[IO, List[List[Playable]]],
     midiChannel: Ref[IO, Int],
     holdAtRef: Ref[IO, Option[Int]],
     currentNoteRef: Ref[IO, Int],
@@ -218,12 +291,12 @@ object Player {
       fs2
         .Stream
         .fixedRateStartImmediately[IO](period)
-        .zipRight(fs2.Stream.emits(tracks.head.indices).repeat)
+        .zipRight(fs2.Stream.emits(0 until stepCount).repeat)
         .pauseWhen(playingRef.map(!_))
         .evalTap(currentNoteRef.set)
         .foreach { noteIndex =>
-          (midiChannel.get, holdAtRef.get, transposeRef.get)
-            .flatMapN { (channel, holdAt, transpose) =>
+          (midiChannel.get, holdAtRef.get, transposeRef.get, tracksRef.get)
+            .flatMapN { (channel, holdAt, transpose, tracks) =>
               // we play notes of each track in parallel
               // because their Off messages need to be sent at roughly the same time
               // and we can't wait for one note to finish before starting the next

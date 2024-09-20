@@ -71,5 +71,5 @@ object data {
     REST,
   ).map(_.atVelocity(0x7f))
 
-  val tracks: List[List[Playable]] = List(plucks, melody, bass)
+  val initTracks: List[List[Playable]] = List(plucks, melody, bass)
 }
