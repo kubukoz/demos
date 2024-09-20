@@ -1,13 +1,12 @@
 package fs2.dom.ext
 
 import cats.effect.IO
-
 import fs2.dom.*
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSGlobal
-import scala.scalajs.js.JSConverters.*
-import org.scalajs.dom.HTMLElement
 import org.scalajs.dom.HTMLDocument
+
+import scala.scalajs.js
+import scala.scalajs.js.JSConverters.*
+import scala.scalajs.js.annotation.JSGlobal
 
 object FS2DomExtensions {
 
@@ -15,7 +14,18 @@ object FS2DomExtensions {
 
     def onKeyDown: fs2.Stream[IO, KeyboardEvent[IO]] = fs2
       .dom
-      .events[IO, org.scalajs.dom.KeyboardEvent](doc.asInstanceOf[HTMLDocument], "keydown")
+      .events[IO, org.scalajs.dom.KeyboardEvent](
+        doc.asInstanceOf[HTMLDocument],
+        "keydown",
+      )
+      .map(KeyboardEvent[IO](_))
+
+    def onKeyUp: fs2.Stream[IO, KeyboardEvent[IO]] = fs2
+      .dom
+      .events[IO, org.scalajs.dom.KeyboardEvent](
+        doc.asInstanceOf[HTMLDocument],
+        "keyup",
+      )
       .map(KeyboardEvent[IO](_))
 
   }

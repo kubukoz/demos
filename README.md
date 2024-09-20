@@ -2,7 +2,7 @@ Feature status:
 
 - [x] Playback
 - [ ] Play/pause
-- [ ] Hold
+- [x] Hold
 - [ ] Muting tracks
 - [ ] Transposing by semitone
 - [ ] Transposing by octave
