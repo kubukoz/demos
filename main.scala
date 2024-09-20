@@ -15,7 +15,8 @@ import fs2.concurrent.SignallingRef
 import fs2.dom.*
 import fs2.dom.ext.FS2DomExtensions.*
 
-import scala.concurrent.duration.*
+import scala.concurrent.duration.{span => _, *}
+import fs2.concurrent.Signal
 
 object SeqApp extends IOWebApp {
 
@@ -94,15 +95,68 @@ object SeqApp extends IOWebApp {
         }
       ),
       div("transpose: ", transposeRef.map(_.show)),
+      SequencerView.show(data.tracks, currentNoteRef),
     )
 
   }.flatten
 
 }
 
+object SequencerView {
+
+  def show(tracks: List[List[Playable]], currentNoteRef: Signal[IO, Int])
+    : Resource[IO, HtmlTableElement[IO]] = table(
+    styleAttr := """
+                   |border: 2px solid black
+                   |""".stripMargin,
+    thead(
+      tr(
+        th("x"),
+        data
+          .tracks
+          .head
+          .indices
+          .map(i =>
+            th(
+              i.show,
+              styleAttr <-- currentNoteRef.changes.map { current =>
+                if i == current then "color: red"
+                else
+                  ""
+              },
+            )
+          )
+          .toList,
+      ),
+      styleAttr := """
+                     |border: 2px solid black
+                     |""".stripMargin,
+    ),
+    tbody(
+      data.tracks.map { track =>
+        tr(
+          styleAttr := """
+                         |border: 2px solid black
+                         |""".stripMargin,
+          td(""),
+          track.map { playable =>
+            td(
+              playable match {
+                case Playable.Rest                   => ""
+                case Playable.Play(noteId, velocity) => show"$noteId @ $velocity"
+              }
+            )
+          },
+        )
+      }
+    ),
+  )
+
+}
+
 object KeyStatus {
 
-  def forKey(key: String) = Window[IO]
+  def forKey(key: String): fs2.Stream[IO, Boolean] = Window[IO]
     .document
     .onKeyDown
     .filter(_.key == key)
@@ -151,7 +205,7 @@ object Player {
     midiChannel: Ref[IO, Int],
     holdAtRef: Ref[IO, Option[Int]],
     currentNoteRef: Ref[IO, Int],
-    playingRef: SignallingRef[IO, Boolean],
+    playingRef: Signal[IO, Boolean],
     transposeRef: Ref[IO, Int],
   ): Resource[IO, Unit] = Window[IO]
     .navigator
