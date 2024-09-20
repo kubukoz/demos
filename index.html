@@ -1,27 +1,10 @@
 <!DOCTYPE html>
 <html>
-  MIDI Channel:
-  <select id="midichannel-select">
-    <option>0</option>
-    <option>1</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5</option>
-    <option>6</option>
-    <option>7</option>
-    <option>8</option>
-    <option>9</option>
-    <option>10</option>
-    <option>11</option>
-    <option>12</option>
-    <option>13</option>
-    <option>14</option>
-    <option>15</option>
-  </select>
+  <!-- calico entrypoint -->
+  <div id="app"></div>
   <div id="content"></div>
-  <script>
-    const midiChannelElem = document.getElementById("midichannel-select");
+  <script type="module" src="./SeqApp.js"></script>
+  <!-- <script>
     // Request MIDI access
     navigator
       .requestMIDIAccess()
@@ -123,6 +106,7 @@
         };
 
         const play = () => {
+          const midiChannelElem = document.getElementById("midichannel-select");
           const channel = +midiChannelElem.value;
 
           tracks.forEach((track, i) => {
@@ -183,5 +167,5 @@
       .catch(function (err) {
         console.error("Failed to access MIDI devices:", err);
       });
-  </script>
+  </script> -->
 </html>
