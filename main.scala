@@ -198,10 +198,15 @@ object SequencerView {
               styleAttr := """
                              |border: 2px solid black
                              |""".stripMargin,
-              playable match {
-                case Playable.Rest                   => "_"
-                case Playable.Play(noteId, velocity) => "x"
-              },
+              holdAtRef
+                .flatMap {
+                  case None         => playable.pure
+                  case Some(holdAt) => tracks.map(_(trackIndex)(holdAt))
+                }
+                .map {
+                  case Playable.Rest                   => "_"
+                  case Playable.Play(noteId, velocity) => "x"
+                },
               input.withSelf { self =>
                 (
                   `type` := "radio",
