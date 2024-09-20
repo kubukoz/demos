@@ -56,8 +56,10 @@ object SeqApp extends IOWebApp {
       _ <-
         KeyStatus
           .forKey(" ")
+          // these lines make sure we only toggle when the key is pressed
           .changes
           .filter(identity)
+          //
           .foreach(_ => playingRef.update(!_))
           .compile
           .drain
@@ -101,7 +103,7 @@ object SeqApp extends IOWebApp {
         }
       ),
       div("transpose: ", transposeRef.map(_.show)),
-      SequencerView.show(tracksRef, currentNoteRef, editedNoteRef),
+      SequencerView.show(tracksRef, currentNoteRef, holdAtRef, editedNoteRef),
       NoteEditor.show(editedNoteRef, tracksRef),
     )
 
@@ -114,7 +116,7 @@ object NoteEditor {
   def show(
     editedNoteRef: Signal[IO, (Int, Int)],
     tracksRef: SignallingRef[IO, List[List[Playable]]],
-  ): Signal[IO, Resource[IO, HtmlDivElement[IO]]] = editedNoteRef.changes.flatMap {
+  ): Signal[IO, Resource[IO, HtmlDivElement[IO]]] = editedNoteRef.flatMap {
     case (editedTrack, editedNote) =>
       tracksRef.map { tracks =>
         div(
@@ -159,6 +161,7 @@ object SequencerView {
   def show(
     tracks: Signal[IO, List[List[Playable]]],
     currentNoteRef: Signal[IO, Int],
+    holdAtRef: Signal[IO, Option[Int]],
     editedNoteRef: SignallingRef[IO, (Int, Int)],
   ): Resource[IO, HtmlTableElement[IO]] = table(
     styleAttr := """
@@ -167,18 +170,18 @@ object SequencerView {
     thead(
       tr(
         th("x"),
-        (0 until stepCount)
-          .map(i =>
-            th(
-              i.show,
-              styleAttr <-- currentNoteRef.changes.map { current =>
-                if i == current then "color: red"
-                else
-                  ""
-              },
-            )
+        (0 until stepCount).map { i =>
+          th(
+            holdAtRef.map { holdAt =>
+              holdAt.getOrElse(i).show
+            },
+            styleAttr <-- currentNoteRef.map { current =>
+              if i == current then "color: red"
+              else
+                ""
+            },
           )
-          .toList,
+        }.toList,
       ),
       styleAttr := """
                      |border: 2px solid black
@@ -204,7 +207,7 @@ object SequencerView {
                   `type` := "radio",
                   nameAttr := "edit-playable",
                   value := show"$trackIndex,$noteIndex",
-                  checked <-- editedNoteRef.changes.map { case (editedTrack, editedNote) =>
+                  checked <-- editedNoteRef.map { case (editedTrack, editedNote) =>
                     editedTrack == trackIndex && editedNote == noteIndex
                   },
                   onChange --> {
@@ -254,7 +257,7 @@ object ChannelSelector {
         (0 to 15).map { i =>
           option(i.toString)
         }.toList,
-        value <-- midiChannel.changes.map(_.toString),
+        value <-- midiChannel.map(_.toString),
         onChange --> {
           _.foreach(_ =>
             self
