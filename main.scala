@@ -23,32 +23,33 @@ object SeqApp extends IOWebApp {
       currentNoteRef <- SignallingRef[IO].of(0).toResource
       holdAtRef <- SignallingRef[IO].of(none[Int]).toResource
       channelRef <- SignallingRef[IO].of(2).toResource
+      pauseRef <- SignallingRef[IO].of(false).toResource
       _ <- Player.run(
         tracks = data.tracks,
         midiChannel = channelRef,
         holdAtRef = holdAtRef,
         currentNoteRef = currentNoteRef,
+        pauseRef = pauseRef,
       )
       _ <-
-        window
-          .document
-          .onKeyDown
-          .filter(_.key == "h")
-          .as(true)
-          .merge(
-            window
-              .document
-              .onKeyUp
-              .filter(_.key == "h")
-              .as(false)
-          )
+        KeyStatus
+          .forKey("h")
           .changes
           .evalMap {
             // we inc by one because we want to hold the next note
-            case true  => currentNoteRef.get.map(_ + 1).map(_.some)
+            case true  => currentNoteRef.get.map(_.+(1).%(data.tracks.head.length)).map(_.some)
             case false => none[Int].pure[IO]
           }
           .evalMap(holdAtRef.set)
+          .compile
+          .drain
+          .background
+      _ <-
+        KeyStatus
+          .forKey(" ")
+          .changes
+          .filter(identity)
+          .evalMap(_ => pauseRef.update(!_))
           .compile
           .drain
           .background
@@ -59,6 +60,23 @@ object SeqApp extends IOWebApp {
     )
 
   }.flatten
+
+}
+
+object KeyStatus {
+
+  def forKey(key: String) = Window[IO]
+    .document
+    .onKeyDown
+    .filter(_.key == key)
+    .as(true)
+    .merge(
+      Window[IO]
+        .document
+        .onKeyUp
+        .filter(_.key == key)
+        .as(false)
+    )
 
 }
 
@@ -96,6 +114,7 @@ object Player {
     midiChannel: Ref[IO, Int],
     holdAtRef: Ref[IO, Option[Int]],
     currentNoteRef: Ref[IO, Int],
+    pauseRef: SignallingRef[IO, Boolean],
   ): Resource[IO, Unit] = Window[IO]
     .navigator
     .requestMIDIAccess
@@ -107,9 +126,8 @@ object Player {
       fs2
         .Stream
         .fixedRateStartImmediately[IO](period)
-        .zipWithIndex
-        .map(_._2)
-        .map(_.%(tracks.head.size).toInt)
+        .zipRight(fs2.Stream.emits(tracks.head.indices).repeat)
+        .pauseWhen(pauseRef)
         .evalTap(currentNoteRef.set)
         .foreach { noteIndex =>
           (midiChannel.get, holdAtRef.get)
