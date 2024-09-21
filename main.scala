@@ -1,10 +1,15 @@
+//> using dep org.http4s::http4s-dom::0.2.11
 //> using dep com.armanbilge::calico::0.2.2
 //> using dep dev.optics::monocle-core::3.3.0
 //> using dep org.typelevel::kittens::3.4.0
+//> using dep io.circe::circe-core::0.14.10
+//> using dep io.circe::circe-scalajs::0.14.10
+//> using dep io.circe::circe-parser::0.14.10
 //> using platform js
 //> using jsModuleKind common
 //> using option -no-indent
 //> using option -Wunused:all
+//> using option -Xkind-projector
 import calico.IOWebApp
 import calico.html.io.*
 import calico.html.io.given
@@ -21,7 +26,7 @@ import scala.concurrent.duration.{span as _, *}
 
 val stepCount = 16
 
-object SeqApp extends IOWebApp {
+trait SeqApp extends IOWebApp {
 
   def render: Resource[IO, HtmlElement[IO]] = {
     for {
