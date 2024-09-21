@@ -198,10 +198,10 @@ object SequencerView {
               styleAttr := """
                              |border: 2px solid black
                              |""".stripMargin,
-              holdAtRef
-                .flatMap {
-                  case None         => playable.pure
-                  case Some(holdAt) => tracks.map(_(trackIndex)(holdAt))
+              (holdAtRef, tracks)
+                .mapN {
+                  case (None, _)              => playable
+                  case (Some(holdAt), tracks) => tracks(trackIndex)(holdAt)
                 }
                 .map {
                   case Playable.Rest                   => "_"
