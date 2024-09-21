@@ -155,7 +155,6 @@ object wsc extends IOWebApp {
                     ws.sendText(Message.Offer(offer).asMessage.asJson.noSpaces)
                 }
           }
-          .debug()
           .void
           .background
     } yield ()
