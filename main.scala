@@ -6,7 +6,6 @@
 //> using option -no-indent
 //> using option -Wunused:all
 import calico.IOWebApp
-import calico.frp.given
 import calico.html.io.*
 import calico.html.io.given
 import cats.effect.IO
@@ -116,42 +115,40 @@ object NoteEditor {
   def show(
     editedNoteRef: Signal[IO, (Int, Int)],
     tracksRef: SignallingRef[IO, List[List[Playable]]],
-  ): Signal[IO, Resource[IO, HtmlDivElement[IO]]] = editedNoteRef.flatMap {
+  ): Signal[IO, Resource[IO, HtmlDivElement[IO]]] = editedNoteRef.map {
     case (editedTrack, editedNote) =>
-      tracksRef.map { tracks =>
-        div(
-          "edited note: ",
-          tracks(editedTrack)(editedNote).toString(),
-          button(
-            "clear",
-            onClick --> {
-              _.foreach { _ =>
-                tracksRef.update { tracks =>
-                  tracks
-                    .updated(
-                      editedTrack,
-                      tracks(editedTrack).updated(editedNote, Playable.Rest),
-                    )
-                }
+      div(
+        "edited note: ",
+        tracksRef.map(_(editedTrack)(editedNote).toString()),
+        button(
+          "clear",
+          onClick --> {
+            _.foreach { _ =>
+              tracksRef.update { tracks =>
+                tracks
+                  .updated(
+                    editedTrack,
+                    tracks(editedTrack).updated(editedNote, Playable.Rest),
+                  )
               }
-            },
-          ),
-          button(
-            "pitch up",
-            onClick --> {
-              _.foreach { _ =>
-                tracksRef.update { tracks =>
-                  tracks
-                    .updated(
-                      editedTrack,
-                      tracks(editedTrack).updated(editedNote, tracks(editedTrack)(editedNote) + 1),
-                    )
-                }
+            }
+          },
+        ),
+        button(
+          "pitch up",
+          onClick --> {
+            _.foreach { _ =>
+              tracksRef.update { tracks =>
+                tracks
+                  .updated(
+                    editedTrack,
+                    tracks(editedTrack).updated(editedNote, tracks(editedTrack)(editedNote) + 1),
+                  )
               }
-            },
-          ),
-        )
-      }
+            }
+          },
+        ),
+      )
   }
 
 }
