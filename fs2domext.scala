@@ -1,6 +1,5 @@
 package fs2.dom.ext
 
-import cats.effect.IO
 import cats.effect.kernel.Async
 import cats.effect.kernel.Resource
 import cats.effect.kernel.Sync
@@ -15,36 +14,37 @@ import org.scalajs.dom.RTCSessionDescription
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters.*
 import scala.scalajs.js.annotation.JSGlobal
+import cats.syntax.all.*
 
 object FS2DomExtensions {
 
-  extension (doc: HtmlDocument[IO]) {
+  extension [F[_]: Async](doc: HtmlDocument[F]) {
 
-    def onKeyDown: fs2.Stream[IO, KeyboardEvent[IO]] = fs2
+    def onKeyDown: fs2.Stream[F, KeyboardEvent[F]] = fs2
       .dom
-      .events[IO, org.scalajs.dom.KeyboardEvent](
+      .events[F, org.scalajs.dom.KeyboardEvent](
         doc.asInstanceOf[HTMLDocument],
         "keydown",
       )
-      .map(KeyboardEvent[IO](_))
+      .map(KeyboardEvent[F](_))
 
-    def onKeyUp: fs2.Stream[IO, KeyboardEvent[IO]] = fs2
+    def onKeyUp: fs2.Stream[F, KeyboardEvent[F]] = fs2
       .dom
-      .events[IO, org.scalajs.dom.KeyboardEvent](
+      .events[F, org.scalajs.dom.KeyboardEvent](
         doc.asInstanceOf[HTMLDocument],
         "keyup",
       )
-      .map(KeyboardEvent[IO](_))
+      .map(KeyboardEvent[F](_))
 
   }
 
-  extension (unused: Navigator[IO]) {
+  extension [F[_]: Async](unused: Navigator[F]) {
 
     // todo: it'd be nice to access the permission as a signal
     // so gotta steal some code from todomeda
-    def requestMIDIAccess: IO[MIDIAccess] = IO
+    def requestMIDIAccess: F[MIDIAccess[F]] = Async[F]
       .fromPromise {
-        IO(
+        Sync[F].delay(
           org
             .scalajs
             .dom
@@ -61,16 +61,16 @@ object FS2DomExtensions {
 
 }
 
-trait MIDIAccess {
-  def outputs: IO[Map[String, MIDIOutput]]
+trait MIDIAccess[F[_]] {
+  def outputs: F[Map[String, MIDIOutput[F]]]
 }
 
 object MIDIAccess {
 
-  private[ext] def wrap(access: natives.MIDIAccess): MIDIAccess =
-    new MIDIAccess {
+  private[ext] def wrap[F[_]: Sync](access: natives.MIDIAccess): MIDIAccess[F] =
+    new {
 
-      def outputs: IO[Map[String, MIDIOutput]] = IO {
+      def outputs: F[Map[String, MIDIOutput[F]]] = Sync[F].delay {
         access
           .outputs
           .toMap
@@ -83,21 +83,21 @@ object MIDIAccess {
 
 }
 
-trait MIDIOutput {
-  def send(data: IArray[Int]): IO[Unit]
-  def clear(): IO[Unit]
+trait MIDIOutput[F[_]] {
+  def send(data: IArray[Int]): F[Unit]
+  def clear: F[Unit]
 }
 
 object MIDIOutput {
 
-  private[ext] def wrap(output: natives.MIDIOutput): MIDIOutput =
-    new MIDIOutput {
+  private[ext] def wrap[F[_]: Sync](output: natives.MIDIOutput): MIDIOutput[F] =
+    new {
 
-      def send(data: IArray[Int]): IO[Unit] = IO {
+      def send(data: IArray[Int]): F[Unit] = Sync[F].delay {
         output.send(data.toJSArray)
       }
 
-      def clear(): IO[Unit] = IO {
+      val clear: F[Unit] = Sync[F].delay {
         output.clear()
       }
 
