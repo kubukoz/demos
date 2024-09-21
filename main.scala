@@ -89,6 +89,7 @@ object SeqApp extends IOWebApp {
           .background
       }
       editedNoteRef <- SignallingRef[IO].of((0, 0)).toResource
+      trackState = TrackState.fromSignallingRef(tracksRef)
     } yield div(
       ChannelSelector.show(channelRef),
       div("current note: ", currentNoteRef.map(_.show)),
@@ -102,8 +103,13 @@ object SeqApp extends IOWebApp {
         }
       ),
       div("transpose: ", transposeRef.map(_.show)),
-      SequencerView.show(tracksRef, currentNoteRef, holdAtRef, editedNoteRef),
-      NoteEditor.show(editedNoteRef, tracksRef),
+      SequencerView.show(
+        trackState,
+        currentNoteRef,
+        holdAtRef,
+        editedNoteRef,
+      ),
+      NoteEditor.show(editedNoteRef, trackState),
     )
 
   }.flatten
@@ -114,17 +120,17 @@ object NoteEditor {
 
   def show(
     editedNoteRef: Signal[IO, (Int, Int)],
-    tracksRef: SignallingRef[IO, List[List[Playable]]],
+    trackState: TrackState,
   ): Signal[IO, Resource[IO, HtmlDivElement[IO]]] = editedNoteRef.map {
     case (editedTrack, editedNote) =>
       div(
         "edited note: ",
-        tracksRef.map(_(editedTrack)(editedNote).toString()),
+        trackState.read.map(_(editedTrack)(editedNote).toString()),
         button(
           "clear",
           onClick --> {
             _.foreach { _ =>
-              tracksRef.update { tracks =>
+              trackState.update { tracks =>
                 tracks
                   .updated(
                     editedTrack,
@@ -138,7 +144,7 @@ object NoteEditor {
           "pitch up",
           onClick --> {
             _.foreach { _ =>
-              tracksRef.update { tracks =>
+              trackState.update { tracks =>
                 tracks
                   .updated(
                     editedTrack,
@@ -156,7 +162,7 @@ object NoteEditor {
 object SequencerView {
 
   def show(
-    tracks: Signal[IO, List[List[Playable]]],
+    trackState: TrackState,
     currentNoteRef: Signal[IO, Int],
     holdAtRef: Signal[IO, Option[Int]],
     editedNoteRef: SignallingRef[IO, (Int, Int)],
@@ -195,7 +201,7 @@ object SequencerView {
               styleAttr := """
                              |border: 2px solid black
                              |""".stripMargin,
-              (holdAtRef, tracks)
+              (holdAtRef, trackState.read)
                 .mapN {
                   case (None, _)              => playable
                   case (Some(holdAt), tracks) => tracks(trackIndex)(holdAt)
@@ -226,7 +232,7 @@ object SequencerView {
             )
           },
         )
-      } <-- tracks.map(_.zipWithIndex)
+      } <-- trackState.read.map(_.zipWithIndex)
     ),
   )
 
