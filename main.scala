@@ -169,7 +169,7 @@ object SequencerView {
                    |""".stripMargin,
     thead(
       tr(
-        th("x"),
+        th("·"),
         (0 until stepCount).map { i =>
           th(
             holdAtRef.map { holdAt =>
