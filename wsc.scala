@@ -25,6 +25,7 @@ import org.scalajs.dom.MessageEvent
 import org.scalajs.dom.RTCIceCandidate
 
 import scala.concurrent.duration.*
+import fs2.dom.ext.RTCDataChannel
 
 def codecViaJsAny[A <: scalajs.js.Any]: Codec[A] = Codec.from(
   Decoder[Json].map(cjs.convertJsonToJs(_)).map(_.asInstanceOf[A]),
@@ -93,11 +94,23 @@ object wsc extends IOWebApp {
     for {
       peerConnection <- RTCPeerConnection[IO]
       dataChannel <- peerConnection.createDataChannel("chat", new dom.RTCDataChannelInit {})
-      dataChannelRef <- IO.ref(dataChannel).toResource
+      remoteDataChannelRef <- IO.deferred[RTCDataChannel[IO]].toResource
+      _ <- peerConnection.onDataChannel(remoteDataChannelRef.complete(_).void).toResource
+      _ <-
+        listenerRef
+          .set(
+            RTCDataChannel
+              .suspend(
+                remoteDataChannelRef
+                  .tryGet
+                  .flatMap(_.liftTo[IO](new Throwable("remote data channel not available")))
+              )
+              .send
+          )
+          .toResource
       _ <-
         dataChannel.onOpen {
-          IO.println("Data channel is open") *>
-            listenerRef.set(msg => dataChannelRef.get.flatMap(_.send(msg)))
+          IO.println("Data channel is open")
         }.toResource
       _ <-
         dataChannel
@@ -106,16 +119,15 @@ object wsc extends IOWebApp {
       _ <-
         peerConnection
           .onIceCandidate(event =>
-            ws.sendText(
-              Message.Candidate(event.candidate).asMessage.asJson.noSpaces
-            )
+            IO.whenA(event.candidate != null) {
+              ws.sendText(
+                Message.Candidate(event.candidate).asMessage.asJson.noSpaces
+              )
+            }
           )
           .toResource
       dispatcher <- Dispatcher.parallel[IO]
-      _ <-
-        peerConnection
-          .onDataChannel(dataChannelRef.set)
-          .toResource
+
       _ <- IO.println("I guess we receivin now").toResource
       _ <-
         ws

@@ -15,6 +15,7 @@ import scala.scalajs.js
 import scala.scalajs.js.JSConverters.*
 import scala.scalajs.js.annotation.JSGlobal
 import cats.syntax.all.*
+import cats.FlatMap
 
 object FS2DomExtensions {
 
@@ -213,6 +214,13 @@ object RTCDataChannel {
       def onMessage(f: dom.MessageEvent => F[Unit]): F[Unit] = Sync[F].delay {
         dc.onmessage = e => dispatcher.unsafeRunAndForget(f(e))
       }
+    }
+
+  def suspend[F[_]: FlatMap](dcf: F[RTCDataChannel[F]]): RTCDataChannel[F] =
+    new RTCDataChannel[F] {
+      def send(data: String): F[Unit] = dcf.flatMap(_.send(data))
+      def onOpen(f: F[Unit]): F[Unit] = dcf.flatMap(_.onOpen(f))
+      def onMessage(f: dom.MessageEvent => F[Unit]): F[Unit] = dcf.flatMap(_.onMessage(f))
     }
 
 }
