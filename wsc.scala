@@ -96,20 +96,7 @@ object wsc extends IOWebApp {
       }
       _ <- IO {
         peerConnection.ondatachannel =
-          event => {
-            dom
-              .console
-              .log(
-                "Data channel",
-                dataChannel,
-                event.channel,
-                dataChannel eq event.channel,
-                dataChannel == event.channel,
-                dataChannel.toString() == event.channel.toString(),
-              )
-
-            dataChannelRef.set(event.channel).unsafeRunAndForget()
-          }
+          event => dataChannelRef.set(event.channel).unsafeRunAndForget()
       }
       _ <- IO.println("I guess we receivin now")
     } yield ws
@@ -126,17 +113,13 @@ object wsc extends IOWebApp {
                   IO(
                     peerConnection.setRemoteDescription(offer)
                   )
-                ).flatMap(_ =>
+                ) *>
                   IO.fromPromise(IO(peerConnection.createAnswer()))
-                    .flatMap(answer =>
-                      IO.fromPromise(IO(peerConnection.setLocalDescription(answer)))
-                        .flatMap(_ =>
-                          ws.sendText(
-                            Message.Answer(answer).asMessage.asJson.noSpaces
-                          )
-                        )
-                    )
-                )
+                    .flatMap { answer =>
+                      IO.fromPromise(IO(peerConnection.setLocalDescription(answer))) *>
+                        ws.sendText(Message.Answer(answer).asMessage.asJson.noSpaces)
+                    }
+
               case Message.Answer(answer) =>
                 IO.fromPromise(
                   IO(
