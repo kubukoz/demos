@@ -5,6 +5,7 @@
 //> using dep io.circe::circe-core::0.14.10
 //> using dep io.circe::circe-scalajs::0.14.10
 //> using dep io.circe::circe-parser::0.14.10
+//> using dep org.typelevel::keypool::0.4.10
 //> using platform js
 //> using jsModuleKind common
 //> using option -no-indent

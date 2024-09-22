@@ -148,11 +148,11 @@ trait RTCPeerConnection[F[_]] {
 
 object RTCPeerConnection {
 
-  def apply[F[_]: Async]: Resource[F, RTCPeerConnection[F]] = Dispatcher.parallel[F].flatMap {
-    dispatcher =>
+  def apply[F[_]: Async](config: Option[dom.RTCConfiguration]): Resource[F, RTCPeerConnection[F]] =
+    Dispatcher.parallel[F].flatMap { dispatcher =>
       Resource
         .make(
-          Sync[F].delay(new dom.RTCPeerConnection())
+          Sync[F].delay(new dom.RTCPeerConnection(config.orUndefined))
         )(conn => Sync[F].delay(conn.close()))
         .map { pc =>
           new RTCPeerConnection[F] {
@@ -204,7 +204,7 @@ object RTCPeerConnection {
 
           }
         }
-  }
+    }
 
 }
 
