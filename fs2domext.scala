@@ -1,9 +1,13 @@
 package fs2.dom.ext
 
+import cats.FlatMap
+import cats.MonadThrow
 import cats.effect.kernel.Async
+import cats.effect.kernel.DeferredSource
 import cats.effect.kernel.Resource
 import cats.effect.kernel.Sync
 import cats.effect.std.Dispatcher
+import cats.syntax.all.*
 import fs2.dom.*
 import org.scalajs.dom
 import org.scalajs.dom.HTMLDocument
@@ -14,8 +18,6 @@ import org.scalajs.dom.RTCSessionDescription
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters.*
 import scala.scalajs.js.annotation.JSGlobal
-import cats.syntax.all.*
-import cats.FlatMap
 
 object FS2DomExtensions {
 
@@ -221,6 +223,11 @@ object RTCDataChannel {
       def send(data: String): F[Unit] = dcf.flatMap(_.send(data))
       def onOpen(f: F[Unit]): F[Unit] = dcf.flatMap(_.onOpen(f))
       def onMessage(f: dom.MessageEvent => F[Unit]): F[Unit] = dcf.flatMap(_.onMessage(f))
+    }
+
+  def fromDeferred[F[_]: MonadThrow](d: DeferredSource[F, RTCDataChannel[F]]): RTCDataChannel[F] =
+    suspend {
+      d.tryGet.flatMap(_.liftTo[F](new Throwable("remote data channel not available yet")))
     }
 
 }

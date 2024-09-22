@@ -2,11 +2,14 @@ import calico.*
 import calico.html.io.*
 import calico.html.io.given
 import cats.ApplicativeThrow
+import cats.effect.Concurrent
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import cats.effect.kernel.Resource
 import cats.effect.std.Dispatcher
+import cats.effect.std.Queue
 import cats.syntax.all.*
+import fs2.Chunk
 import fs2.concurrent.SignallingRef
 import fs2.dom.HtmlElement
 import fs2.dom.ext.RTCDataChannel
@@ -23,9 +26,12 @@ import org.http4s.client.websocket.WSRequest
 import org.http4s.dom.WebSocketClient
 import org.http4s.implicits.*
 import org.scalajs.dom
-import org.scalajs.dom.RTCIceCandidate
 
 import scala.concurrent.duration.*
+import cats.Functor
+import scala.scalajs.js.JSON
+import cats.Apply
+import cats.FlatMap
 
 def codecViaJsAny[A <: scalajs.js.Any]: Codec[A] = Codec.from(
   Decoder[Json].map(cjs.convertJsonToJs(_)).map(_.asInstanceOf[A]),
@@ -39,7 +45,15 @@ given Codec[dom.RTCIceCandidate] = codecViaJsAny
 enum Message derives Codec.AsObject {
   case Offer(offer: dom.RTCSessionDescription)
   case Answer(answer: dom.RTCSessionDescription)
-  case Candidate(candidate: RTCIceCandidate)
+  case Candidate(candidate: dom.RTCIceCandidate)
+
+  override def toString(): String =
+    this match {
+      case Answer(answer) => s"Answer(${JSON.stringify(answer)})"
+      case Offer(offer)   => s"Offer(${JSON.stringify(offer)})"
+      case Candidate(c)   => s"Candidate(${JSON.stringify(c)})"
+    }
+
 }
 
 object wsc extends IOWebApp {
@@ -51,11 +65,28 @@ object wsc extends IOWebApp {
       )
       listenerRef <- IO.ref((s: String) => IO.println("noop: " + s)).toResource
       messages <- SignallingRef[IO].of(List.empty[String]).toResource
+
+      localQ <- Queue.unbounded[IO, Chunk[Message]].toResource
+      remoteQ <- Queue.unbounded[IO, Chunk[Message]].toResource
+
+      sendChannel = RTCSignalling.logged("sendChannel", RTCSignalling.fromQueues(localQ, remoteQ))
+      receiveChannel = RTCSignalling.logged(
+        "receiveChannel",
+        RTCSignalling.fromQueues(remoteQ, localQ),
+      )
       _ <-
         setupConnection(
           listenerRef,
-          WSChannel.fromWebSocket(ws),
-          onReceive = msg => messages.update(_.prepended(msg)),
+          receiveChannel,
+          onReceive = msg => messages.update(_.prepended("receiveChannel: " + msg)),
+          wait = 0.seconds,
+        ).useForever.background
+      _ <-
+        setupConnection(
+          listenerRef,
+          sendChannel,
+          onReceive = msg => messages.update(_.prepended("sendChannel: " + msg)),
+          wait = 2.seconds,
         ).useForever.background
       messageRef <- SignallingRef[IO].of("").toResource
       view <- div(
@@ -83,61 +114,54 @@ object wsc extends IOWebApp {
 
   def setupConnection(
     listenerRef: Ref[IO, String => IO[Unit]],
-    // ws: WSConnectionHighLevel[IO],
-    channel: WSChannel[IO, Message],
+    signalling: RTCSignalling[IO, Message],
     onReceive: String => IO[Unit],
+    wait: FiniteDuration,
   ) =
     for {
       peerConnection <- RTCPeerConnection[IO]
-      dataChannel <- peerConnection.createDataChannel("chat", new dom.RTCDataChannelInit {})
-      remoteDataChannelRef <- IO.deferred[RTCDataChannel[IO]].toResource
-      _ <- peerConnection.onDataChannel(remoteDataChannelRef.complete(_).void).toResource
+      sendChannel <- peerConnection.createDataChannel("chat", new dom.RTCDataChannelInit {})
+      receiveChannel <- IO.deferred[RTCDataChannel[IO]].toResource
+      _ <- peerConnection.onDataChannel(receiveChannel.complete(_).void).toResource
       _ <-
-        listenerRef
-          .set(
+        listenerRef.update { old => msg =>
+          old(msg) *>
             RTCDataChannel
-              .suspend(
-                remoteDataChannelRef
-                  .tryGet
-                  .flatMap(_.liftTo[IO](new Throwable("remote data channel not available")))
-              )
-              .send
-          )
-          .toResource
+              .fromDeferred(receiveChannel)
+              .send(msg)
+        }.toResource
       _ <-
-        dataChannel.onOpen {
+        sendChannel.onOpen {
           IO.println("Data channel is open")
         }.toResource
       _ <-
-        dataChannel.onMessage { event =>
+        sendChannel.onMessage { event =>
           IO(dom.console.log("Data channel received message", event)) *>
             onReceive(event.data.toString())
         }.toResource
       _ <-
-        peerConnection
-          .onIceCandidate(event =>
-            IO.whenA(event.candidate != null) {
-              channel.send(
-                Message.Candidate(event.candidate)
-              )
-            }
-          )
-          .toResource
+        peerConnection.onIceCandidate { event =>
+          // so much for null safety in Scala
+          IO.whenA(event.candidate != null) {
+            signalling.send(Message.Candidate(event.candidate))
+          }
+        }.toResource
+
       dispatcher <- Dispatcher.parallel[IO]
 
-      _ <- IO.println("I guess we receivin now").toResource
       _ <-
-        channel
+        signalling
           .receiveStream
-          .debug("received event " + _)
           .foreach {
+            // todo: possible race condition between offer/answer (webrtc conflict)
+            // should apply the perfect negotiation pattern: https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Perfect_negotiation
             case Message.Offer(offer) =>
               peerConnection.setRemoteDescription(offer) *>
                 peerConnection
                   .createAnswer
                   .flatMap { answer =>
                     peerConnection.setLocalDescription(answer) *>
-                      channel.send(Message.Answer(answer))
+                      signalling.send(Message.Answer(answer))
                   }
 
             case Message.Answer(answer)       => peerConnection.setRemoteDescription(answer)
@@ -147,14 +171,14 @@ object wsc extends IOWebApp {
           .drain
           .both {
             IO.println("I guess we waitin now") *>
-              IO.sleep(2.seconds) *>
+              IO.sleep(wait) *>
               IO.println("sendin'") *>
               peerConnection
                 .createOffer
                 .flatMap { offer =>
                   peerConnection.setLocalDescription(offer) *>
                     IO.println("yo?") *>
-                    channel.send(Message.Offer(offer))
+                    signalling.send(Message.Offer(offer))
                 }
           }
           .void
@@ -163,16 +187,16 @@ object wsc extends IOWebApp {
 
 }
 
-trait WSChannel[F[_], Msg] {
+trait RTCSignalling[F[_], Msg] {
   def send(msg: Msg): F[Unit]
   def receiveStream: fs2.Stream[F, Msg]
 }
 
-object WSChannel {
+object RTCSignalling {
 
   def fromWebSocket[F[_]: ApplicativeThrow, A: Codec](ws: WSConnectionHighLevel[F])
-    : WSChannel[F, A] =
-    new WSChannel[F, A] {
+    : RTCSignalling[F, A] =
+    new RTCSignalling[F, A] {
       def send(msg: A): F[Unit] = ws.sendText(msg.asJson.noSpaces)
       def receiveStream: fs2.Stream[F, A] = ws
         .receiveStream
@@ -180,6 +204,27 @@ object WSChannel {
           case Text(data, _) => io.circe.parser.decode[A](data).liftTo[F]
           case Binary(_, _)  => (new Throwable("Binary messages not supported")).raiseError
         }
+    }
+
+  def fromQueues[F[_]: Functor, Msg](from: Queue[F, Chunk[Msg]], to: Queue[F, Chunk[Msg]])
+    : RTCSignalling[F, Msg] =
+    new RTCSignalling[F, Msg] {
+      def send(msg: Msg): F[Unit] = to.offer(Chunk.singleton(msg))
+      def receiveStream: fs2.Stream[F, Msg] = fs2.Stream.fromQueueUnterminatedChunk(from)
+    }
+
+  def logged[F[_]: cats.effect.std.Console: FlatMap, Msg](
+    label: String,
+    underlying: RTCSignalling[F, Msg],
+  ): RTCSignalling[F, Msg] =
+    new RTCSignalling[F, Msg] {
+      def send(msg: Msg): F[Unit] =
+        cats.effect.std.Console[F].println(s"$label sending: $msg") *>
+          underlying.send(msg)
+
+      def receiveStream: fs2.Stream[F, Msg] = underlying
+        .receiveStream
+        .debug(s"$label receiving: " + _)
     }
 
 }
