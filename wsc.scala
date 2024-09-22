@@ -1,7 +1,7 @@
 import calico.*
 import calico.html.io.*
 import calico.html.io.given
-import cats.data.Chain
+import cats.ApplicativeThrow
 import cats.effect.IO
 import cats.effect.kernel.Ref
 import cats.effect.kernel.Resource
@@ -9,6 +9,7 @@ import cats.effect.std.Dispatcher
 import cats.syntax.all.*
 import fs2.concurrent.SignallingRef
 import fs2.dom.HtmlElement
+import fs2.dom.ext.RTCDataChannel
 import fs2.dom.ext.RTCPeerConnection
 import io.circe.Codec
 import io.circe.Decoder
@@ -16,16 +17,15 @@ import io.circe.Json
 import io.circe.scalajs as cjs
 import io.circe.syntax.*
 import org.http4s.client.websocket.WSConnectionHighLevel
+import org.http4s.client.websocket.WSFrame.Binary
 import org.http4s.client.websocket.WSFrame.Text
 import org.http4s.client.websocket.WSRequest
 import org.http4s.dom.WebSocketClient
 import org.http4s.implicits.*
 import org.scalajs.dom
-import org.scalajs.dom.MessageEvent
 import org.scalajs.dom.RTCIceCandidate
 
 import scala.concurrent.duration.*
-import fs2.dom.ext.RTCDataChannel
 
 def codecViaJsAny[A <: scalajs.js.Any]: Codec[A] = Codec.from(
   Decoder[Json].map(cjs.convertJsonToJs(_)).map(_.asInstanceOf[A]),
@@ -40,8 +40,6 @@ enum Message derives Codec.AsObject {
   case Offer(offer: dom.RTCSessionDescription)
   case Answer(answer: dom.RTCSessionDescription)
   case Candidate(candidate: RTCIceCandidate)
-
-  def asMessage: Message = this
 }
 
 object wsc extends IOWebApp {
@@ -56,7 +54,7 @@ object wsc extends IOWebApp {
       _ <-
         setupConnection(
           listenerRef,
-          ws,
+          WSChannel.fromWebSocket(ws),
           onReceive = msg => messages.update(_.prepended(msg)),
         ).useForever.background
       messageRef <- SignallingRef[IO].of("").toResource
@@ -85,7 +83,8 @@ object wsc extends IOWebApp {
 
   def setupConnection(
     listenerRef: Ref[IO, String => IO[Unit]],
-    ws: WSConnectionHighLevel[IO],
+    // ws: WSConnectionHighLevel[IO],
+    channel: WSChannel[IO, Message],
     onReceive: String => IO[Unit],
   ) =
     for {
@@ -118,8 +117,8 @@ object wsc extends IOWebApp {
         peerConnection
           .onIceCandidate(event =>
             IO.whenA(event.candidate != null) {
-              ws.sendText(
-                Message.Candidate(event.candidate).asMessage.asJson.noSpaces
+              channel.send(
+                Message.Candidate(event.candidate)
               )
             }
           )
@@ -128,28 +127,21 @@ object wsc extends IOWebApp {
 
       _ <- IO.println("I guess we receivin now").toResource
       _ <-
-        ws
+        channel
           .receiveStream
           .debug("received event " + _)
-          .foreach { event =>
-            event match {
-              case Text(data, _) =>
-                val message = io.circe.parser.decode[Message](data).toTry.get
+          .foreach {
+            case Message.Offer(offer) =>
+              peerConnection.setRemoteDescription(offer) *>
+                peerConnection
+                  .createAnswer
+                  .flatMap { answer =>
+                    peerConnection.setLocalDescription(answer) *>
+                      channel.send(Message.Answer(answer))
+                  }
 
-                message match {
-                  case Message.Offer(offer) =>
-                    peerConnection.setRemoteDescription(offer) *>
-                      peerConnection
-                        .createAnswer
-                        .flatMap { answer =>
-                          peerConnection.setLocalDescription(answer) *>
-                            ws.sendText(Message.Answer(answer).asMessage.asJson.noSpaces)
-                        }
-
-                  case Message.Answer(answer)       => peerConnection.setRemoteDescription(answer)
-                  case Message.Candidate(candidate) => peerConnection.addIceCandidate(candidate)
-                }
-            }
+            case Message.Answer(answer)       => peerConnection.setRemoteDescription(answer)
+            case Message.Candidate(candidate) => peerConnection.addIceCandidate(candidate)
           }
           .compile
           .drain
@@ -162,11 +154,32 @@ object wsc extends IOWebApp {
                 .flatMap { offer =>
                   peerConnection.setLocalDescription(offer) *>
                     IO.println("yo?") *>
-                    ws.sendText(Message.Offer(offer).asMessage.asJson.noSpaces)
+                    channel.send(Message.Offer(offer))
                 }
           }
           .void
           .background
     } yield ()
+
+}
+
+trait WSChannel[F[_], Msg] {
+  def send(msg: Msg): F[Unit]
+  def receiveStream: fs2.Stream[F, Msg]
+}
+
+object WSChannel {
+
+  def fromWebSocket[F[_]: ApplicativeThrow, A: Codec](ws: WSConnectionHighLevel[F])
+    : WSChannel[F, A] =
+    new WSChannel[F, A] {
+      def send(msg: A): F[Unit] = ws.sendText(msg.asJson.noSpaces)
+      def receiveStream: fs2.Stream[F, A] = ws
+        .receiveStream
+        .evalMap {
+          case Text(data, _) => io.circe.parser.decode[A](data).liftTo[F]
+          case Binary(_, _)  => (new Throwable("Binary messages not supported")).raiseError
+        }
+    }
 
 }
