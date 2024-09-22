@@ -52,7 +52,7 @@ object wsc extends IOWebApp {
         WSRequest(uri"ws://localhost:8080")
       )
       listenerRef <- IO.ref((s: String) => IO.println("noop: " + s)).toResource
-      messages <- SignallingRef[IO].of(Chain.empty[String]).toResource
+      messages <- SignallingRef[IO].of(List.empty[String]).toResource
       _ <-
         setupConnection(
           listenerRef,
@@ -60,7 +60,7 @@ object wsc extends IOWebApp {
           onWebRtcMessage =
             event =>
               IO(dom.console.log("Data channel received message", event)) *>
-                messages.update(_.append(event.data.toString())),
+                messages.update(_.prepended(event.data.toString())),
         ).useForever.background
       messageRef <- SignallingRef[IO].of("").toResource
       view <- div(
@@ -74,7 +74,7 @@ object wsc extends IOWebApp {
           },
           button(`type` := "submit", "send"),
           onSubmit --> (_.foreach(e =>
-            e.preventDefault *> listenerRef.get.ap(messageRef.get).flatten
+            e.preventDefault *> listenerRef.get.ap(messageRef.get).flatten *> messageRef.set("")
           )),
         ),
         ul(
