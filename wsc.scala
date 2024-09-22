@@ -124,6 +124,12 @@ object wsc extends IOWebApp {
       receiveChannel <- IO.deferred[RTCDataChannel[IO]].toResource
       _ <- peerConnection.onDataChannel(receiveChannel.complete(_).void).toResource
       _ <-
+        peerConnection
+          .onIceConnectionStateChange(e =>
+            IO(dom.console.log(s"peer ice state change (wait $wait): ", e))
+          )
+          .toResource
+      _ <-
         listenerRef.update { old => msg =>
           old(msg) *>
             RTCDataChannel

@@ -18,6 +18,7 @@ import org.scalajs.dom.RTCSessionDescription
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters.*
 import scala.scalajs.js.annotation.JSGlobal
+import org.scalajs.dom.RTCIceConnectionState
 
 object FS2DomExtensions {
 
@@ -135,6 +136,7 @@ trait RTCPeerConnection[F[_]] {
 
   def onIceCandidate(f: dom.RTCPeerConnectionIceEvent => F[Unit]): F[Unit]
   def onDataChannel(f: RTCDataChannel[F] => F[Unit]): F[Unit]
+  def onIceConnectionStateChange(f: dom.RTCIceConnectionState => F[Unit]): F[Unit]
 
   def setLocalDescription(description: dom.RTCSessionDescription): F[Unit]
   def setRemoteDescription(description: dom.RTCSessionDescription): F[Unit]
@@ -169,6 +171,14 @@ object RTCPeerConnection {
               pc.ondatachannel =
                 e => dispatcher.unsafeRunAndForget(f(RTCDataChannel.lift(e.channel, dispatcher)))
             }
+            def onIceConnectionStateChange(f: RTCIceConnectionState => F[Unit]): F[Unit] = Sync[F]
+              .delay {
+                pc.oniceconnectionstatechange =
+                  e =>
+                    dispatcher.unsafeRunAndForget(
+                      f(e.target.asInstanceOf[dom.RTCPeerConnection].iceConnectionState)
+                    )
+              }
 
             def addIceCandidate(candidate: RTCIceCandidate): F[Unit] = Async[F].fromPromise(
               Sync[F].delay(pc.addIceCandidate(candidate))
