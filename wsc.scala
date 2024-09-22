@@ -57,10 +57,7 @@ object wsc extends IOWebApp {
         setupConnection(
           listenerRef,
           ws,
-          onWebRtcMessage =
-            event =>
-              IO(dom.console.log("Data channel received message", event)) *>
-                messages.update(_.prepended(event.data.toString())),
+          onReceive = msg => messages.update(_.prepended(msg)),
         ).useForever.background
       messageRef <- SignallingRef[IO].of("").toResource
       view <- div(
@@ -89,7 +86,7 @@ object wsc extends IOWebApp {
   def setupConnection(
     listenerRef: Ref[IO, String => IO[Unit]],
     ws: WSConnectionHighLevel[IO],
-    onWebRtcMessage: MessageEvent => IO[Unit],
+    onReceive: String => IO[Unit],
   ) =
     for {
       peerConnection <- RTCPeerConnection[IO]
@@ -113,9 +110,10 @@ object wsc extends IOWebApp {
           IO.println("Data channel is open")
         }.toResource
       _ <-
-        dataChannel
-          .onMessage(onWebRtcMessage)
-          .toResource
+        dataChannel.onMessage { event =>
+          IO(dom.console.log("Data channel received message", event)) *>
+            onReceive(event.data.toString())
+        }.toResource
       _ <-
         peerConnection
           .onIceCandidate(event =>
