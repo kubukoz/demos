@@ -149,7 +149,7 @@ trait RTCPeerConnection[F[_]] {
 object RTCPeerConnection {
 
   def apply[F[_]: Async](config: Option[dom.RTCConfiguration]): Resource[F, RTCPeerConnection[F]] =
-    Dispatcher.parallel[F].flatMap { dispatcher =>
+    Dispatcher.sequential[F].flatMap { dispatcher =>
       Resource
         .make(
           Sync[F].delay(new dom.RTCPeerConnection(config.orUndefined))
