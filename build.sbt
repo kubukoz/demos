@@ -4,11 +4,34 @@ val root = project
   .in(file("."))
   .enablePlugins(Smithy4sCodegenPlugin)
   .settings(
-    scalaVersion := "3.4.2",
+    scalaVersion := "2.13.15",
     libraryDependencies ++= Seq(
-      "com.disneystreaming.smithy4s" %% "smithy4s-core" % smithy4sVersion.value,
-      "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
-      "org.http4s" %% "http4s-ember-server" % "0.23.27"
+      // for compilation of generated only
+      "com.disneystreaming.smithy4s" %% "smithy4s-aws-kernel" % smithy4sVersion.value,
+      // to actually call it
+      "com.disneystreaming.smithy4s" %% "smithy4s-aws-http4s" % smithy4sVersion.value,
+      "org.http4s" %% "http4s-ember-client" % "0.23.28"
+    ),
+    // some of these would be added if we were using disneystreaming/aws-smithy-sdk-specs, but that's out of date so we're not.
+    // others should still be added in there.
+    libraryDependencies ++= Seq(
+      "smithy-aws-traits",
+      "smithy-aws-cloudformation-traits",
+      "smithy-aws-iam-traits",
+      "smithy-waiters",
+      "smithy-rules-engine",
+      "smithy-aws-endpoints"
+    ).map { art =>
+      smithy4s.codegen.BuildInfo.smithyOrg % art % smithy4s.codegen.BuildInfo.smithyVersion % Smithy4s,
+    },
+    smithy4sAllowedNamespaces := List(
+      // only needed because we're using smithy4sAllowedNamespaces at all (otherwise pretty much everything gets generated except for aws.* and smithy.*)
+      "com.amazonaws.location",
+      "com.amazonaws.sagemaker",
+
+      // These weren't generated in smithy4s-core nor smithy4s-aws-kernel so we need to force generating them.
+      "aws.cloudformation",
+      "smithy.rules"
     ),
     fork := true
   )
