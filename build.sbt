@@ -20,7 +20,9 @@ val root = project
       "smithy-aws-iam-traits",
       "smithy-waiters",
       "smithy-rules-engine",
-      "smithy-aws-endpoints"
+      "smithy-aws-endpoints",
+      "smithy-smoke-test-traits",
+      "smithy-aws-smoke-test-model"
     ).map { art =>
       smithy4s.codegen.BuildInfo.smithyOrg % art % smithy4s.codegen.BuildInfo.smithyVersion % Smithy4s,
     },
@@ -28,10 +30,13 @@ val root = project
       // only needed because we're using smithy4sAllowedNamespaces at all (otherwise pretty much everything gets generated except for aws.* and smithy.*)
       "com.amazonaws.location",
       "com.amazonaws.sagemaker",
+      "com.amazonaws.sns",
 
       // These weren't generated in smithy4s-core nor smithy4s-aws-kernel so we need to force generating them.
       "aws.cloudformation",
-      "smithy.rules"
+      "aws.test",
+      "smithy.rules",
+      "smithy.test"
     ),
     fork := true
   )
