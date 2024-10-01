@@ -1,4 +1,5 @@
 ThisBuild / scalaVersion := "3.5.0"
+ThisBuild / scalacOptions += "-deprecation"
 
 val transformation = project
   .settings(
