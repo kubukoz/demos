@@ -1,17 +1,15 @@
 ThisBuild / scalaVersion := "3.5.0"
 ThisBuild / scalacOptions += "-deprecation"
 
-val transformation = project
+lazy val transformation = project
   .settings(
     scalaVersion := "2.12.20",
     libraryDependencies ++= Seq(
       "software.amazon.smithy" % "smithy-build" % "1.51.0"
     ),
-    crossPaths := false,
   )
 
-val codegen = project
-  .in(file("."))
+lazy val codegen = project
   .settings(
     libraryDependencies ++= Seq(
       "ch.epfl.scala" % "spec" % "2.2.0-M2" % Smithy4s,
@@ -21,9 +19,9 @@ val codegen = project
     Compile / smithy4sModelTransformers := List("rename-scala-namespace"),
     Compile / smithy4sAllDependenciesAsJars += (transformation / Compile / packageBin).value,
   )
-  .dependsOn(transformation)
   .enablePlugins(Smithy4sCodegenPlugin)
 
-val root = project
+lazy val root = project
   .in(file("."))
   .aggregate(codegen, transformation)
+  .dependsOn(codegen)
