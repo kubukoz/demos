@@ -1,0 +1,10 @@
+on:
+  push:
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        cpu: [x86, arm64]
+    steps:
+      - run: echo "${{matrix.cpu}}"
