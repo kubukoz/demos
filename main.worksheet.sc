@@ -1,5 +1,5 @@
-//> using scala 3.4.2
-//> using lib software.amazon.smithy:smithy-model:1.50.0
+//> using scala 3.5.2
+//> using lib software.amazon.smithy:smithy-model:1.52.1
 import software.amazon.smithy.model.Model
 import software.amazon.smithy.model.selector.Selector
 import software.amazon.smithy.model.shapes.ShapeId
