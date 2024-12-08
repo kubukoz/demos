@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets
 import scala.scalanative.runtime.ffi
 import scala.scalanative.runtime.Platform
 import scala.scalanative.posix.wchar
-import CExtras.wcsrtombs
+import CExtras.wcstombs
 
 @main def run = {
   require(hid_init() == 0)
@@ -42,13 +42,13 @@ def fromwchar_tstring(input: Ptr[wchar_t]): String = {
   val inputPtr = stackalloc[Ptr[wchar_t]](1)
   !inputPtr = input
 
-  val utf8Size = wcsrtombs(null, inputPtr, 0.toCSize, null)
+  val utf8Size = wcstombs(null, input, 0.toCSize)
 
   if utf8Size == -1 then throw new RuntimeException("wcsrtombs failed")
 
   val utf8Bytes = new Array[Byte](utf8Size.toInt)
 
-  val written = wcsrtombs(utf8Bytes.atUnsafe(0), inputPtr, utf8Size, null)
+  val written = wcstombs(utf8Bytes.atUnsafe(0), input, utf8Size)
 
   if written == -1 then throw new RuntimeException("wcsrtombs failed")
 
@@ -58,5 +58,5 @@ def fromwchar_tstring(input: Ptr[wchar_t]): String = {
 @extern
 object CExtras {
   @extern
-  def wcsrtombs(dest: Ptr[Byte], src: Ptr[Ptr[wchar_t]], n: CSize, ps: Ptr[Byte]): CSize = extern
+  def wcstombs(dest: Ptr[Byte], src: Ptr[wchar_t], n: CSize): CSize = extern
 }
