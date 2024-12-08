@@ -1,15 +1,10 @@
 //> using platform "native"
-
+//> using option -Wunused:all
+import CExtras.wcstombs
 import libhidapi.all.*
-import scala.util.Using
+
 import scalanative.unsafe.*
 import scalanative.unsigned.*
-import java.nio.charset.Charset
-import java.nio.charset.StandardCharsets
-import scala.scalanative.runtime.ffi
-import scala.scalanative.runtime.Platform
-import scala.scalanative.posix.wchar
-import CExtras.wcstombs
 
 @main def run = {
   require(hid_init() == 0)
