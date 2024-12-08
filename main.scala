@@ -4,9 +4,12 @@ import libhidapi.all.*
 import scala.util.Using
 import scalanative.unsafe.*
 import scalanative.unsigned.*
-import scala.scalanative.posix.wchar
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
+import scala.scalanative.runtime.ffi
+import scala.scalanative.runtime.Platform
+import scala.scalanative.posix.wchar
+import CExtras.wcsrtombs
 
 @main def run = {
   require(hid_init() == 0)
@@ -14,24 +17,46 @@ import java.nio.charset.StandardCharsets
   try {
     val deviceInfoStart = hid_enumerate(0.toUShort, 0.toUShort)
 
-    try List
+    try
+      (deviceInfoStart :: List
         .unfold(deviceInfoStart) { deviceInfo =>
           Option((!deviceInfo).next).map(dev => (dev, dev))
-        }
+        })
         .map { deviceInfo =>
           val vendorId = (!deviceInfo).vendor_id
           val productId = (!deviceInfo).product_id
 
-          val productString = fromCWideString(
-            (!deviceInfo).product_string.asInstanceOf[CWideString],
-            StandardCharsets.UTF_8,
-          )
+          val productString = fromwchar_tstring((!deviceInfo).product_string)
 
           println(
-            s"Vendor ID: $vendorId, Product ID: $productId, Product String: $productString"
+            s"Vendor ID: $vendorId, Product ID: $productId, Product String: $productString (len ${productString.length()})"
           )
         }
     finally hid_free_enumeration(deviceInfoStart)
   } finally hid_exit()
 
+}
+
+def fromwchar_tstring(input: Ptr[wchar_t]): String = {
+
+  val inputPtr = stackalloc[Ptr[wchar_t]](1)
+  !inputPtr = input
+
+  val utf8Size = wcsrtombs(null, inputPtr, 0.toCSize, null)
+
+  if utf8Size == -1 then throw new RuntimeException("wcsrtombs failed")
+
+  val utf8Bytes = new Array[Byte](utf8Size.toInt)
+
+  val written = wcsrtombs(utf8Bytes.atUnsafe(0), inputPtr, utf8Size, null)
+
+  if written == -1 then throw new RuntimeException("wcsrtombs failed")
+
+  new String(utf8Bytes)
+}
+
+@extern
+object CExtras {
+  @extern
+  def wcsrtombs(dest: Ptr[Byte], src: Ptr[Ptr[wchar_t]], n: CSize, ps: Ptr[Byte]): CSize = extern
 }
