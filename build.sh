@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 scala-cli package . \
-  --native-linking "-L$(pwd)" \
   --native-linking '-lhidapi' \
+  --native-linking "-L$(pwd)" \
   --output run \
   --native \
   --force
