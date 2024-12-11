@@ -1,6 +1,4 @@
-//> using platform "native"
-//> using option -Wunused:all
-import CExtras.wcstombs
+//> using target.platform "native"
 import libhidapi.all.*
 
 import scalanative.unsafe.*
@@ -10,48 +8,18 @@ import scalanative.unsigned.*
   require(hid_init() == 0)
 
   try {
-    val deviceInfoStart = hid_enumerate(0.toUShort, 0.toUShort)
+    val device = hid_open(0x054c.toUShort, 0x0ce6.toUShort, null)
+    require(device != null, "hid_open failed")
 
-    try
-      (deviceInfoStart :: List
-        .unfold(deviceInfoStart) { deviceInfo =>
-          Option((!deviceInfo).next).map(dev => (dev, dev))
-        })
-        .map { deviceInfo =>
-          val vendorId = (!deviceInfo).vendor_id
-          val productId = (!deviceInfo).product_id
+    val size = 64
+    val data = new Array[Byte](size)
 
-          val productString = fromwchar_tstring((!deviceInfo).product_string)
+    while (true) {
+      hid_read(device, data.atUnsafe(0).asInstanceOf[Ptr[CUnsignedChar]], size.toUInt)
 
-          println(
-            s"Vendor ID: $vendorId, Product ID: $productId, Product String: $productString (len ${productString.length()})"
-          )
-        }
-    finally hid_free_enumeration(deviceInfoStart)
+      System.out.write(data)
+      Thread.sleep(100)
+    }
   } finally hid_exit()
 
-}
-
-def fromwchar_tstring(input: Ptr[wchar_t]): String = {
-
-  val inputPtr = stackalloc[Ptr[wchar_t]](1)
-  !inputPtr = input
-
-  val utf8Size = wcstombs(null, input, 0.toCSize)
-
-  if utf8Size == -1 then throw new RuntimeException("wcsrtombs failed")
-
-  val utf8Bytes = new Array[Byte](utf8Size.toInt)
-
-  val written = wcstombs(utf8Bytes.atUnsafe(0), input, utf8Size)
-
-  if written == -1 then throw new RuntimeException("wcsrtombs failed")
-
-  new String(utf8Bytes)
-}
-
-@extern
-object CExtras {
-  @extern
-  def wcstombs(dest: Ptr[Byte], src: Ptr[wchar_t], n: CSize): CSize = extern
 }
