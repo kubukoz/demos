@@ -50,9 +50,11 @@ private object LeafBlowerPlatform {
 
         }
 
-      def blowLeaf(leaf: LanguageWrapper): Int = LIBRARY.blow_leaf(leaf.lang)
+      def helloLeaf(): Int = LIBRARY.hello_leaf()
 
-      def freeLeaf(leaf: LanguageWrapper): Unit = LIBRARY.free_leaf(leaf.lang)
+      def blowLeaf(language: LanguageWrapper): Int = LIBRARY.blow_leaf(language.lang)
+
+      def freeLeaf(language: LanguageWrapper): Unit = LIBRARY.free_leaf(language.lang)
     }
 
 }

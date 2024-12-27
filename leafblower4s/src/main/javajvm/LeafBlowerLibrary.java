@@ -16,6 +16,7 @@ interface LeafBlowerLibrary extends Library {
 		}
 	}
 
+  int hello_leaf();
   int blow_leaf(Language leaf);
   void free_leaf(Language leaf);
 }

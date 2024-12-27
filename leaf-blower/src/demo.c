@@ -4,6 +4,7 @@
 
 int main()
 {
+  printf("hello: %d\n", hello_leaf());
   LBLanguage *scala = scala_leaf();
   int blown = blow_leaf(scala);
   free_leaf(scala);

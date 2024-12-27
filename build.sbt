@@ -12,7 +12,19 @@ val leafblower4s = projectMatrix
     ),
   )
   .jsPlatform(scalaVersions)
-  .nativePlatform(scalaVersions)
+  .nativePlatform(
+    scalaVersions,
+    Seq(
+      nativeConfig := {
+        val base = nativeConfig.value
+        val root = (ThisBuild / baseDirectory).value
+
+        base.withLinkingOptions(
+          _ :+ s"-L${root / "leaf-blower" / "lib"}"
+        )
+      }
+    ),
+  )
   .settings(
     Compile / unmanagedResourceDirectories += {
       val suffix =

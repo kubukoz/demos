@@ -8,8 +8,9 @@ trait LeafBlower {
   }
 
   val Language: LanguageFunctions
-  def blowLeaf(leaf: Language): Int
-  def freeLeaf(leaf: Language): Unit
+  def helloLeaf(): Int
+  def blowLeaf(language: Language): Int
+  def freeLeaf(language: Language): Unit
 }
 
 object LeafBlower {
