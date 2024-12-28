@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="app"></div>
+  </body>
+  <script src="./lib/libleaf-blower.js" lang="javascript"></script>
+  <script src="./lib/libleaf-blower-scala.js" lang="javascript"></script>
+  <script type="module">
+    const memory = new WebAssembly.Memory({
+      initial: 128,
+      maximum: 128,
+      shared: true,
+    });
+
+    const lb = await LeafBlower({ wasmMemory: memory });
+    const scala = await LeafBlowerScala({ wasmMemory: memory });
+
+    const scalaLeaf = scala._scala_leaf();
+    console.log(scalaLeaf);
+
+    let result;
+
+    try {
+      result = lb._blow_leaf(scalaLeaf);
+    } finally {
+      lb._free_leaf(scalaLeaf);
+    }
+
+    console.log(result);
+  </script>
+</html>
