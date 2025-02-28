@@ -1,4 +1,5 @@
 //> using dep io.circe::circe-parser:0.14.10
+//> using option -Ykind-projector
 import util.chaining.*
 
 enum Document {
@@ -6,20 +7,95 @@ enum Document {
   private case DList(values: List[Document])
   private case DString(value: String)
 
+  private case DWrapped[A](a: A, schema: Schema[A])
+
   def visit[A](v: DocumentVisitor[A]): A =
     this match {
-      case Document.DObject(values) => v.visitObject(values)
-      case Document.DList(values)   => v.visitList(values)
-      case Document.DString(value)  => v.visitString(value)
+      case Document.DObject(values) =>
+        v.visitObject(
+          values,
+          MapTag.docMapTag,
+        )
+      case Document.DList(values) =>
+        v.visitList(
+          values,
+          CollectionTag.docListTag,
+        )
+      case Document.DString(value)      => v.visitString(value)
+      case Document.DWrapped(a, schema) =>
+        // note: this compilation should be cached of course
+        // maybe even the FusedDocumentSchemaCompiler instance should be a field in DocumentVisitor
+        new FusedDocumentSchemaCompiler(v).visit(schema).apply(a)
     }
 
+  private class FusedDocumentSchemaCompiler[A](v: DocumentVisitor[A])
+    extends SchemaVisitor[* => A] {
+    val visitString: String => A = v.visitString
+
+    def visitDocument: Document => A = v.visit
+
+    def visitList[T](member: Schema[T]): List[T] => A = {
+      val tag: CollectionTag[List[T], Document] =
+        new {
+          def foreach(
+            c: List[T]
+          )(
+            f: Document => Unit
+          ): Unit = c.foreach(e => f(Document.DWrapped(e, member)))
+        }
+
+      v.visitList(_, tag)
+    }
+
+    def visitStruct[T](fields: List[Field[T, ?]], make: List[Any] => T): T => A = {
+      val tag: MapTag[T, String, Document] =
+        new {
+          def foreach(m: T)(f: (String, Document) => Unit): Unit = fields.foreach { field =>
+            val value = field.get(m)
+            f(field.label, Document.DWrapped(value, field.schema))
+          }
+        }
+
+      v.visitObject(_, tag)
+    }
+
+  }
+
+}
+
+trait CollectionTag[C, E] {
+  def foreach(c: C)(f: E => Unit): Unit
+}
+
+object CollectionTag {
+
+  // private[pkg]
+  val docListTag =
+    new CollectionTag[List[Document], Document] {
+      def foreach(c: List[Document])(f: Document => Unit): Unit = c.foreach(f)
+    }
+
+}
+
+trait MapTag[M, K, V] {
+  def foreach(m: M)(f: (K, V) => Unit): Unit
+}
+
+object MapTag {
+  // private[pkg]
+  val docMapTag = MapMapTag[String, Document]()
+
+}
+
+case class MapMapTag[K, V]() extends MapTag[Map[K, V], K, V] {
+  def foreach(m: Map[K, V])(f: (K, V) => Unit): Unit = m.foreachEntry(f)
 }
 
 trait DocumentVisitor[A] {
   def visit(document: Document): A = document.visit(this)
 
-  def visitObject(values: Map[String, Document]): A
-  def visitList(values: List[Document]): A
+  def visitObject[M](values: M, tag: MapTag[M, String, Document]): A
+  def visitList[L](values: L, tag: CollectionTag[L, Document]): A
   def visitString(value: String): A
 }
 
@@ -57,7 +133,10 @@ object Document {
 
   }
 
-  def encode[A: Schema](a: A): Document = Compiler.visit(Schema[A]).encode(a)
+  def encode[A: Schema](
+    a: A
+  ): Document = Document.DWrapped(a, Schema[A]) // Compiler.visit(Schema[A]).encode(a)
+
 }
 
 trait DocumentEncoder[A] {
@@ -157,31 +236,33 @@ object JsonEncoder {
           def visitString(value: String): StringBuilder => Unit =
             _.append("\"").append(value).append("\"")
 
-          def visitList(values: List[Document]): StringBuilder => Unit = { sb =>
-            sb.append("[")
-            var isFirst = true
-            values.foreach { value =>
-              if (isFirst)
-                isFirst = false
-              else
-                sb.append(",")
-              this.visit(value)(sb)
-            }
-            sb.append("]")
+          def visitList[L](values: L, tag: CollectionTag[L, Document]): StringBuilder => Unit = {
+            sb =>
+              sb.append("[")
+              var isFirst = true
+              tag.foreach(values) { value =>
+                if (isFirst)
+                  isFirst = false
+                else
+                  sb.append(",")
+                this.visit(value)(sb)
+              }
+              sb.append("]")
           }
 
-          def visitObject(values: Map[String, Document]): StringBuilder => Unit = { sb =>
-            sb.append("{")
-            var isFirst = true
-            values.foreach { (label, value) =>
-              if (isFirst)
-                isFirst = false
-              else
-                sb.append(",")
-              sb.append("\"").append(label).append("\":")
-              this.visit(value)(sb)
-            }
-            sb.append("}")
+          def visitObject[M](values: M, tag: MapTag[M, String, Document]): StringBuilder => Unit = {
+            sb =>
+              sb.append("{")
+              var isFirst = true
+              tag.foreach(values) { (label, value) =>
+                if (isFirst)
+                  isFirst = false
+                else
+                  sb.append(",")
+                sb.append("\"").append(label).append("\":")
+                this.visit(value)(sb)
+              }
+              sb.append("}")
           }
         }
 
