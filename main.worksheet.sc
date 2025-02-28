@@ -2,12 +2,32 @@
 import util.chaining.*
 
 enum Document {
-  case DObject(values: Map[String, Document])
-  case DList(values: List[Document])
-  case DString(value: String)
+  private case DObject(values: Map[String, Document])
+  private case DList(values: List[Document])
+  private case DString(value: String)
+
+  def visit[A](v: DocumentVisitor[A]): A =
+    this match {
+      case Document.DObject(values) => v.visitObject(values)
+      case Document.DList(values)   => v.visitList(values)
+      case Document.DString(value)  => v.visitString(value)
+    }
+
+}
+
+trait DocumentVisitor[A] {
+  def visit(document: Document): A = document.visit(this)
+
+  def visitObject(values: Map[String, Document]): A
+  def visitList(values: List[Document]): A
+  def visitString(value: String): A
 }
 
 object Document {
+
+  def obj(values: (String, Document)*): Document = Document.DObject(values.toMap)
+  def list(values: Document*): Document = Document.DList(values.toList)
+  def string(value: String): Document = Document.DString(value)
 
   private object Compiler extends SchemaVisitor[DocumentEncoder] {
     def visitDocument: DocumentEncoder[Document] = identity(_)
@@ -15,10 +35,10 @@ object Document {
     def visitList[T](member: Schema[T]): DocumentEncoder[List[T]] = {
       val underlying = visit(member)
 
-      list => Document.DList(list.map(underlying.encode))
+      list => Document.list(list.map(underlying.encode)*)
     }
 
-    val visitString: DocumentEncoder[String] = DString(_)
+    val visitString: DocumentEncoder[String] = Document.string(_)
 
     def visitStruct[T](fields: List[Field[T, ?]], make: List[Any] => T): DocumentEncoder[T] = {
       val instances = fields.map { field =>
@@ -27,11 +47,11 @@ object Document {
       }
 
       s => {
-        val values =
-          instances.map { (label, encoder) =>
-            label -> encoder.encode(s)
-          }.toMap
-        Document.DObject(values)
+        val values = instances.map { (label, encoder) =>
+          label -> encoder.encode(s)
+        }
+
+        Document.obj(values*)
       }
     }
 
@@ -108,7 +128,7 @@ object JsonEncoder {
         }
     }
 
-    def visitString: JsonEncoder[String] = v => _.append("\"").append(v).append("\"")
+    val visitString: JsonEncoder[String] = v => _.append("\"").append(v).append("\"")
 
     def visitStruct[T](fields: List[Field[T, ?]], make: List[Any] => T): JsonEncoder[T] = {
       val instances = fields.map { field =>
@@ -131,35 +151,41 @@ object JsonEncoder {
       }
     }
 
-    def visitDocument: JsonEncoder[Document] = {
-      case Document.DObject(values) =>
-        sb => {
-          sb.append("{")
-          var isFirst = true
-          values.foreach { (label, value) =>
-            if (isFirst)
-              isFirst = false
-            else
-              sb.append(",")
-            sb.append("\"").append(label).append("\":")
-            visitDocument.encode(value)(sb)
+    val visitDocument: JsonEncoder[Document] = {
+      val visitor =
+        new DocumentVisitor[StringBuilder => Unit] {
+          def visitString(value: String): StringBuilder => Unit =
+            _.append("\"").append(value).append("\"")
+
+          def visitList(values: List[Document]): StringBuilder => Unit = { sb =>
+            sb.append("[")
+            var isFirst = true
+            values.foreach { value =>
+              if (isFirst)
+                isFirst = false
+              else
+                sb.append(",")
+              this.visit(value)(sb)
+            }
+            sb.append("]")
           }
-          sb.append("}")
-        }
-      case Document.DList(values) =>
-        sb => {
-          sb.append("[")
-          var isFirst = true
-          values.foreach { value =>
-            if (isFirst)
-              isFirst = false
-            else
-              sb.append(",")
-            visitDocument.encode(value)(sb)
+
+          def visitObject(values: Map[String, Document]): StringBuilder => Unit = { sb =>
+            sb.append("{")
+            var isFirst = true
+            values.foreach { (label, value) =>
+              if (isFirst)
+                isFirst = false
+              else
+                sb.append(",")
+              sb.append("\"").append(label).append("\":")
+              this.visit(value)(sb)
+            }
+            sb.append("}")
           }
-          sb.append("]")
         }
-      case Document.DString(value) => sb => sb.append("\"").append(value).append("\"")
+
+      visitor.visit(_)
     }
 
   }
@@ -227,17 +253,13 @@ val user = User(
   List(
     Friend(
       "Alice",
-      Document.DObject(
-        Map(
-          "k" -> Document.DList(
-            List(
-              Document.DString("vvv")
-            )
-          )
+      Document.obj(
+        "k" -> Document.list(
+          Document.string("vvv")
         )
       ),
     ),
-    Friend("Bob", Document.DString("aaa")),
+    Friend("Bob", Document.string("aaa")),
   ),
 )
 
