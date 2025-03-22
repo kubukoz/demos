@@ -1,3 +1,5 @@
+ThisBuild / usePipelining := true
+
 val models = project
   .enablePlugins(Smithy4sCodegenPlugin)
   .settings(
