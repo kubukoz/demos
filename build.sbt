@@ -1,11 +1,11 @@
-ThisBuild / scalaVersion := "3.5.0"
+ThisBuild / scalaVersion := "3.7.0-RC1"
 ThisBuild / scalacOptions += "-deprecation"
 
 lazy val transformation = project
   .settings(
     scalaVersion := "2.12.20",
     libraryDependencies ++= Seq(
-      "software.amazon.smithy" % "smithy-build" % "1.51.0"
+      "software.amazon.smithy" % "smithy-build" % "1.56.0"
     ),
   )
 
