@@ -33,15 +33,32 @@ import bsp.DependencySourcesResult
 import bsp.BuildServerOperation.BuildTargetCompile
 import bsp.CompileResult
 import bsp.StatusCode
+import bsp.scala_.ScalaBuildServerOperation.BuildTargetScalacOptions
+import bsp.scala_.ScalacOptionsResult
+import bsp.scala_.ScalaBuildServerOperation.BuildTargetScalaMainClasses
+import bsp.scala_.ScalaMainClassesResult
+import bsp.scala_.ScalaBuildServerOperation.BuildTargetScalaTestClasses
+import bsp.scala_.ScalaTestClassesResult
+import bsp.BuildServerOperation.BuildTargetCleanCache
+import bsp.CleanCacheResult
+import bsp.scala_.ScalacOptionsItem
+import bsp.DependencySourcesItem
+import bsp.BuildTargetData
+import smithy4s.Document
+import bsp.scala_.ScalaPlatform
+import bsp.scala_.ScalaBuildTarget
+import bsp.BuildServerOperation.OnBuildExit
 
 object SampleServer extends IOApp.Simple {
   val cancelEndpoint = CancelTemplate.make[CallId]("$/cancel", identity, identity)
+
+  val targetId = BuildTargetIdentifier(URI("proj://hello"))
 
   def server(log: String => IO[Unit]) =
     BSPBuilder
       .create(BuildServer)
       .withHandler(BuildInitialize) { input =>
-        log(s"omg! received a valid request with inputs $input") *>
+        log(s"received a valid request with inputs $input") *>
           IO {
             InitializeBuildResult(
               displayName = "jk-sample-server",
@@ -58,25 +75,46 @@ object SampleServer extends IOApp.Simple {
 
       }
       .withHandler(BuildShutdown) { _ =>
-        log("received a shutdown request") *>
-          IO.unit
+        log("received a shutdown request")
       }
+      .withHandler(OnBuildExit)(_ =>
+        // this doesn't actually get called. Metals bug? (per spec)
+        log("received a build exit notification") *>
+          IO(sys.exit(0))
+      )
       .withHandler(WorkspaceBuildTargets) { _ =>
         log("received a targets request") *>
           IO(
             WorkspaceBuildTargetsResult(
               List(
                 BuildTarget(
-                  id = BuildTargetIdentifier(
-                    URI("proj://hello")
-                  ),
+                  id = targetId,
                   tags = List(BuildTargetTag.LIBRARY),
                   languageIds = List(LanguageId("scala")),
                   dependencies = Nil,
-                  capabilities = BuildTargetCapabilities(),
+                  capabilities = BuildTargetCapabilities(
+                    canCompile = Some(true),
+                    canRun = Some(true),
+                    canTest = Some(true),
+                    canDebug = Some(true),
+                  ),
                   displayName = Some("jk-hello"),
                   baseDirectory = Some(
                     URI(Paths.get("./").toAbsolutePath().toUri().toString())
+                  ),
+                  data = Some(
+                    BuildTargetData(
+                      Document.encode(
+                        ScalaBuildTarget(
+                          scalaOrganization = "org.scala-lang",
+                          scalaVersion = "3.7.0-RC1",
+                          scalaBinaryVersion = "3.7",
+                          platform = ScalaPlatform.JVM,
+                          jars = Nil,
+                          jvmBuildTarget = None,
+                        )
+                      )
+                    )
                   ),
                 )
               )
@@ -89,9 +127,7 @@ object SampleServer extends IOApp.Simple {
             SourcesResult(
               List(
                 SourcesItem(
-                  target = BuildTargetIdentifier(
-                    URI("proj://hello")
-                  ),
+                  target = targetId,
                   sources = List(
                     SourceItem(
                       uri = URI(Paths.get("./hello").toAbsolutePath().toUri().toString()),
@@ -101,9 +137,7 @@ object SampleServer extends IOApp.Simple {
                   ),
                 ),
                 SourcesItem(
-                  target = BuildTargetIdentifier(
-                    URI("proj://hello")
-                  ),
+                  target = targetId,
                   sources = List(
                     SourceItem(
                       uri = URI(Paths.get("./hello2").toAbsolutePath().toUri().toString()),
@@ -119,7 +153,14 @@ object SampleServer extends IOApp.Simple {
       .withHandler(BuildTargetDependencySources) { params =>
         log(s"received dep sources params: $params") *>
           IO {
-            DependencySourcesResult(Nil)
+            DependencySourcesResult(
+              List(
+                DependencySourcesItem(
+                  target = targetId,
+                  sources = Nil,
+                )
+              )
+            )
           }
       }
       .withHandler(BuildTargetCompile) { params =>
@@ -129,6 +170,37 @@ object SampleServer extends IOApp.Simple {
               statusCode = StatusCode.OK
             )
           }
+      }
+      .withHandler(BuildTargetScalacOptions) { params =>
+        log(s"received scalac options params: $params") *>
+          IO {
+            ScalacOptionsResult(
+              List(
+                ScalacOptionsItem(
+                  target = targetId,
+                  options = Nil,
+                  classpath = Nil,
+                  classDirectory = Paths.get("./out").toAbsolutePath().toUri().toString(),
+                )
+              )
+            )
+          }
+      }
+      .withHandler(BuildTargetScalaMainClasses) { params =>
+        log(s"received main classes params: $params") *>
+          IO {
+            ScalaMainClassesResult(Nil)
+          }
+      }
+      .withHandler(BuildTargetScalaTestClasses) { params =>
+        log(s"received test classes params: $params") *>
+          IO {
+            ScalaTestClassesResult(Nil)
+          }
+      }
+      .withHandler(BuildTargetCleanCache) { params =>
+        log(s"received clean cache params: $params") *>
+          IO(CleanCacheResult(cleaned = true, message = Some("cleaned cache")))
       }
 
   def run: IO[Unit] = {

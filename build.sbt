@@ -42,4 +42,9 @@ lazy val sampleServer = project
 
 lazy val root = project
   .in(file("."))
+  .settings(
+    publish / skip := true
+  )
   .aggregate(sampleServer, codegen, transformation)
+
+ThisBuild / doc / sources := Nil

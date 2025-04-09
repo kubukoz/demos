@@ -13,25 +13,48 @@ import smithy4s.json.Json
 import smithy4s.schema.Schema
 
 import util.chaining.*
+import bsp.traits.JsonNotification
+import bsp.WorkspaceBuildTargetsResult
+import smithy4s.Document.DObject
+import bsp.scala_.ScalaBuildTarget
+import bsp.traits.DataKind
+import smithy4s.Document
+import smithy4s.Document.DArray
 
 final case class BSPBuilder[Alg[_[_, _, _, _, _]], Op[_, _, _, _, _]] private (
   private val service: Service.Aux[Alg, Op],
-  private val endpoints: Vector[BSPBuilder.BSPEndpoint[Op, ?, ?]],
+  private val endpoints: Vector[BSPBuilder.BSPEndpoint],
 ) {
+  type Op_[I, O, E, S, F] = Op[I, O, E, S, F]
 
-  def withHandler[I, O](
-    op: service.Endpoint[I, ?, O, ?, ?]
+  // todo: type safety for ops from multiple services / ability to combine builders
+  def withHandler[Oppy[_, _, _, _, _], I, O](
+    op: smithy4s.Endpoint[Oppy, I, ?, O, ?, ?]
   )(
     f: I => IO[O]
-  ): BSPBuilder[Alg, Op] = copy(
-    endpoints = endpoints :+ BSPBuilder.BSPEndpoint(op, f)
+  ): BSPBuilder[Alg, Op_] = copy(
+    service,
+    endpoints =
+      endpoints :+ new BSPBuilder.BSPEndpoint {
+        type Op[I, O, E, S, F] = Oppy[I, O, E, S, F]
+        type In = I
+        type Out = O
+
+        def endpoint: smithy4s.Endpoint[Oppy, I, ?, O, ?, ?] = op
+        def impl(in: I): IO[Out] = f(in)
+      },
   )
 
   def bind(chan: FS2Channel[IO]): fs2.Stream[IO, FS2Channel[IO]] = {
     def codecFor[A: Schema]: Codec[A] =
       new {
-        private val decoder = Json.payloadCodecs.decoders.fromSchema[A](summon[Schema[A]])
-        private val encoder = Json.payloadCodecs.encoders.fromSchema[A](summon[Schema[A]])
+        val schema = summon[Schema[A]]
+        private val decoder = Json.payloadCodecs.decoders.fromSchema[A](schema)
+        private val encoder = Json
+          .payloadCodecs
+          .encoders
+          .fromSchema[A](schema)
+          .andThen(`UGLY HACK DO NOT LOOK!`(schema))
 
         def decode(payload: Option[Payload]): Either[ProtocolError, A] = payload
           .flatMap(_.stripNull)
@@ -46,7 +69,7 @@ final case class BSPBuilder[Alg[_[_, _, _, _, _]], Op[_, _, _, _, _]] private (
         def encode(a: A): Payload = Payload.Data(encoder.encode(a).toArrayUnsafe)
       }
 
-    def handle[Op[_, _, _, _, _], I, O](e: BSPBuilder.BSPEndpoint[Op, I, O]) = {
+    def handle[Op[_, _, _, _, _], I, O](e: BSPBuilder.BSPEndpoint.Aux[Op, I, O]) = {
       given Codec[I] = codecFor[I](
         using e.endpoint.input
       )
@@ -58,13 +81,46 @@ final case class BSPBuilder[Alg[_[_, _, _, _, _]], Op[_, _, _, _, _]] private (
         e.endpoint
           .hints
           .get(JsonRequest)
-          .getOrElse(sys.error(s"invalid endpoint ${e.endpoint.id}: no JsonRequest present"))
-          .value
+          .map(_.value)
+          .orElse(
+            e.endpoint
+              .hints
+              .get(JsonNotification)
+              .map(_.value)
+          )
+          .getOrElse(
+            sys.error(s"invalid endpoint ${e.endpoint.id}: no JsonRequest/JsonNotification present")
+          )
       ).simple(e.impl)
     }
 
     chan.withEndpointsStream(endpoints.map(handle(_)))
   }
+
+  private def `UGLY HACK DO NOT LOOK!`(schema: Schema[?])(blob: Blob): Blob =
+    blob match {
+      case blob if schema.shapeId == WorkspaceBuildTargetsResult.id =>
+        // we need to add a dataKind to this!
+
+        val base: Map[String, Document] =
+          Json
+            .readDocument(blob)
+            .toTry
+            .get
+            .asInstanceOf[DObject]
+            .value
+
+        val converted = base("targets").asInstanceOf[DArray].value.map { target =>
+          Document.DObject {
+            target.asInstanceOf[DObject].value +
+              ("dataKind" -> Document.fromString(ScalaBuildTarget.hints.get[DataKind].get.kind))
+          }
+        }
+
+        // fun fact, if you just write the array in DArray, you'll get a CCE in the jsoniter codec
+        Json.writeDocumentAsBlob(Document.obj("targets" -> Document.array(converted*)))
+      case other => other
+    }
 
 }
 
@@ -74,9 +130,24 @@ object BSPBuilder {
     service: Service.Aux[Alg, Op]
   ): BSPBuilder[Alg, Op] = new BSPBuilder(service, Vector.empty)
 
-  case class BSPEndpoint[Op[_, _, _, _, _], In, Out](
-    endpoint: smithy4s.Endpoint[Op, In, ?, Out, ?, ?],
-    impl: In => IO[Out],
-  )
+  trait BSPEndpoint {
+    type Op[_, _, _, _, _]
+    type In
+    type Out
+
+    def endpoint: smithy4s.Endpoint[Op, In, ?, Out, ?, ?]
+    def impl(in: In): IO[Out]
+  }
+
+  object BSPEndpoint {
+
+    type Aux[Op_[_, _, _, _, _], In_, Out_] =
+      BSPEndpoint {
+        type Op[I, O, E, S, F] = Op_[I, O, E, S, F]
+        type In = In_
+        type Out = Out_
+      }
+
+  }
 
 }
