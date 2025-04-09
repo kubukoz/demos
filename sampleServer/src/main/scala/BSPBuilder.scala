@@ -113,6 +113,9 @@ final case class BSPBuilder[Alg[_[_, _, _, _, _]], Op[_, _, _, _, _]] private (
         val converted = base("targets").asInstanceOf[DArray].value.map { target =>
           Document.DObject {
             target.asInstanceOf[DObject].value +
+              // note: in a real implementation, this should be based on some dynamic lookup of the schema of ScalaBuildTarget.
+              // I'm not sure how it could be done without codegen customizations, reflection or special-casing ScalaBuildTarget...
+              // ...regardless, this whole thing should happen on a much higher level than already-encoded Blobs.
               ("dataKind" -> Document.fromString(ScalaBuildTarget.hints.get[DataKind].get.kind))
           }
         }
