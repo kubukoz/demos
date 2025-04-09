@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion := "3.7.0-RC1"
-ThisBuild / scalacOptions += "-deprecation"
+ThisBuild / organization := "com.kubukoz.smithy4s-bsp"
 
 lazy val transformation = project
   .settings(
@@ -7,6 +7,7 @@ lazy val transformation = project
     libraryDependencies ++= Seq(
       "software.amazon.smithy" % "smithy-build" % "1.56.0"
     ),
+    publish / skip := true,
   )
 
 lazy val codegen = project
@@ -23,5 +24,18 @@ lazy val codegen = project
 
 lazy val root = project
   .in(file("."))
+  .settings(
+    libraryDependencies ++= Seq(
+      "tech.neander" %% "jsonrpclib-fs2" % "0.0.7",
+      "co.fs2" %% "fs2-io" % "3.12.0",
+      "com.disneystreaming.smithy4s" %% "smithy4s-json" % smithy4sVersion.value,
+    ),
+    scalacOptions ++= Seq(
+      "-deprecation",
+      "-Wunused:all",
+      "-Xkind-projector",
+    ),
+    name := "sample-server",
+  )
   .aggregate(codegen, transformation)
   .dependsOn(codegen)
