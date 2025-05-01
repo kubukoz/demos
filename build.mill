@@ -1,5 +1,5 @@
-import scalalib._
-
+import mill._
+import mill.scalalib._
 import mill.scalalib.publish._
 
 object demo extends JavaModule with PublishModule {
