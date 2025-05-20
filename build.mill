@@ -1,0 +1,67 @@
+import coursier.core.Info.License
+import mill.scalalib.publish.PomSettings
+import os.Path
+import mill._
+import scalalib._
+import mill.scalalib.publish.VersionControl
+
+object poc extends ScalaModule with PublishModule {
+  def scalaVersion = "2.13.16"
+  def scalacOptions = super.scalacOptions() ++ Seq("-Xsource:3", "-Wunused:imports")
+
+  def ivyDeps = Agg(
+    ivy"com.disneystreaming.smithy4s::smithy4s-codegen:0.18.35",
+    ivy"software.amazon.smithy:smithy-build:1.57.1",
+  )
+
+  def pomSettings: T[PomSettings] = T {
+    PomSettings(
+      description = "???",
+      organization = "com.kubukoz",
+      url = "https://github.com/kubukoz",
+      licenses = Nil,
+      versionControl = VersionControl.github("kubukoz", "demos"),
+      developers = Nil,
+    )
+  }
+
+  def publishVersion: T[String] = T("0.0.1-SNAPSHOT")
+
+  def smithySourcePath = Task.Source(os.sub / "smithy")
+
+  def updateSmithyConfig() = Task.Command {
+    val base = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
+
+    os.write
+      .over(
+        base / "smithy-build.json",
+        s"""{
+           |  "version": "1.0",
+           |  "plugins": {
+           |    "smithy4s": {
+           |      "allowedNS": ["com.kubukoz"],
+           |      "excludedNS": []
+           |    }
+           |  },
+           |  "maven": {
+           |    "dependencies": [
+           |      "com.kubukoz:poc_2.13:${publishVersion()}",
+           |      "com.disneystreaming.alloy:alloy-core:0.3.20",
+           |      "com.disneystreaming.smithy4s:smithy4s-protocol:0.18.35"
+           |    ]
+           |  },
+           |  "sources": ["${smithySourcePath().path.subRelativeTo(base)}"]
+           |}""".stripMargin,
+      )
+  }
+
+  def smithyBuild() = Task.Command {
+    updateSmithyConfig()()
+    publishM2Local()()
+    val base = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
+
+    os.proc(base / "smithy", "build")
+      .call(cwd = base, stdout = os.Inherit, stderr = os.Inherit)
+  }
+
+}
