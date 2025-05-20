@@ -1,0 +1,17 @@
+{
+  "version": "1.0",
+  "plugins": {
+    "smithy4s": {
+      "allowedNS": ["com.kubukoz"],
+      "excludedNS": []
+    }
+  },
+  "maven": {
+    "dependencies": [
+      "com.kubukoz:poc_2.13:0.0.1-SNAPSHOT",
+      "com.disneystreaming.alloy:alloy-core:0.3.20",
+      "com.disneystreaming.smithy4s:smithy4s-protocol:0.18.35"
+    ]
+  },
+  "sources": ["poc/smithy"]
+}
