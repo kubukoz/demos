@@ -1,6 +1,6 @@
 //> using scala 3.7.0
 //> using dep software.amazon.smithy:smithy-model:1.58.0
-//> using dep io.get-coursier:coursier_2.13:2.1.0
+//> using dep io.get-coursier:coursier_2.13:2.1.24
 //> using dep org.typelevel::cats-core:2.13.0
 import software.amazon.smithy.model.Model
 import software.amazon.smithy.model.selector.Selector
