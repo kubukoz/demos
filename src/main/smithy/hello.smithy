@@ -2,26 +2,15 @@ $version: "2"
 
 namespace hello
 
-use alloy#simpleRestJson
+use smithy4s.meta#refinement
 
-@simpleRestJson
-service WeatherService {
-    operations: [
-        GetWeather
-    ]
-}
+@trait(selector: "string")
+structure skuFormat {}
 
-@http(method: "GET", uri: "/weather/{city}")
-@readonly
-operation GetWeather {
-    input := {
-        @required
-        @httpLabel
-        city: String
-    }
+@skuFormat
+string Sku
 
-    output := {
-        @required
-        weather: String
-    }
-}
+apply skuFormat @refinement(
+    targetType: "com.comcast.platform.types.Sku"
+    providerImport: "com.comcast.lms.smithy4s.providers.given"
+)
