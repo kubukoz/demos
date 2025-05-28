@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <script src="https://cjrtnc.leaningtech.com/4.1/loader.js"></script>
+  <script type="module">
+    await cheerpjInit();
+
+    const lib = await cheerpjRunLibrary("/app/Demo.jar");
+    const demoClass = await lib.Demo;
+
+    // remove this line and it'll be fine, for some reason
+    // await demoClass.dump();
+    // console.log("after dump");
+    console.log("format result", await demoClass.format());
+    await demoClass.dump();
+    console.log("after second dump");
+  </script>
+</html>
