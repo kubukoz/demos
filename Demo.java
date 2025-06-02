@@ -32,6 +32,7 @@ public class Demo {
 
   public static void main(String[] args) {
     dump();
+    System.out.println("after dump");
     System.out.println("format result: " + format());
     dump();
   }

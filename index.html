@@ -8,10 +8,6 @@
     const demoClass = await lib.Demo;
 
     // remove this line and it'll be fine, for some reason
-    // await demoClass.dump();
-    // console.log("after dump");
-    console.log("format result", await demoClass.format());
-    await demoClass.dump();
-    console.log("after second dump");
+    await demoClass.main([]);
   </script>
 </html>
