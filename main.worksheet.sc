@@ -5,18 +5,20 @@
 import cats.syntax.all.*
 import software.amazon.smithy.model.Model
 import software.amazon.smithy.model.neighbor.NeighborProvider
+import software.amazon.smithy.model.neighbor.Relationship
 import software.amazon.smithy.model.neighbor.RelationshipDirection
 import software.amazon.smithy.model.neighbor.Walker
 import software.amazon.smithy.model.selector.Selector
+import software.amazon.smithy.model.selector.Selector.ShapeMatch
 import software.amazon.smithy.model.shapes.Shape
+import software.amazon.smithy.model.shapes.ShapeId
 
-import scala.jdk.OptionConverters.*
 import java.nio.file.Files
 import java.nio.file.Paths
 import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 
 import util.chaining.*
-import software.amazon.smithy.model.shapes.ShapeId
 
 def closure(
   shapes: List[Shape]
@@ -49,6 +51,14 @@ def renderShapeId(s: ShapeId): String = {
   s"<span style=\"color: #7F848E\">$nsPart#</span>$namePart$memberPart"
 }
 
+def shouldRender(sm: ShapeMatch, visible: Shape => Boolean) =
+  visible(sm.getShape()) &&
+    sm.values.asScala.flatMap(_.asScala).forall(visible)
+
+def shouldRender(rel: Relationship, visible: Shape => Boolean) =
+  visible(rel.getShape()) &&
+    visible(rel.expectNeighborShape())
+
 def renderHighlights(
   selectorAndStyles: (String, String)*
 )(
@@ -67,7 +77,12 @@ def renderHighlights(
     }
 
   val allShapesToRender =
-    List.concat(startingShapes, relationships.map(_.expectNeighborShape())).toSet
+    List
+      .concat(startingShapes, relationships.map(_.expectNeighborShape()))
+      .toSet
+  // todo: filtering here to narrow large graphs to just relevant parts.
+  // e.g. compute neighbors of shapes that matched selectors up to a selected level of depth
+  // .filter(_.isStructureShape())
 
   val shapeDefs = allShapesToRender
     .map { shape =>
@@ -77,6 +92,7 @@ def renderHighlights(
     }
 
   val shapeConnections = relationships
+    .filter(shouldRender(_, allShapesToRender))
     .map { rel =>
       s"    ${rel.getShape.getId()} --> ${rel.getNeighborShapeId()}"
     }
@@ -90,15 +106,19 @@ def renderHighlights(
           .toList()
           .asScala
           .toList
-          .filter(sm => allShapesToRender.contains(sm.getShape()))
+          .filter(shouldRender(_, allShapesToRender))
           .groupBy(_.getShape()) -> selectorStyle
       }
       .toList
       .separateFoldable
 
-  val shapeStyles = selections.zipWithIndex.map { (matches, i) =>
-    s"  class ${matches.keySet.map(_.getId()).mkString(",")} highlight$i;"
-  }
+  val shapeStyles = selections
+    .zipWithIndex
+    // for selectors that didn't match anything
+    .filterNot(_._1.isEmpty)
+    .map { (matches, i) =>
+      s"  class ${matches.keySet.map(_.getId()).mkString(",")} highlight$i;"
+    }
 
   val highlightDefs = highlightStyles
     .zipWithIndex
