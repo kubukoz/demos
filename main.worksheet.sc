@@ -105,19 +105,15 @@ def renderHighlights(
     .map((style, i) => s"  classDef highlight$i $style;")
 
   val variableRefs =
-    if !showVariables then Nil
-    else
-      selections.zipWithIndex.flatMap { (matches, i) =>
-        matches.flatMap { (shape, matches) =>
-          matches.flatMap { shapeMatch =>
-            shapeMatch.asScala.toMap.flatMap { (variableName, shapesForVariable) =>
-              shapesForVariable.asScala.map { shapeForVariable =>
-                s"  ${shape.getId()} --> |$i: $variableName|${shapeForVariable.getId()}"
-              }
-            }
-          }
-        }
-      }
+    for {
+      (selectorMatches, i) <- selections.zipWithIndex
+      if showVariables
+
+      (shape, matches) <- selectorMatches
+      shapeMatch <- matches
+      (variableName, shapesForVariable) <- shapeMatch.asScala.toMap
+      shapeForVariable <- shapesForVariable.asScala
+    } yield s"  ${shape.getId()} --> |$i: $variableName|${shapeForVariable.getId()}"
 
   val str = List
     .concat(
@@ -155,13 +151,13 @@ given Model = Model
       |/// an operation
       |@http(method: "GET", uri: "/hello")
       |operation GetHello {
-      |  output: Foo
+      |  output:={foo: Foo}
       |}
       |
       |/// an operation as well
       |@http(method: "POST", uri: "/hello")
       |operation PostHello {
-      |  input: Foo
+      |  input:={foo: Foo}
       |}
       |
       |structure Foo { @required s: String }
@@ -172,9 +168,9 @@ given Model = Model
 
 renderHighlights(
   "*" -> "font-family: monospace",
-  "$op(operation) ${op} ~>" -> "fill:#882200,color:black",
-  // "operation" -> "fill: #98C379,color:black",
+  "$op(operation) ${op} ~> structure" -> "fill:#882200,color:black",
+  "operation" -> "fill: #98C379,color:black",
   "service" -> "fill: #def,color:black",
 )(
-  // showVariables = true
+  showVariables = true
 )
