@@ -18,42 +18,15 @@ import scala.jdk.CollectionConverters.*
 import util.chaining.*
 import software.amazon.smithy.model.shapes.ShapeId
 
-val r = Model
-  .assembler()
-  .addUnparsedModel(
-    "test.smithy",
-    """$version: "2"
-      |namespace test
-      |
-      |service Hello {
-      |  operations: [GetHello, PostHello]
-      |}
-      |
-      |
-      |/// an operation
-      |@http(method: "GET", uri: "/hello")
-      |operation GetHello {
-      |  output: Foo
-      |}
-      |
-      |/// an operation as well
-      |@http(method: "POST", uri: "/hello")
-      |operation PostHello {
-      |  input: Foo
-      |}
-      |
-      |structure Foo { @required s: String }
-      |""".stripMargin,
-  )
-  .assemble()
+def closure(
+  shapes: List[Shape]
+)(
+  using m: Model
+) = shapes.flatMap(Walker(m).walkShapes(_).asScala).distinct
 
-r.getValidationEvents().asScala.toList
-
-val m = r.unwrap()
-
-def closure(shapes: List[Shape]) = shapes.flatMap(Walker(m).walkShapes(_).asScala).distinct
-
-val startingShapes = closure(
+def startingShapes(
+  using m: Model
+) = closure(
   m
     .shapes()
     .toList()
@@ -80,6 +53,8 @@ def renderHighlights(
   selectorAndStyles: (String, String)*
 )(
   showVariables: Boolean = false
+)(
+  using m: Model
 ) = {
 
   val relationships = startingShapes
@@ -165,11 +140,41 @@ def renderHighlights(
 
 }
 
+given Model = Model
+  .assembler()
+  .addUnparsedModel(
+    "test.smithy",
+    """$version: "2"
+      |namespace test
+      |
+      |service Hello {
+      |  operations: [GetHello, PostHello]
+      |}
+      |
+      |
+      |/// an operation
+      |@http(method: "GET", uri: "/hello")
+      |operation GetHello {
+      |  output: Foo
+      |}
+      |
+      |/// an operation as well
+      |@http(method: "POST", uri: "/hello")
+      |operation PostHello {
+      |  input: Foo
+      |}
+      |
+      |structure Foo { @required s: String }
+      |""".stripMargin,
+  )
+  .assemble()
+  .unwrap()
+
 renderHighlights(
   "*" -> "font-family: monospace",
   "$op(operation) ${op} ~>" -> "fill:#882200,color:black",
   // "operation" -> "fill: #98C379,color:black",
-  // "service" -> "fill: #def,color:black",
+  "service" -> "fill: #def,color:black",
 )(
-  showVariables = true
+  // showVariables = true
 )
