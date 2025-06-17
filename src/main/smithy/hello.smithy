@@ -8,6 +8,7 @@ use alloy#simpleRestJson
 service WeatherService {
     operations: [
         GetWeather
+        PostCity
     ]
 }
 
@@ -23,5 +24,18 @@ operation GetWeather {
     output := {
         @required
         weather: String
+    }
+}
+
+@http(method: "POST", uri: "/cities")
+operation PostCity {
+    input := {
+        @required
+        city: String
+    }
+
+    output := {
+        @required
+        message: String
     }
 }
