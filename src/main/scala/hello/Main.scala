@@ -4,6 +4,13 @@ import org.http4s.ember.server.EmberServerBuilder
 import smithy4s.http4s.SimpleRestJsonBuilder
 import cats.effect.IO
 import cats.effect.IOApp
+import cats.syntax.all.*
+import org.http4s.HttpApp
+import cats.data.Kleisli
+import smithy4s.http4s.ServerEndpointMiddleware
+import smithy4s.Endpoint
+import smithy4s.Service
+import smithy4s.Hints
 
 object Main extends IOApp.Simple {
 
@@ -20,6 +27,13 @@ object Main extends IOApp.Simple {
               "City " + city + " has been added"
             )
           )
+        }
+      )
+      .middleware(
+        new ServerEndpointMiddleware.Simple[IO] {
+          def prepareWithHints(serviceHints: Hints, endpointHints: Hints)
+            : HttpApp[IO] => HttpApp[IO] =
+            _.onError { case e => Kleisli.liftF(IO.consoleForIO.printStackTrace(e)) }
         }
       )
       .resource
