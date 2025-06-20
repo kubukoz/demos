@@ -2,7 +2,7 @@
 //> using dep org.http4s::http4s-ember-server:0.23.30
 //> using dep org.http4s::http4s-dsl:0.23.30
 //> using dep org.http4s::http4s-scalatags::0.25.2
-//> using dep software.amazon.smithy:smithy-model:1.58.0
+//> using dep software.amazon.smithy:smithy-model:1.59.0
 //> using option -Wunused:imports
 //> using option -Wunused:all
 import cats.effect.*
@@ -27,6 +27,7 @@ import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.*
 import scala.util.chaining.*
 import scala.util.Using
+import software.amazon.smithy.model.selector.Selector.StartingContext
 
 object SelectorPlayground extends IOApp.Simple {
 
@@ -139,6 +140,13 @@ object SelectorPlayground extends IOApp.Simple {
               placeholder := "Selector text",
               initSelector,
             ),
+            p("Starting shape (if empty, uses the whole model)"),
+            textarea(
+              autocomplete := "off",
+              name := "startingShape",
+              placeholder := "Starting shape",
+              "",
+            ),
           ),
         ),
         div(cls := "right", div(id := "result", em("Results will appear here..."))),
@@ -164,10 +172,18 @@ object SelectorPlayground extends IOApp.Simple {
 
           val selector = form.getFirst("selectorText").getOrElse("*")
 
+          val startingShape = form.getFirst("startingShape").flatMap { shapeIdStr =>
+            if (shapeIdStr.isEmpty)
+              None
+            else
+              Some(ShapeId.from(shapeIdStr))
+          }
+
           val rendered =
             Smithy
               .renderHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
-                showVariables = true
+                showVariables = true,
+                startingShape = startingShape,
               )
 
           Ok(
@@ -251,7 +267,8 @@ object Smithy {
   def renderHighlights(
     selectorAndStyles: (String, String)*
   )(
-    showVariables: Boolean = false
+    showVariables: Boolean,
+    startingShape: Option[ShapeId],
   )(
     using m: Model
   ): String = {
@@ -291,7 +308,12 @@ object Smithy {
         .map { (selectorText, selectorStyle) =>
           Selector
             .parse(selectorText)
-            .matches(m)
+            .matches(
+              m,
+              startingShape
+                .map(s => StartingContext(List(m.expectShape(s)).asJava))
+                .getOrElse(StartingContext.DEFAULT),
+            )
             .toList()
             .asScala
             .toList
