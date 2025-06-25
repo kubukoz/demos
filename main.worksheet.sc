@@ -23,5 +23,3 @@ val r = Model
 r.getValidationEvents().asScala.toList
 
 val m = r.unwrap()
-
-// ModelTransformer.create().
