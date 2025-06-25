@@ -1,3 +1,3 @@
 addSbtPlugin(
-  "com.disneystreaming.smithy4s" % "smithy4s-sbt-codegen" % "0.18.37"
+  "com.disneystreaming.smithy4s" % "smithy4s-sbt-codegen" % "0.18.38"
 )
