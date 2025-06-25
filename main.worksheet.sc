@@ -1,4 +1,4 @@
-//> using scala 3.5.2
+//> using scala 3.7.1
 //> using dep software.amazon.smithy:smithy-model:1.60.0
 import software.amazon.smithy.model.Model
 import software.amazon.smithy.model.selector.Selector
