@@ -34,6 +34,7 @@ import software.amazon.smithy.model.neighbor.RelationshipType
 import software.amazon.smithy.model.loader.ModelAssembler
 import _root_.scalatags.Text
 import software.amazon.smithy.model.traits.TraitDefinition
+import _root_.scalatags.Text.TypedTag
 
 object SelectorPlayground extends IOApp.Simple {
 
@@ -48,7 +49,7 @@ object SelectorPlayground extends IOApp.Simple {
     ),
   )
 
-  def indexPage(req: Req) = html(
+  def indexPage(req: Req, result: Text.Modifier) = html(
     meta(charset := "utf-8"),
     head(
       script(src := "https://unpkg.com/htmx.org@2.0.4"),
@@ -157,7 +158,7 @@ object SelectorPlayground extends IOApp.Simple {
             checkbox("showVariables", "Show variables", Option.when(req.showVariables)(checked)),
           ),
         ),
-        div(cls := "right", div(id := "result", em("Results will appear here..."))),
+        div(cls := "right", div(id := "result", result)),
       ),
     ),
   )
@@ -192,6 +193,41 @@ object SelectorPlayground extends IOApp.Simple {
 
   }
 
+  private def impl(req: Req): IO[TypedTag[String]] = IO {
+    val assembler = Model
+      .assembler()
+      .addUnparsedModel(
+        "test.smithy",
+        req.modelText,
+      )
+
+    if (req.allowUnknownTraits)
+      assembler.putProperty(ModelAssembler.ALLOW_UNKNOWN_TRAITS, true)
+
+    given Model = assembler
+      .assemble()
+      .unwrap()
+
+    val selector = req.selectorText
+
+    val startingShape = req.startingShape.map(ShapeId.from)
+
+    val rendered =
+      Smithy
+        .renderHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
+          showVariables = req.showVariables,
+          showTraits = req.showTraits,
+          showPreludeTraits = req.showPreludeTraits,
+          startingShape = startingShape,
+        )
+
+    div(
+      cls := "mermaid",
+      style := "visibility: hidden;",
+      raw(rendered),
+    )
+  }
+
   val routes = HttpRoutes.of[IO] {
     case GET -> Root =>
       val initModel =
@@ -219,59 +255,24 @@ object SelectorPlayground extends IOApp.Simple {
 
       val initSelector = "structure"
 
-      Ok(
-        indexPage(
-          Req(
-            modelText = initModel,
-            selectorText = initSelector,
-            startingShape = None,
-            showVariables = true,
-            allowUnknownTraits = false,
-            showTraits = true,
-            showPreludeTraits = false,
-          )
-        )
+      val req = Req(
+        modelText = initModel,
+        selectorText = initSelector,
+        startingShape = None,
+        showVariables = true,
+        allowUnknownTraits = false,
+        showTraits = true,
+        showPreludeTraits = false,
       )
+
+      impl(req).flatMap { result =>
+        Ok(indexPage(req, result))
+      }
 
     case req @ POST -> Root / "render" =>
       req
         .as[Req]
-        .flatMap { req =>
-          val assembler = Model
-            .assembler()
-            .addUnparsedModel(
-              "test.smithy",
-              req.modelText,
-            )
-
-          if (req.allowUnknownTraits)
-            assembler.putProperty(ModelAssembler.ALLOW_UNKNOWN_TRAITS, true)
-
-          given Model = assembler
-            .assemble()
-            .unwrap()
-
-          val selector = req.selectorText
-
-          val startingShape = req.startingShape.map(ShapeId.from)
-
-          val rendered =
-            Smithy
-              .renderHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
-                showVariables = req.showVariables,
-                showTraits = req.showTraits,
-                showPreludeTraits = req.showPreludeTraits,
-                startingShape = startingShape,
-              )
-
-          Ok(
-            div(
-              cls := "mermaid",
-              style := "visibility: hidden;",
-              raw(rendered),
-            )
-          )
-        }
+        .flatMap(impl.andThenF(Ok(_)))
         .recoverWith { case e =>
           def slurpStackTrace(e: Throwable) =
             Using.resource(new java.io.StringWriter()) { sw =>
