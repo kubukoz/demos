@@ -2,7 +2,7 @@
 //> using dep org.http4s::http4s-ember-server:0.23.30
 //> using dep org.http4s::http4s-dsl:0.23.30
 //> using dep org.http4s::http4s-scalatags::0.25.2
-//> using dep software.amazon.smithy:smithy-model:1.59.0
+//> using dep software.amazon.smithy:smithy-model:1.60.3
 //> using option -Wunused:imports
 //> using option -Wunused:all
 import cats.effect.*
@@ -28,6 +28,7 @@ import scala.jdk.OptionConverters.*
 import scala.util.chaining.*
 import scala.util.Using
 import software.amazon.smithy.model.selector.Selector.StartingContext
+import software.amazon.smithy.model.neighbor.RelationshipType
 
 object SelectorPlayground extends IOApp.Simple {
 
@@ -231,6 +232,8 @@ object Smithy {
     using m: Model
   ): List[Shape] = shapes.flatMap(Walker(m).walkShapes(_).asScala).distinct
 
+  def isLocal(s: Shape): Boolean = s.getSourceLocation().getFilename() == "test.smithy"
+
   def startingShapes(
     using m: Model
   ): List[Shape] = closure(
@@ -238,7 +241,7 @@ object Smithy {
       .shapes()
       .toList()
       .asScala
-      .filter(_.getSourceLocation().getFilename() == "test.smithy")
+      .filter(isLocal)
       .toList
   )
 
@@ -276,15 +279,17 @@ object Smithy {
     val relationships = startingShapes
       .flatMap { shape =>
         m.pipe(NeighborProvider.of)
-          // .pipe(NeighborProvider.withTraitRelationships(m, _))
+          .pipe(NeighborProvider.withTraitRelationships(m, _))
           .getNeighbors(shape)
           .asScala
           .filter(_.getDirection == RelationshipDirection.DIRECTED)
       }
 
+    val neighbors = relationships.map(_.expectNeighborShape()).filter(isLocal)
+
     val allShapesToRender =
       List
-        .concat(startingShapes, relationships.map(_.expectNeighborShape()))
+        .concat(startingShapes, neighbors)
         .toSet
     // todo: filtering here to narrow large graphs to just relevant parts.
     // e.g. compute neighbors of shapes that matched selectors up to a selected level of depth
@@ -300,7 +305,13 @@ object Smithy {
     val shapeConnections = relationships
       .filter(shouldRender(_, allShapesToRender))
       .map { rel =>
-        s"    ${rel.getShape.getId()} --> ${rel.getNeighborShapeId()}"
+        val arrow =
+          rel.getRelationshipType() match {
+            case RelationshipType.TRAIT => "-.->"
+            case _                      => "-->"
+          }
+
+        s"    ${rel.getShape.getId()} $arrow ${rel.getNeighborShapeId()}"
       }
 
     val (selections, highlightStyles) =
