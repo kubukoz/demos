@@ -209,18 +209,25 @@ object SelectorPlayground extends IOApp.Simple {
       .assemble()
       .unwrap()
 
-    val selector = req.selectorText
+    val selectorsWithStyles = List(
+      (
+        selector = Selector.parse(req.selectorText),
+        css = "fill:#882200,color:black,font-family:monospace",
+      )
+    )
 
     val startingShape = req.startingShape.map(ShapeId.from)
 
     val rendered = Smithy
-      .buildHighlights(selector)(
+      .buildHighlights(selectorsWithStyles.map(_.selector)*)(
         showVariables = req.showVariables,
         showTraits = req.showTraits,
         showPreludeTraits = req.showPreludeTraits,
         startingShape = startingShape,
       )
-      .pipe(Smithy.render(_, selector -> "fill:#882200,color:black,font-family:monospace"))
+      .pipe(
+        Smithy.render(_, selectorsWithStyles*)
+      )
 
     div(
       cls := "mermaid",
@@ -335,7 +342,7 @@ object Smithy {
       rel.getNeighborShape().toScala.exists(visible)
 
   def buildHighlights(
-    selectors: String*
+    selectors: Selector*
   )(
     showVariables: Boolean,
     showTraits: Boolean,
@@ -407,14 +414,12 @@ object Smithy {
 
     val selections =
       selectors.map {
-        Selector
-          .parse(_)
-          .matches(
-            m,
-            startingShape
-              .map(s => StartingContext(List(m.expectShape(s)).asJava))
-              .getOrElse(StartingContext.DEFAULT),
-          )
+        _.matches(
+          m,
+          startingShape
+            .map(s => StartingContext(List(m.expectShape(s)).asJava))
+            .getOrElse(StartingContext.DEFAULT),
+        )
           .toList()
           .asScala
           .toList
@@ -446,7 +451,7 @@ object Smithy {
     IR(shapeDefs, shapeConnections, shapeStyles, variableRefs)
   }
 
-  def render(ir: IR, selectorsWithStyles: (String, String)*): String = {
+  def render(ir: IR, selectorsWithStyles: (selector: Selector, css: String)*): String = {
     val shapeDefs = ir
       .shapeDefs
       .map { shape =>
@@ -472,9 +477,10 @@ object Smithy {
     }
 
     val highlightDefs = selectorsWithStyles
-      .map(_._2)
       .zipWithIndex
-      .map((selectorStyle, selectorId) => s"  classDef highlight${selectorId} ${selectorStyle};")
+      .map((selectorStyle, selectorId) =>
+        s"  classDef highlight${selectorId} ${selectorStyle.css};"
+      )
 
     val shapeStyles = ir
       .shapeStyles
