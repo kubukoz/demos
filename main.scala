@@ -34,6 +34,7 @@ import software.amazon.smithy.model.neighbor.RelationshipType
 import cats.data.Chain
 import cats.data.ValidatedNel
 import software.amazon.smithy.model.loader.ModelAssembler
+import _root_.scalatags.Text
 
 object SelectorPlayground extends IOApp.Simple {
 
@@ -61,6 +62,17 @@ object SelectorPlayground extends IOApp.Simple {
       |""".stripMargin
 
   val initSelector = "structure"
+
+  def checkbox(idValue: String, labelValue: String, checkboxAttrs: Text.Modifier*) = div(
+    label(`for` := idValue)(labelValue),
+    input(
+      `type` := "checkbox",
+      name := idValue,
+      id := idValue,
+      value := "true",
+      checkboxAttrs,
+    ),
+  )
 
   val indexPage = html(
     meta(charset := "utf-8"),
@@ -153,25 +165,8 @@ object SelectorPlayground extends IOApp.Simple {
               placeholder := "Starting shape",
               "",
             ),
-            div(
-              label(`for` := "showVariables")("Show variables"),
-              input(
-                `type` := "checkbox",
-                name := "showVariables",
-                id := "showVariables",
-                checked,
-                value := "true",
-              ),
-            ),
-            div(
-              label(`for` := "allowUnknownTraits")("Allow unknown traits"),
-              input(
-                `type` := "checkbox",
-                name := "allowUnknownTraits",
-                id := "allowUnknownTraits",
-                value := "true",
-              ),
-            ),
+            checkbox("showVariables", "Show variable", checked),
+            checkbox("allowUnknownTraits", "Allow unknown traits"),
           ),
         ),
         div(cls := "right", div(id := "result", em("Results will appear here..."))),
