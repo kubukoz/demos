@@ -58,16 +58,19 @@ object SelectorPlayground extends IOApp.Simple {
       script("mermaid.initialize({ startOnLoad: false, flowchart: { htmlLabels: true } });"),
       script(
         raw("""
+          async function refresh() {
+            if (!window.mermaid) return;
+
+            await mermaid.run({querySelector: ".mermaid"})
+
+            const resultVisible = document.getElementById('result-visible');
+            const result = document.getElementById('result');
+            resultVisible.replaceChildren(...result.childNodes);
+          }
+
           document.addEventListener('DOMContentLoaded', () => {
-            document.body.addEventListener('htmx:afterSettle', async () => {
-              if (!window.mermaid) return;
-
-              await mermaid.run({querySelector: ".mermaid"})
-
-              const resultVisible = document.getElementById('result-visible');
-              const result = document.getElementById('result');
-              resultVisible.replaceChildren(...result.childNodes);
-            });
+            refresh()
+            document.body.addEventListener('htmx:afterSettle', refresh);
           });
         """)
       ),
@@ -118,7 +121,7 @@ object SelectorPlayground extends IOApp.Simple {
             id := "input-form",
             attr("hx-post") := "/render",
             attr("hx-target") := "#result",
-            attr("hx-trigger") := "load, input",
+            attr("hx-trigger") := "input",
             p("Model:"),
             textarea(
               autocomplete := "off",
