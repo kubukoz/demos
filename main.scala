@@ -33,33 +33,9 @@ import software.amazon.smithy.model.selector.Selector.StartingContext
 import software.amazon.smithy.model.neighbor.RelationshipType
 import software.amazon.smithy.model.loader.ModelAssembler
 import _root_.scalatags.Text
+import software.amazon.smithy.model.traits.TraitDefinition
 
 object SelectorPlayground extends IOApp.Simple {
-
-  val initModel =
-    """$version: "2"
-      |namespace test
-      |
-      |service Hello {
-      |  operations: [GetHello, PostHello]
-      |}
-      |
-      |/// an operation
-      |@http(method: "GET", uri: "/hello")
-      |operation GetHello {
-      |  output:={foo: Foo}
-      |}
-      |
-      |/// an operation as well
-      |@http(method: "POST", uri: "/hello")
-      |operation PostHello {
-      |  input:={foo: Foo}
-      |}
-      |
-      |structure Foo { @required s: String }
-      |""".stripMargin
-
-  val initSelector = "structure"
 
   def checkbox(idValue: String, labelValue: String, checkboxAttrs: Text.Modifier*) = div(
     label(`for` := idValue)(labelValue),
@@ -72,7 +48,7 @@ object SelectorPlayground extends IOApp.Simple {
     ),
   )
 
-  val indexPage = html(
+  def indexPage(req: Req) = html(
     meta(charset := "utf-8"),
     head(
       script(src := "https://unpkg.com/htmx.org@2.0.4"),
@@ -147,24 +123,38 @@ object SelectorPlayground extends IOApp.Simple {
               cls := "primary",
               name := "modelText",
               placeholder := "Model text",
-              initModel,
+              req.modelText,
             ),
             p("Selector:"),
             textarea(
               autocomplete := "off",
               name := "selectorText",
               placeholder := "Selector text",
-              initSelector,
+              req.selectorText,
             ),
             p("Starting shape (if empty, uses the whole model)"),
             textarea(
               autocomplete := "off",
               name := "startingShape",
               placeholder := "Starting shape",
-              "",
+              req.startingShape.getOrElse(""),
             ),
-            checkbox("showVariables", "Show variables", checked),
-            checkbox("allowUnknownTraits", "Allow unknown traits"),
+            checkbox(
+              "showTraits",
+              "Show traits",
+              checked := req.showTraits,
+            ),
+            checkbox(
+              "showPreludeTraits",
+              "Include prelude traits",
+              Option.when(req.showPreludeTraits)(checked),
+            ),
+            checkbox(
+              "allowUnknownTraits",
+              "Include unknown traits",
+              Option.when(req.allowUnknownTraits)(checked),
+            ),
+            checkbox("showVariables", "Show variables", Option.when(req.showVariables)(checked)),
           ),
         ),
         div(cls := "right", div(id := "result", em("Results will appear here..."))),
@@ -178,6 +168,8 @@ object SelectorPlayground extends IOApp.Simple {
     startingShape: Option[String],
     showVariables: Boolean,
     allowUnknownTraits: Boolean,
+    showTraits: Boolean,
+    showPreludeTraits: Boolean,
   )
 
   object Req {
@@ -194,12 +186,52 @@ object SelectorPlayground extends IOApp.Simple {
         FormDataDecoder.fieldOptional[String]("startingShape").map(_.filter(_.nonEmpty)),
         flag("showVariables"),
         flag("allowUnknownTraits"),
+        flag("showTraits"),
+        flag("showPreludeTraits"),
       )
 
   }
 
   val routes = HttpRoutes.of[IO] {
-    case GET -> Root => Ok(indexPage)
+    case GET -> Root =>
+      val initModel =
+        """$version: "2"
+          |namespace test
+          |
+          |service Hello {
+          |  operations: [GetHello, PostHello]
+          |}
+          |
+          |/// an operation
+          |@http(method: "GET", uri: "/hello")
+          |operation GetHello {
+          |  output:={foo: Foo}
+          |}
+          |
+          |/// an operation as well
+          |@http(method: "POST", uri: "/hello")
+          |operation PostHello {
+          |  input:={foo: Foo}
+          |}
+          |
+          |structure Foo { @required s: String }
+          |""".stripMargin
+
+      val initSelector = "structure"
+
+      Ok(
+        indexPage(
+          Req(
+            modelText = initModel,
+            selectorText = initSelector,
+            startingShape = None,
+            showVariables = true,
+            allowUnknownTraits = false,
+            showTraits = true,
+            showPreludeTraits = false,
+          )
+        )
+      )
 
     case req @ POST -> Root / "render" =>
       req
@@ -227,6 +259,8 @@ object SelectorPlayground extends IOApp.Simple {
             Smithy
               .renderHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
                 showVariables = req.showVariables,
+                showTraits = req.showTraits,
+                showPreludeTraits = req.showPreludeTraits,
                 startingShape = startingShape,
               )
 
@@ -270,23 +304,11 @@ object SelectorPlayground extends IOApp.Simple {
 object Smithy {
 
   def closure(
-    shapes: List[Shape]
-  )(
-    using m: Model
-  ): List[Shape] = shapes.flatMap(Walker(m).walkShapes(_).asScala).distinct
+    shapes: List[Shape],
+    neighborProvider: NeighborProvider,
+  ): Set[Shape] = shapes.flatMap(Walker(neighborProvider).walkShapes(_).asScala).toSet
 
   def isLocal(s: Shape): Boolean = s.getSourceLocation().getFilename() == "test.smithy"
-
-  def startingShapes(
-    using m: Model
-  ): List[Shape] = closure(
-    m
-      .shapes()
-      .toList()
-      .asScala
-      .filter(isLocal)
-      .toList
-  )
 
   val keyword = "#C678DD"
 
@@ -314,21 +336,59 @@ object Smithy {
     selectorAndStyles: (String, String)*
   )(
     showVariables: Boolean,
+    showTraits: Boolean,
+    showPreludeTraits: Boolean,
     startingShape: Option[ShapeId],
   )(
     using m: Model
   ): String = {
+    val neighborProvider = m
+      .pipe(NeighborProvider.of)
+      .pipe(
+        if (showTraits)
+          NeighborProvider.withTraitRelationships(m, _)
+        else
+          identity
+      )
+
+    val localShapes = m
+      .shapes()
+      .toList()
+      .asScala
+      .toSet
+      .filter { s =>
+        // display local shapes (possibly local traits, if enabled)
+        // as well as shapes that were reached from the initial set of local shapes, regardless of the selector
+        isLocal(s) &&
+        (showTraits || !s.hasTrait(classOf[TraitDefinition]))
+      }
+
+    val startingShapes: Set[Shape] =
+      localShapes
+        .flatMap(
+          Walker(neighborProvider)
+            .walkShapes(
+              _,
+              rel =>
+                isLocal(rel.getShape()) && {
+                  rel.getNeighborShape().toScala.exists(isLocal) || {
+                    showPreludeTraits || rel.getRelationshipType() != RelationshipType.TRAIT
+                  }
+                },
+            )
+            .asScala
+        )
+        .toSet
 
     val relationships = startingShapes
       .flatMap { shape =>
-        m.pipe(NeighborProvider.of)
-          .pipe(NeighborProvider.withTraitRelationships(m, _))
+        neighborProvider
           .getNeighbors(shape)
           .asScala
           .filter(_.getDirection == RelationshipDirection.DIRECTED)
       }
 
-    val neighbors = relationships.flatMap(_.getNeighborShape().toScala).filter(isLocal)
+    val neighbors = relationships.flatMap(_.getNeighborShape().toScala).filter(startingShapes)
 
     val allShapesToRender =
       List
