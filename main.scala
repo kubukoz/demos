@@ -31,8 +31,6 @@ import scala.util.chaining.*
 import scala.util.Using
 import software.amazon.smithy.model.selector.Selector.StartingContext
 import software.amazon.smithy.model.neighbor.RelationshipType
-import cats.data.Chain
-import cats.data.ValidatedNel
 import software.amazon.smithy.model.loader.ModelAssembler
 import _root_.scalatags.Text
 
@@ -165,7 +163,7 @@ object SelectorPlayground extends IOApp.Simple {
               placeholder := "Starting shape",
               "",
             ),
-            checkbox("showVariables", "Show variable", checked),
+            checkbox("showVariables", "Show variables", checked),
             checkbox("allowUnknownTraits", "Allow unknown traits"),
           ),
         ),
