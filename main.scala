@@ -214,13 +214,13 @@ object SelectorPlayground extends IOApp.Simple {
     val startingShape = req.startingShape.map(ShapeId.from)
 
     val rendered = Smithy
-      .buildHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
+      .buildHighlights(selector)(
         showVariables = req.showVariables,
         showTraits = req.showTraits,
         showPreludeTraits = req.showPreludeTraits,
         startingShape = startingShape,
       )
-      .pipe(Smithy.render)
+      .pipe(Smithy.render(_, selector -> "fill:#882200,color:black,font-family:monospace"))
 
     div(
       cls := "mermaid",
@@ -335,7 +335,7 @@ object Smithy {
       rel.getNeighborShape().toScala.exists(visible)
 
   def buildHighlights(
-    selectorAndStyles: (String, String)*
+    selectors: String*
   )(
     showVariables: Boolean,
     showTraits: Boolean,
@@ -405,25 +405,22 @@ object Smithy {
     val shapeConnections = relationships
       .filter(shouldRender(_, allShapesToRender))
 
-    val (selections, highlightStyles) =
-      selectorAndStyles
-        .map { (selectorText, selectorStyle) =>
-          Selector
-            .parse(selectorText)
-            .matches(
-              m,
-              startingShape
-                .map(s => StartingContext(List(m.expectShape(s)).asJava))
-                .getOrElse(StartingContext.DEFAULT),
-            )
-            .toList()
-            .asScala
-            .toList
-            .filter(shouldRender(_, allShapesToRender))
-            .groupBy(_.getShape()) -> selectorStyle
-        }
-        .toList
-        .separateFoldable
+    val selections =
+      selectors.map {
+        Selector
+          .parse(_)
+          .matches(
+            m,
+            startingShape
+              .map(s => StartingContext(List(m.expectShape(s)).asJava))
+              .getOrElse(StartingContext.DEFAULT),
+          )
+          .toList()
+          .asScala
+          .toList
+          .filter(shouldRender(_, allShapesToRender))
+          .groupBy(_.getShape())
+      }.toList
 
     val shapeStyles =
       selections
@@ -433,12 +430,6 @@ object Smithy {
         .map { (matches, i) =>
           ShapeStyle(matches.keySet.map(_.getId), i)
         }
-        .toSet
-
-    val highlightDefs =
-      highlightStyles
-        .zipWithIndex
-        .map(HighlightDef.apply)
         .toSet
 
     val variableRefs =
@@ -452,11 +443,10 @@ object Smithy {
         shapeForVariable <- shapesForVariable.asScala
       } yield VariableRef(shape.getId(), i, variableName, shapeForVariable.getId())
 
-    IR(shapeDefs, shapeConnections, shapeStyles, highlightDefs, variableRefs)
+    IR(shapeDefs, shapeConnections, shapeStyles, variableRefs)
   }
 
-  def render(ir: IR): String = {
-
+  def render(ir: IR, selectorsWithStyles: (String, String)*): String = {
     val shapeDefs = ir
       .shapeDefs
       .map { shape =>
@@ -481,9 +471,10 @@ object Smithy {
       s"  ${ref.shape} --> |${ref.selectorId}: ${ref.variableName}| ${ref.variableValue}"
     }
 
-    val highlightDefs = ir
-      .highlightDefs
-      .map(style => s"  classDef highlight${style.selectorId} ${style.style};")
+    val highlightDefs = selectorsWithStyles
+      .map(_._2)
+      .zipWithIndex
+      .map((selectorStyle, selectorId) => s"  classDef highlight${selectorId} ${selectorStyle};")
 
     val shapeStyles = ir
       .shapeStyles
@@ -523,7 +514,6 @@ object Smithy {
     shapeDefs: Set[Shape],
     shapeConnections: Set[Relationship],
     shapeStyles: Set[ShapeStyle],
-    highlightDefs: Set[HighlightDef],
     variableRefs: Set[VariableRef],
   )
 
