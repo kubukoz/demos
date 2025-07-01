@@ -213,14 +213,14 @@ object SelectorPlayground extends IOApp.Simple {
 
     val startingShape = req.startingShape.map(ShapeId.from)
 
-    val rendered =
-      Smithy
-        .renderHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
-          showVariables = req.showVariables,
-          showTraits = req.showTraits,
-          showPreludeTraits = req.showPreludeTraits,
-          startingShape = startingShape,
-        )
+    val rendered = Smithy
+      .buildHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
+        showVariables = req.showVariables,
+        showTraits = req.showTraits,
+        showPreludeTraits = req.showPreludeTraits,
+        startingShape = startingShape,
+      )
+      .pipe(Smithy.render)
 
     div(
       cls := "mermaid",
@@ -334,7 +334,7 @@ object Smithy {
     visible(rel.getShape()) &&
       rel.getNeighborShape().toScala.exists(visible)
 
-  def renderHighlights(
+  def buildHighlights(
     selectorAndStyles: (String, String)*
   )(
     showVariables: Boolean,
@@ -343,7 +343,7 @@ object Smithy {
     startingShape: Option[ShapeId],
   )(
     using m: Model
-  ): String = {
+  ): IR = {
     val neighborProvider = m
       .pipe(NeighborProvider.of)
       .pipe(
@@ -401,23 +401,9 @@ object Smithy {
     // .filter(_.isStructureShape())
 
     val shapeDefs = allShapesToRender
-      .map { shape =>
-        val shapeType = s"""<span style="color:$keyword">${shape.getType().toString()}</span>"""
-
-        s"""  ${shape.getId()}[$shapeType&nbsp;${renderShapeId(shape.getId())}]"""
-      }
 
     val shapeConnections = relationships
       .filter(shouldRender(_, allShapesToRender))
-      .map { rel =>
-        val arrow =
-          rel.getRelationshipType() match {
-            case RelationshipType.TRAIT => "-.->"
-            case _                      => "-->"
-          }
-
-        s"    ${rel.getShape.getId()} $arrow ${rel.getNeighborShapeId()}"
-      }
 
     val (selections, highlightStyles) =
       selectorAndStyles
@@ -439,28 +425,71 @@ object Smithy {
         .toList
         .separateFoldable
 
-    val shapeStyles = selections
-      .zipWithIndex
-      // for selectors that didn't match anything
-      .filterNot(_._1.isEmpty)
-      .map { (matches, i) =>
-        s"  class ${matches.keySet.map(_.getId()).mkString(",")} highlight$i;"
-      }
+    val shapeStyles =
+      selections
+        .zipWithIndex
+        // for selectors that didn't match anything
+        .filterNot(_._1.isEmpty)
+        .map { (matches, i) =>
+          ShapeStyle(matches.keySet.map(_.getId), i)
+        }
+        .toSet
 
-    val highlightDefs = highlightStyles
-      .zipWithIndex
-      .map((style, i) => s"  classDef highlight$i $style;")
+    val highlightDefs =
+      highlightStyles
+        .zipWithIndex
+        .map(HighlightDef.apply)
+        .toSet
 
     val variableRefs =
       for {
-        (selectorMatches, i) <- selections.zipWithIndex
+        (selectorMatches, i) <- selections.zipWithIndex.toSet
         if showVariables
 
         (shape, matches) <- selectorMatches
         shapeMatch <- matches
         (variableName, shapesForVariable) <- shapeMatch.asScala.toMap
         shapeForVariable <- shapesForVariable.asScala
-      } yield s"  ${shape.getId()} --> |$i: $variableName|${shapeForVariable.getId()}"
+      } yield VariableRef(shape.getId(), i, variableName, shapeForVariable.getId())
+
+    IR(shapeDefs, shapeConnections, shapeStyles, highlightDefs, variableRefs)
+  }
+
+  def render(ir: IR): String = {
+
+    val shapeDefs = ir
+      .shapeDefs
+      .map { shape =>
+        val shapeType = s"""<span style="color:$keyword">${shape.getType().toString()}</span>"""
+
+        s"""  ${shape.getId()}[$shapeType&nbsp;${renderShapeId(shape.getId())}]"""
+      }
+
+    val shapeConnections = ir
+      .shapeConnections
+      .map { rel =>
+        val arrow =
+          rel.getRelationshipType() match {
+            case RelationshipType.TRAIT => "-.->"
+            case _                      => "-->"
+          }
+
+        s"    ${rel.getShape.getId()} $arrow ${rel.getNeighborShapeId()}"
+      }
+
+    val variableRefs = ir.variableRefs.map { ref =>
+      s"  ${ref.shape} --> |${ref.selectorId}: ${ref.variableName}| ${ref.variableValue}"
+    }
+
+    val highlightDefs = ir
+      .highlightDefs
+      .map(style => s"  classDef highlight${style.selectorId} ${style.style};")
+
+    val shapeStyles = ir
+      .shapeStyles
+      .map { style =>
+        s"  class ${style.matches.mkString(",")} highlight${style.selectorId};"
+      }
 
     List
       .concat(
@@ -477,5 +506,25 @@ object Smithy {
         "\n",
       )
   }
+
+  case class ShapeStyle(matches: Set[ShapeId], selectorId: Int)
+  case class HighlightDef(style: String, selectorId: Int)
+
+  case class VariableRef(
+    // the shape matched by the selector
+    shape: ShapeId,
+    selectorId: Int,
+    variableName: String,
+    // the shape the variable is pointing to (the arrow points here)
+    variableValue: ShapeId,
+  )
+
+  case class IR(
+    shapeDefs: Set[Shape],
+    shapeConnections: Set[Relationship],
+    shapeStyles: Set[ShapeStyle],
+    highlightDefs: Set[HighlightDef],
+    variableRefs: Set[VariableRef],
+  )
 
 }
