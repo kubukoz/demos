@@ -38,7 +38,8 @@ import _root_.scalatags.Text.TypedTag
 
 object SelectorPlayground extends IOApp.Simple {
 
-  def checkbox(idValue: String, labelValue: String, checkboxAttrs: Text.Modifier*) = div(
+  def checkbox(idValue: String, labelValue: String, checkboxAttrs: Text.Modifier*)
+    : TypedTag[String] = div(
     label(`for` := idValue)(labelValue),
     input(
       `type` := "checkbox",
@@ -49,7 +50,7 @@ object SelectorPlayground extends IOApp.Simple {
     ),
   )
 
-  def indexPage(req: Req, result: Text.Modifier) = html(
+  def indexPage(req: Req, result: Text.Modifier): TypedTag[String] = html(
     meta(charset := "utf-8"),
     head(
       script(src := "https://unpkg.com/htmx.org@2.0.4"),
