@@ -55,18 +55,18 @@ object SelectorPlayground extends IOApp.Simple {
     head(
       script(src := "https://unpkg.com/htmx.org@2.0.4"),
       script(src := "https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"),
-      script("mermaid.initialize({ startOnLoad: true, flowchart: { htmlLabels: true } });"),
+      script("mermaid.initialize({ startOnLoad: false, flowchart: { htmlLabels: true } });"),
       script(
         raw("""
           document.addEventListener('DOMContentLoaded', () => {
-            document.body.addEventListener('htmx:afterSettle', () => {
-              if (window.mermaid) {
-                mermaid.run().then(() => {
-                  document.querySelectorAll('.mermaid').forEach(el => {
-                    el.style.visibility = 'visible';
-                  });
-                });
-              }
+            document.body.addEventListener('htmx:afterSettle', async () => {
+              if (!window.mermaid) return;
+
+              await mermaid.run({querySelector: ".mermaid"})
+
+              const resultVisible = document.getElementById('result-visible');
+              const result = document.getElementById('result');
+              resultVisible.replaceChildren(...result.childNodes);
             });
           });
         """)
@@ -159,7 +159,8 @@ object SelectorPlayground extends IOApp.Simple {
             checkbox("showVariables", "Show variables", Option.when(req.showVariables)(checked)),
           ),
         ),
-        div(cls := "right", div(id := "result", result)),
+        div(cls := "right", div(id := "result-visible")),
+        div(id := "result", result, style := "visibility: hidden; position: absolute"),
       ),
     ),
   )
@@ -231,7 +232,6 @@ object SelectorPlayground extends IOApp.Simple {
 
     div(
       cls := "mermaid",
-      style := "visibility: hidden;",
       raw(rendered),
     )
   }
