@@ -1,4 +1,5 @@
 //> using scala 3.7
+//> using dep org.typelevel::cats-core:2.13.0
 //> using dep org.http4s::http4s-ember-server:0.23.30
 //> using dep org.http4s::http4s-dsl:0.23.30
 //> using dep org.http4s::http4s-scalatags::0.25.2
@@ -23,12 +24,16 @@ import software.amazon.smithy.model.selector.Selector.ShapeMatch
 import software.amazon.smithy.model.shapes.Shape
 import software.amazon.smithy.model.shapes.ShapeId
 
+import org.http4s.FormDataDecoder.formEntityDecoder
 import scala.jdk.CollectionConverters.*
 import scala.jdk.OptionConverters.*
 import scala.util.chaining.*
 import scala.util.Using
 import software.amazon.smithy.model.selector.Selector.StartingContext
 import software.amazon.smithy.model.neighbor.RelationshipType
+import cats.data.Chain
+import cats.data.ValidatedNel
+import software.amazon.smithy.model.loader.ModelAssembler
 
 object SelectorPlayground extends IOApp.Simple {
 
@@ -125,7 +130,7 @@ object SelectorPlayground extends IOApp.Simple {
             id := "input-form",
             attr("hx-post") := "/render",
             attr("hx-target") := "#result",
-            attr("hx-trigger") := "load, input from:textarea",
+            attr("hx-trigger") := "load, input",
             p("Model:"),
             textarea(
               autocomplete := "off",
@@ -148,6 +153,25 @@ object SelectorPlayground extends IOApp.Simple {
               placeholder := "Starting shape",
               "",
             ),
+            div(
+              label(`for` := "showVariables")("Show variables"),
+              input(
+                `type` := "checkbox",
+                name := "showVariables",
+                id := "showVariables",
+                checked,
+                value := "true",
+              ),
+            ),
+            div(
+              label(`for` := "allowUnknownTraits")("Allow unknown traits"),
+              input(
+                `type` := "checkbox",
+                name := "allowUnknownTraits",
+                id := "allowUnknownTraits",
+                value := "true",
+              ),
+            ),
           ),
         ),
         div(cls := "right", div(id := "result", em("Results will appear here..."))),
@@ -155,35 +179,61 @@ object SelectorPlayground extends IOApp.Simple {
     ),
   )
 
+  case class Req(
+    modelText: String,
+    selectorText: String,
+    startingShape: Option[String],
+    showVariables: Boolean,
+    allowUnknownTraits: Boolean,
+  )
+
+  object Req {
+
+    private def flag(name: String): FormDataDecoder[Boolean] = FormDataDecoder
+      .fieldOptional[Boolean](name)
+      .map(_.getOrElse(false))
+
+    given FormDataDecoder[Req] = Req
+      .apply
+      .liftN(
+        FormDataDecoder.field[String]("modelText"),
+        FormDataDecoder.field[String]("selectorText"),
+        FormDataDecoder.fieldOptional[String]("startingShape").map(_.filter(_.nonEmpty)),
+        flag("showVariables"),
+        flag("allowUnknownTraits"),
+      )
+
+  }
+
   val routes = HttpRoutes.of[IO] {
     case GET -> Root => Ok(indexPage)
 
     case req @ POST -> Root / "render" =>
       req
-        .as[UrlForm]
-        .flatMap { form =>
-          given Model = Model
+        .as[Req]
+        .flatMap { req =>
+          val assembler = Model
             .assembler()
             .addUnparsedModel(
               "test.smithy",
-              form.getFirst("modelText").getOrElse(""),
+              req.modelText,
             )
+
+          if (req.allowUnknownTraits)
+            assembler.putProperty(ModelAssembler.ALLOW_UNKNOWN_TRAITS, true)
+
+          given Model = assembler
             .assemble()
             .unwrap()
 
-          val selector = form.getFirst("selectorText").getOrElse("*")
+          val selector = req.selectorText
 
-          val startingShape = form.getFirst("startingShape").flatMap { shapeIdStr =>
-            if (shapeIdStr.isEmpty)
-              None
-            else
-              Some(ShapeId.from(shapeIdStr))
-          }
+          val startingShape = req.startingShape.map(ShapeId.from)
 
           val rendered =
             Smithy
               .renderHighlights(selector -> "fill:#882200,color:black,font-family:monospace")(
-                showVariables = true,
+                showVariables = req.showVariables,
                 startingShape = startingShape,
               )
 
@@ -265,7 +315,7 @@ object Smithy {
 
   def shouldRender(rel: Relationship, visible: Shape => Boolean): Boolean =
     visible(rel.getShape()) &&
-      visible(rel.expectNeighborShape())
+      rel.getNeighborShape().toScala.exists(visible)
 
   def renderHighlights(
     selectorAndStyles: (String, String)*
@@ -285,7 +335,7 @@ object Smithy {
           .filter(_.getDirection == RelationshipDirection.DIRECTED)
       }
 
-    val neighbors = relationships.map(_.expectNeighborShape()).filter(isLocal)
+    val neighbors = relationships.flatMap(_.getNeighborShape().toScala).filter(isLocal)
 
     val allShapesToRender =
       List
