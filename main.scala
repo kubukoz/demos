@@ -58,14 +58,26 @@ object SelectorPlayground extends IOApp.Simple {
       script("mermaid.initialize({ startOnLoad: false, flowchart: { htmlLabels: true } });"),
       script(
         raw("""
+          var latestPromise;
           async function refresh() {
             if (!window.mermaid) return;
 
-            await mermaid.run({querySelector: ".mermaid"})
+            const running = mermaid.run({querySelector: ".mermaid"})
+            latestPromise = running
+            await running
+            if(running != latestPromise) {
+              console.log("Skipping rendering, because a newer request is in progress");
+              return;
+            }
 
             const resultVisible = document.getElementById('result-visible');
             const result = document.getElementById('result');
-            resultVisible.replaceChildren(...result.childNodes);
+
+            if(result.childNodes.length)
+              resultVisible.replaceChildren(...result.childNodes);
+            else {
+              console.log("No child nodes in result, not updating visible area");
+            }
           }
 
           document.addEventListener('DOMContentLoaded', () => {
