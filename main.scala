@@ -58,31 +58,36 @@ object SelectorPlayground extends IOApp.Simple {
       script("mermaid.initialize({ startOnLoad: false, flowchart: { htmlLabels: true } });"),
       script(
         raw("""
-          var latestPromise;
-          async function refresh() {
+          async function refresh(e) {
             if (!window.mermaid) return;
-
-            const running = mermaid.run({querySelector: ".mermaid"})
-            latestPromise = running
-            await running
-            if(running != latestPromise) {
-              console.log("Skipping rendering, because a newer request is in progress");
-              return;
-            }
 
             const resultVisible = document.getElementById('result-visible');
             const result = document.getElementById('result');
 
-            if(result.childNodes.length)
-              resultVisible.replaceChildren(...result.childNodes);
-            else {
-              console.log("No child nodes in result, not updating visible area");
+            if(result.childNodes.length === 0) {
+              console.log("No child nodes in result, not running mermaid. HTMX is probably updating it");
+              return;
+            }
+
+            const tempDiv = document.createElement('div');
+            document.body.appendChild(tempDiv);
+            tempDiv.replaceChildren(...result.childNodes);
+            try {
+              await mermaid.run({querySelector: ".mermaid"})
+              if(tempDiv.childNodes.length)
+                resultVisible.replaceChildren(...tempDiv.childNodes);
+              else {
+                console.log("No child nodes in tempDiv, not updating visible area");
+              }
+            } finally {
+              // document.body.removeChild(tempDiv);
             }
           }
 
           document.addEventListener('DOMContentLoaded', () => {
             refresh()
             document.body.addEventListener('htmx:afterSettle', refresh);
+            // htmx.logAll();
           });
         """)
       ),
@@ -289,7 +294,7 @@ object SelectorPlayground extends IOApp.Simple {
       )
 
       impl(req).flatMap { result =>
-        Ok(indexPage(req, result))
+        Ok(doctype("html")(indexPage(req, result)))
       }
 
     case req @ POST -> Root / "render" =>
