@@ -1,6 +1,8 @@
 //> using option -no-indent
 //> using dep org.typelevel::cats-core:2.13.0
 import cats.syntax.all.*
+import cats.data.EitherNel
+import scala.collection.immutable.SortedMap
 
 enum Node {
   case Strink(s: String)
@@ -8,12 +10,17 @@ enum Node {
   case NodeMap(map: Map[String, Node])
   case VariableRef(name: String)
 
-  def toType: Type =
+  def toType(variablesInScope: Map[String, Type]): EitherNel[String, Type] =
     this match {
-      case Strink(_)       => Type.Str
-      case Num(_)          => Type.Int
-      case NodeMap(fields) => Type.Struct(fields.map { case (k, v) => k -> v.toType })
-      case VariableRef(_)  => throw new Exception("Cannot convert variable ref to type")
+      case Strink(_) => Type.Str.asRight
+      case Num(_)    => Type.Int.asRight
+      case NodeMap(fields) =>
+        fields
+          .to(SortedMap)
+          .traverse(_.toType(variablesInScope))
+          .map(Type.Struct(_))
+      case VariableRef(k) =>
+        variablesInScope.get(k).toRightNel(s"Referenced variable '$k' not found in scope.")
     }
 }
 
@@ -29,6 +36,7 @@ case class RunQuery(
 )
 
 enum Type {
+  case NoType
   case Str
   case Int
   case Struct(fields: Map[String, Type])
@@ -62,10 +70,21 @@ object Typer {
       onError(s"Service '$s' is not available.")
     }
 
+    val resolvedVars =
+      sf.variables.foldLeft((scope = Map.empty[String, Type], issues = List.empty[String])) {
+        case ((scope, issues), (name, varDef)) =>
+          varDef.toType(scope) match {
+            case Left(e)    => (scope + (name -> Type.NoType), issues ++ e.toList)
+            case Right(tpe) => (scope + (name -> tpe), issues)
+          }
+      }
+
+    resolvedVars.issues.foreach(onError)
+
     val newCtx = ctx.copy(
       // or pass them all, even the nonexisting ones?
       importedServices = existingSvcs,
-      variablesInScope = sf.variables.view.mapValues(_.toType).toMap,
+      variablesInScope = resolvedVars.scope,
     )
 
     typecheckQuery(sf.rq, newCtx, onError)
@@ -156,7 +175,8 @@ val ctx = Context.fromServiceIndex(
 val sampleQuery = SourceFile(
   importedServices = List("UserService"),
   variables = Map(
-    "maxUsers" -> Node.Num(10)
+    "userLimit" -> Node.Num(10),
+    "maxUsers" -> Node.VariableRef("userLimit"),
   ),
   rq = RunQuery(
     opName = "GetUsers",
