@@ -196,3 +196,21 @@ Typer.typecheckFile(sampleQuery, ctx, errors.addOne)
 val errorsList = errors.result()
 
 assert(errorsList.isEmpty, errorsList.mkString("\n"))
+
+// val sampleQueryElaborated = SourceFile(
+//   importedServices = List(("UserService", SymbolRef("service:UserService"))),
+//   variables = Map(
+//     ("userLimit", SymbolDef("variable:userLimit")) -> Node.Num(10),
+//     ("maxUsers", SymbolDef("variable:maxUsers")) -> Node.Ident("userLimit", SymbolRef("variable:userLimit")),
+//   ),
+//   rq = RunQuery(
+//     opName = SymbolRef("GetUsers", "service:UserService#operation:GetUsers"),
+//     input = Node.NodeMap(
+//       Map(
+// Q: should this also be a symbol def?
+//         ("filter", SymbolRef("service:UserService#operation:GetUsers#input#key:filter")) -> Node.Strink("active"),
+//         ...
+//       )
+//     ),
+//   ),
+// )
