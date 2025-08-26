@@ -8,7 +8,7 @@ enum Node {
   case Strink(s: String)
   case Num(n: Int)
   case NodeMap(map: Map[String, Node])
-  case VariableRef(name: String)
+  case Ident(name: String)
 
   def toType(variablesInScope: Map[String, Type]): EitherNel[String, Type] =
     this match {
@@ -19,7 +19,7 @@ enum Node {
           .to(SortedMap)
           .traverse(_.toType(variablesInScope))
           .map(Type.Struct(_))
-      case VariableRef(k) =>
+      case Ident(k) =>
         variablesInScope.get(k).toRightNel(s"Referenced variable '$k' not found in scope.")
     }
 }
@@ -125,7 +125,7 @@ object Typer {
   private def typecheckNodeInternal(node: Node, schema: Type, ctx: Context, onError: String => Unit)
     : Result =
     (node, schema) match {
-      case (Node.VariableRef(name), tpe) =>
+      case (Node.Ident(name), tpe) =>
         ctx.variablesInScope.get(name) match {
           case None => onError(s"Variable '$name' is not defined in the current scope.")
           case Some(varType) =>
@@ -176,14 +176,14 @@ val sampleQuery = SourceFile(
   importedServices = List("UserService"),
   variables = Map(
     "userLimit" -> Node.Num(10),
-    "maxUsers" -> Node.VariableRef("userLimit"),
+    "maxUsers" -> Node.Ident("userLimit"),
   ),
   rq = RunQuery(
     opName = "GetUsers",
     input = Node.NodeMap(
       Map(
         "filter" -> Node.Strink("active"),
-        "limit" -> Node.VariableRef("maxUsers"),
+        "limit" -> Node.Ident("maxUsers"),
       )
     ),
   ),
