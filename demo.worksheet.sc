@@ -6,9 +6,12 @@ import scala.collection.immutable.SortedMap
 import scala.collection.immutable.ListMap
 import cats.Id
 
-opaque type WithSymbol[A] = (value: A, sym: Symbol)
-extension [A](a: A) {
-  def withSym(sym: Symbol): WithSymbol[A] = (a, sym)
+case class Span(start: Int, end: Int)
+
+case class WithSymbol[A](value: A, sym: Symbol, span: Span)
+
+extension [A](a: WithSymbol[A]) {
+  def withSym(sym: Symbol): WithSymbol[A] = a.copy(sym = sym)
 }
 
 enum Symbol {
@@ -36,14 +39,14 @@ enum Node {
     }
 }
 
-case class SourceFile[F[_]](
+case class SourceFile(
   importedServices: List[String],
   variables: ListMap[String, Node],
-  rq: RunQuery[F],
+  rq: RunQuery,
 )
 
-case class RunQuery[F[_]](
-  opName: F[String],
+case class RunQuery(
+  opName: WithSymbol[String],
   input: Node,
 )
 
@@ -71,10 +74,10 @@ object Context {
 object Typer {
 
   def typecheckFile(
-    sf: SourceFile[Id],
+    sf: SourceFile,
     ctx: Context,
     onError: String => Unit,
-  ): SourceFile[WithSymbol] = {
+  ): SourceFile = {
 
     val (existingSvcs, nonexistingSvcs) = sf
       .importedServices
@@ -105,12 +108,11 @@ object Typer {
     sf.copy(rq = newRQ)
   }
 
-  def typecheckQuery(rq: RunQuery[Id], ctx: Context, onError: String => Unit)
-    : RunQuery[WithSymbol] = {
+  def typecheckQuery(rq: RunQuery, ctx: Context, onError: String => Unit): RunQuery = {
     val matchingServices = ctx
       .availableServices
       .filter((k, _) => ctx.importedServices.contains(k))
-      .filter(_._2.map(_.name).contains_(rq.opName))
+      .filter(_._2.map(_.name).contains_(rq.opName.value))
 
     if (matchingServices.size > 1) {
       onError(
@@ -125,7 +127,7 @@ object Typer {
     }
 
     val (matchingServiceName, operations) = matchingServices.head
-    val op = operations.find(_.name == rq.opName).get
+    val op = operations.find(_.name == rq.opName.value).get
 
     val newCtx = ctx.copy(currentSchema = op.input.some)
 
@@ -173,14 +175,14 @@ val ctx = Context.fromServiceIndex(
   )
 )
 
-val sampleQuery = SourceFile[Id](
+val sampleQuery = SourceFile(
   importedServices = List("UserService"),
   variables = ListMap(
     "userLimit" -> Node.Num(10),
     "maxUsers" -> Node.Ident("userLimit"),
   ),
   rq = RunQuery(
-    opName = "GetUsers",
+    opName = WithSymbol("GetUsers", Symbol.NoSymbol, Span(10, 18)),
     input = Node.Ident("maxUsers"),
   ),
 )
@@ -198,6 +200,8 @@ assert(errorsList.isEmpty, errorsList.mkString("\n"))
 checked.rq.opName
 checked.rq.opName.sym
 checked.rq.opName.sym.asOpRef.operation.input
+
+checked.rq.opName.sym.asOpRef.operation.definitionSource
 
 // val sampleQueryElaborated = SourceFile(
 //   importedServices = List(("UserService", SymbolRef("service:UserService"))),
