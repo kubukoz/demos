@@ -3,6 +3,7 @@
 import cats.syntax.all.*
 import cats.data.EitherNel
 import scala.collection.immutable.SortedMap
+import scala.collection.immutable.ListMap
 
 enum Node {
   case Strink(s: String)
@@ -26,7 +27,7 @@ enum Node {
 
 case class SourceFile(
   importedServices: List[String],
-  variables: Map[String, Node],
+  variables: ListMap[String, Node],
   rq: RunQuery,
 )
 
@@ -174,7 +175,7 @@ val ctx = Context.fromServiceIndex(
 
 val sampleQuery = SourceFile(
   importedServices = List("UserService"),
-  variables = Map(
+  variables = ListMap(
     "userLimit" -> Node.Num(10),
     "maxUsers" -> Node.Ident("userLimit"),
   ),
