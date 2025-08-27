@@ -5,22 +5,27 @@ import cats.data.EitherNel
 import scala.collection.immutable.SortedMap
 import scala.collection.immutable.ListMap
 
+enum Symbol {
+  case NoSymbol
+  case OperationRef(service: String, operation: KnownOperation)
+
+  def asOpRef =
+    this match {
+      case orr: OperationRef => orr
+      case NoSymbol          => throw new Exception("Not an operation reference")
+    }
+}
+
 enum Node {
   case Strink(s: String)
   case Num(n: Int)
-  case NodeMap(map: Map[String, Node])
-  case Ident(name: String)
+  case Ident(name: String, sym: Symbol = Symbol.NoSymbol)
 
   def toType(variablesInScope: Map[String, Type]): EitherNel[String, Type] =
     this match {
       case Strink(_) => Type.Str.asRight
       case Num(_)    => Type.Int.asRight
-      case NodeMap(fields) =>
-        fields
-          .to(SortedMap)
-          .traverse(_.toType(variablesInScope))
-          .map(Type.Struct(_))
-      case Ident(k) =>
+      case Ident(k, _) =>
         variablesInScope.get(k).toRightNel(s"Referenced variable '$k' not found in scope.")
     }
 }
@@ -32,7 +37,7 @@ case class SourceFile(
 )
 
 case class RunQuery(
-  opName: String,
+  opName: Node.Ident,
   input: Node,
 )
 
@@ -40,7 +45,6 @@ enum Type {
   case NoType
   case Str
   case Int
-  case Struct(fields: Map[String, Type])
 
   def matchesType(of: Type): Boolean = this == of // no subtyping for now
 }
@@ -59,9 +63,12 @@ object Context {
 }
 
 object Typer {
-  type Result = Unit
 
-  def typecheckFile(sf: SourceFile, ctx: Context, onError: String => Unit): Result = {
+  def typecheckFile(
+    sf: SourceFile,
+    ctx: Context,
+    onError: String => Unit,
+  ): SourceFile = {
 
     val (existingSvcs, nonexistingSvcs) = sf
       .importedServices
@@ -88,14 +95,15 @@ object Typer {
       variablesInScope = resolvedVars.scope,
     )
 
-    typecheckQuery(sf.rq, newCtx, onError)
+    val newRQ = typecheckQuery(sf.rq, newCtx, onError)
+    sf.copy(rq = newRQ)
   }
 
-  def typecheckQuery(rq: RunQuery, ctx: Context, onError: String => Unit): Result = {
+  def typecheckQuery(rq: RunQuery, ctx: Context, onError: String => Unit): RunQuery = {
     val matchingServices = ctx
       .availableServices
       .filter((k, _) => ctx.importedServices.contains(k))
-      .filter(_._2.map(_.name).contains_(rq.opName))
+      .filter(_._2.map(_.name).contains_(rq.opName.name))
 
     if (matchingServices.size > 1) {
       onError(
@@ -110,54 +118,41 @@ object Typer {
     }
 
     val (matchingServiceName, operations) = matchingServices.head
-    val op = operations.find(_.name == rq.opName).get
+    val op = operations.find(_.name == rq.opName.name).get
 
     val newCtx = ctx.copy(currentSchema = op.input.some)
 
-    typecheckNode(rq.input, newCtx, onError)
+    val newInput = typecheckNode(rq.input, newCtx, onError)
+    rq.copy(
+      opName = rq
+        .opName
+        .copy(sym = Symbol.OperationRef(matchingServiceName, op)),
+      input = newInput,
+    )
   }
 
-  def typecheckNode(node: Node, ctx: Context, onError: String => Unit): Result =
+  def typecheckNode(node: Node, ctx: Context, onError: String => Unit): Node =
     ctx.currentSchema match {
-      case None         => onError("No schema available for typechecking.")
+      case None         => onError("No schema available for typechecking."); node
       case Some(schema) => typecheckNodeInternal(node, schema, ctx, onError)
     }
 
   private def typecheckNodeInternal(node: Node, schema: Type, ctx: Context, onError: String => Unit)
-    : Result =
+    : Node =
     (node, schema) match {
-      case (Node.Ident(name), tpe) =>
+      case (Node.Ident(name, _), tpe) =>
         ctx.variablesInScope.get(name) match {
-          case None => onError(s"Variable '$name' is not defined in the current scope.")
+          case None => onError(s"Variable '$name' is not defined in the current scope."); node
           case Some(varType) =>
             if (!varType.matchesType(tpe)) {
               onError(s"Type mismatch for variable '$name': expected $tpe but found $varType")
             }
+            node
         }
 
-      case (Node.Strink(_), Type.Str) => // ok
-      case (Node.Num(_), Type.Int)    => // ok
-      case (Node.NodeMap(fields), Type.Struct(fieldTypes)) =>
-        val missingFields = fieldTypes -- fields.keySet
-        val extraneousFields = fields -- fieldTypes.keySet
-        val knownPresentFields = fields.keySet.intersect(fieldTypes.keySet)
-
-        missingFields.foreach { f =>
-          onError(s"Missing required field '$f' in input object.")
-        }
-
-        extraneousFields.foreach { f =>
-          onError(s"Extraneous field '$f' in input object.")
-        }
-
-        knownPresentFields.foreach { knownFieldKey =>
-          val fieldNode = fields(knownFieldKey)
-          val fieldType = fieldTypes(knownFieldKey)
-
-          typecheckNodeInternal(fieldNode, fieldType, ctx, onError)
-        }
-
-      case _ => onError(s"Type mismatch: node $node does not conform to schema $schema")
+      case (Node.Strink(_), Type.Str) => node // ok
+      case (Node.Num(_), Type.Int)    => node // ok
+      case _ => onError(s"Type mismatch: node $node does not conform to schema $schema"); node
     }
 }
 
@@ -166,10 +161,10 @@ val ctx = Context.fromServiceIndex(
   // so we have to initialize it straight up like that
   Map(
     "UserService" -> List(
-      KnownOperation("GetUsers", Type.Struct(Map("filter" -> Type.Str, "limit" -> Type.Int))),
-      KnownOperation("CreateUser", Type.Struct(Map("name" -> Type.Str))),
+      KnownOperation("GetUsers", Type.Int),
+      KnownOperation("CreateUser", Type.Str),
     ),
-    "OrderService" -> List(KnownOperation("Refresh", Type.Struct(Map.empty))),
+    "OrderService" -> List(KnownOperation("Refresh", Type.Str)),
   )
 )
 
@@ -180,23 +175,25 @@ val sampleQuery = SourceFile(
     "maxUsers" -> Node.Ident("userLimit"),
   ),
   rq = RunQuery(
-    opName = "GetUsers",
-    input = Node.NodeMap(
-      Map(
-        "filter" -> Node.Strink("active"),
-        "limit" -> Node.Ident("maxUsers"),
-      )
-    ),
+    opName = Node.Ident("GetUsers"),
+    input = Node.Ident("maxUsers"),
   ),
 )
 
+sampleQuery.rq.opName
+sampleQuery.rq.opName.sym
+
 val errors = List.newBuilder[String]
 
-Typer.typecheckFile(sampleQuery, ctx, errors.addOne)
+val checked = Typer.typecheckFile(sampleQuery, ctx, errors.addOne)
 
 val errorsList = errors.result()
 
 assert(errorsList.isEmpty, errorsList.mkString("\n"))
+
+checked.rq.opName
+checked.rq.opName.sym
+checked.rq.opName.sym.asOpRef.operation.input
 
 // val sampleQueryElaborated = SourceFile(
 //   importedServices = List(("UserService", SymbolRef("service:UserService"))),
