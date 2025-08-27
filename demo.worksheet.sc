@@ -4,6 +4,12 @@ import cats.syntax.all.*
 import cats.data.EitherNel
 import scala.collection.immutable.SortedMap
 import scala.collection.immutable.ListMap
+import cats.Id
+
+opaque type WithSymbol[A] = (value: A, sym: Symbol)
+extension [A](a: A) {
+  def withSym(sym: Symbol): WithSymbol[A] = (a, sym)
+}
 
 enum Symbol {
   case NoSymbol
@@ -19,25 +25,25 @@ enum Symbol {
 enum Node {
   case Strink(s: String)
   case Num(n: Int)
-  case Ident(name: String, sym: Symbol = Symbol.NoSymbol)
+  case Ident(name: String)
 
   def toType(variablesInScope: Map[String, Type]): EitherNel[String, Type] =
     this match {
       case Strink(_) => Type.Str.asRight
       case Num(_)    => Type.Int.asRight
-      case Ident(k, _) =>
+      case Ident(k) =>
         variablesInScope.get(k).toRightNel(s"Referenced variable '$k' not found in scope.")
     }
 }
 
-case class SourceFile(
+case class SourceFile[F[_]](
   importedServices: List[String],
   variables: ListMap[String, Node],
-  rq: RunQuery,
+  rq: RunQuery[F],
 )
 
-case class RunQuery(
-  opName: Node.Ident,
+case class RunQuery[F[_]](
+  opName: F[String],
   input: Node,
 )
 
@@ -48,7 +54,7 @@ enum Type {
 
   def matchesType(of: Type): Boolean = this == of // no subtyping for now
 }
-case class KnownOperation(name: String, input: Type)
+case class KnownOperation(name: String, input: Type, definitionSource: String)
 
 case class Context(
   availableServices: Map[String, List[KnownOperation]],
@@ -65,10 +71,10 @@ object Context {
 object Typer {
 
   def typecheckFile(
-    sf: SourceFile,
+    sf: SourceFile[Id],
     ctx: Context,
     onError: String => Unit,
-  ): SourceFile = {
+  ): SourceFile[WithSymbol] = {
 
     val (existingSvcs, nonexistingSvcs) = sf
       .importedServices
@@ -99,11 +105,12 @@ object Typer {
     sf.copy(rq = newRQ)
   }
 
-  def typecheckQuery(rq: RunQuery, ctx: Context, onError: String => Unit): RunQuery = {
+  def typecheckQuery(rq: RunQuery[Id], ctx: Context, onError: String => Unit)
+    : RunQuery[WithSymbol] = {
     val matchingServices = ctx
       .availableServices
       .filter((k, _) => ctx.importedServices.contains(k))
-      .filter(_._2.map(_.name).contains_(rq.opName.name))
+      .filter(_._2.map(_.name).contains_(rq.opName))
 
     if (matchingServices.size > 1) {
       onError(
@@ -118,15 +125,13 @@ object Typer {
     }
 
     val (matchingServiceName, operations) = matchingServices.head
-    val op = operations.find(_.name == rq.opName.name).get
+    val op = operations.find(_.name == rq.opName).get
 
     val newCtx = ctx.copy(currentSchema = op.input.some)
 
     val newInput = typecheckNode(rq.input, newCtx, onError)
     rq.copy(
-      opName = rq
-        .opName
-        .copy(sym = Symbol.OperationRef(matchingServiceName, op)),
+      opName = rq.opName.withSym(Symbol.OperationRef(matchingServiceName, op)),
       input = newInput,
     )
   }
@@ -140,7 +145,7 @@ object Typer {
   private def typecheckNodeInternal(node: Node, schema: Type, ctx: Context, onError: String => Unit)
     : Node =
     (node, schema) match {
-      case (Node.Ident(name, _), tpe) =>
+      case (Node.Ident(name), tpe) =>
         ctx.variablesInScope.get(name) match {
           case None => onError(s"Variable '$name' is not defined in the current scope."); node
           case Some(varType) =>
@@ -161,27 +166,26 @@ val ctx = Context.fromServiceIndex(
   // so we have to initialize it straight up like that
   Map(
     "UserService" -> List(
-      KnownOperation("GetUsers", Type.Int),
-      KnownOperation("CreateUser", Type.Str),
+      KnownOperation("GetUsers", Type.Int, "/getusers.smithy"),
+      KnownOperation("CreateUser", Type.Str, "/createuser.smithy"),
     ),
-    "OrderService" -> List(KnownOperation("Refresh", Type.Str)),
+    "OrderService" -> List(KnownOperation("Refresh", Type.Str, "/orderservice.smithy")),
   )
 )
 
-val sampleQuery = SourceFile(
+val sampleQuery = SourceFile[Id](
   importedServices = List("UserService"),
   variables = ListMap(
     "userLimit" -> Node.Num(10),
     "maxUsers" -> Node.Ident("userLimit"),
   ),
   rq = RunQuery(
-    opName = Node.Ident("GetUsers"),
+    opName = "GetUsers",
     input = Node.Ident("maxUsers"),
   ),
 )
 
 sampleQuery.rq.opName
-sampleQuery.rq.opName.sym
 
 val errors = List.newBuilder[String]
 
