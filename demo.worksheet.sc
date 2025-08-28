@@ -8,21 +8,28 @@ import cats.Id
 
 case class Span(start: Int, end: Int)
 
-case class WithSymbol[A](value: A, sym: Symbol, span: Span)
+case class WithSymbol[A](value: A, sym: SymbolId, span: Span)
 
 extension [A](a: WithSymbol[A]) {
-  def withSym(sym: Symbol): WithSymbol[A] = a.copy(sym = sym)
-}
-
-enum Symbol {
-  case NoSymbol
-  case SymbolRef(id: SymbolId)
+  def withSym(sym: SymbolId): WithSymbol[A] = a.copy(sym = sym)
 }
 
 case class SymbolId(id: String)
+object SymbolId {
+  val Empty = SymbolId("<empty>")
+}
 
 enum SymbolDef {
   case Operation(service: String, operation: KnownOperation)
+}
+
+object SymbolDef {
+  extension (sd: SymbolDef) {
+    def definitionSource: String =
+      sd match {
+        case Operation(_, op) => op.definitionSource
+      }
+  }
 }
 
 enum Node {
@@ -75,11 +82,14 @@ case class Compiler(
   var symbolTable: Map[SymbolId, SymbolDef] = Map.empty,
   var referenceMap: Map[SymbolId, List[Span]] = Map.empty,
 ) {
-  def findSymbol(ref: Symbol): Either["NoSymbol" | "SymbolNotFound", SymbolDef] =
-    ref match {
-      case Symbol.NoSymbol      => Left("NoSymbol")
-      case Symbol.SymbolRef(id) => symbolTable.get(id).toRight("SymbolNotFound")
-    }
+  def findSymbol(ref: SymbolId): Either["SymbolNotFound", SymbolDef] = symbolTable
+    .get(ref)
+    .toRight("SymbolNotFound")
+
+  lazy val definitionMap: Map[Span, List[SymbolId]] = referenceMap.toList.foldMap {
+    case (definitionSymbol, referenceSpans) => referenceSpans.map(_ -> List(definitionSymbol)).toMap
+  }
+
 }
 
 object Typer {
@@ -172,7 +182,7 @@ object Typer {
 
     val newInput = typecheckNode(rq.input, newCtx, onError)
     rq.copy(
-      opName = rq.opName.withSym(Symbol.SymbolRef(opSymbol)),
+      opName = rq.opName.withSym(opSymbol),
       input = newInput,
     )
   }
@@ -221,7 +231,7 @@ val sampleQuery = SourceFile(
     "maxUsers" -> Node.Ident("userLimit"),
   ),
   rq = RunQuery(
-    opName = WithSymbol("GetUsers", Symbol.NoSymbol, Span(10, 18)),
+    opName = WithSymbol("GetUsers", SymbolId.Empty, Span(10, 18)),
     input = Node.Ident("maxUsers"),
   ),
 )
@@ -245,7 +255,10 @@ checked.rq.opName.sym
 
 c.findSymbol(checked.rq.opName.sym).toOption.get.asInstanceOf[SymbolDef.Operation].operation.input
 
-c.referenceMap.getOrElse(checked.rq.opName.sym.asInstanceOf[Symbol.SymbolRef].id, Nil)
+c.referenceMap(checked.rq.opName.sym)
+c.definitionMap(checked.rq.opName.span)
+  .map(c.findSymbol(_).toOption.get)
+  .map(_.definitionSource)
 
 // checked.rq.opName.sym.asOpRef.operation.definitionSource
 
