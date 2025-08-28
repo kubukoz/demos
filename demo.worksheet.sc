@@ -35,6 +35,7 @@ object SymbolDef {
     def definitionSource: String =
       sd match {
         case Operation(_, op) => op.definitionSource
+        case Service(name)    => s"Service $name (no source)"
       }
   }
 }
@@ -171,69 +172,6 @@ object Typer {
 
   def serviceSymbolId(serviceName: String): SymbolId = SymbolId(s"service:$serviceName")
 
-  private def resolveServiceReference(
-    opName: String,
-    explicitRef: Option[String],
-    ctx: Context,
-    onError: String => Unit,
-  ): Option[(String, List[KnownOperation])] = resolveExplicitService(
-    opName,
-    explicitRef,
-    ctx,
-    onError,
-  ).getOrElse {
-    resolveImplicitService(opName, ctx, onError)
-  }
-
-  // outer option if "not explicit", inner option for actual failures (we don't attempt implicit resolution then)
-  private def resolveExplicitService(
-    opName: String,
-    explicitRef: Option[String],
-    ctx: Context,
-    onError: String => Unit,
-  ): Option[Option[(String, List[KnownOperation])]] =
-    // first check if there's an explicit ref
-    explicitRef.map { serviceId =>
-      // at this point it exists
-      val ops = ctx.availableServices(serviceId)
-      // check if the op is known
-      if (ops.exists(_.name == opName)) {
-        Some((serviceId, ops))
-      } else {
-        onError(s"Operation '$opName' not found in service '$serviceId'.")
-        None
-      }
-    }
-
-  private def resolveImplicitService(
-    opName: String,
-    ctx: Context,
-    onError: String => Unit,
-  ): Option[(String, List[KnownOperation])] = {
-
-    val matchingServices = ctx
-      .availableServices
-      .filter((k, _) => ctx.importedServices.contains(k))
-      .filter(_._2.map(_.name).contains_(opName))
-
-    if (matchingServices.size > 1) {
-      onError(
-        s"Operation '$opName' is ambiguous, found in services: ${matchingServices.keys.mkString(", ")}"
-      )
-    } else if (matchingServices.isEmpty) {
-      onError(
-        s"Operation '$opName' not found in imported services: ${ctx.importedServices.mkString(", ")}"
-      )
-    } else {
-      // all good
-    }
-
-    if (matchingServices.size != 1)
-      None
-    else
-      Some(matchingServices.head)
-  }
-
   def typecheckQuery(
     rq: RunQuery,
     ctx: Context,
@@ -322,6 +260,70 @@ object Typer {
       case (Node.Num(_), Type.Int)    => node // ok
       case _ => onError(s"Type mismatch: node $node does not conform to schema $schema"); node
     }
+
+  private def resolveServiceReference(
+    opName: String,
+    explicitRef: Option[String],
+    ctx: Context,
+    onError: String => Unit,
+  ): Option[(String, List[KnownOperation])] = resolveExplicitService(
+    opName,
+    explicitRef,
+    ctx,
+    onError,
+  ).getOrElse {
+    resolveImplicitService(opName, ctx, onError)
+  }
+
+  // outer option if "not explicit", inner option for actual failures (we don't attempt implicit resolution then)
+  private def resolveExplicitService(
+    opName: String,
+    explicitRef: Option[String],
+    ctx: Context,
+    onError: String => Unit,
+  ): Option[Option[(String, List[KnownOperation])]] =
+    // first check if there's an explicit ref
+    explicitRef.map { serviceId =>
+      // at this point it exists
+      val ops = ctx.availableServices(serviceId)
+      // check if the op is known
+      if (ops.exists(_.name == opName)) {
+        Some((serviceId, ops))
+      } else {
+        onError(s"Operation '$opName' not found in service '$serviceId'.")
+        None
+      }
+    }
+
+  private def resolveImplicitService(
+    opName: String,
+    ctx: Context,
+    onError: String => Unit,
+  ): Option[(String, List[KnownOperation])] = {
+
+    val matchingServices = ctx
+      .availableServices
+      .filter((k, _) => ctx.importedServices.contains(k))
+      .filter(_._2.map(_.name).contains_(opName))
+
+    if (matchingServices.size > 1) {
+      onError(
+        s"Operation '$opName' is ambiguous, found in services: ${matchingServices.keys.mkString(", ")}"
+      )
+    } else if (matchingServices.isEmpty) {
+      onError(
+        s"Operation '$opName' not found in imported services: ${ctx.importedServices.mkString(", ")}"
+      )
+    } else {
+      // all good
+    }
+
+    if (matchingServices.size != 1)
+      None
+    else
+      Some(matchingServices.head)
+  }
+
 }
 
 val ctx = Context.fromServiceIndex(
