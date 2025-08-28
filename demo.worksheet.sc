@@ -16,13 +16,12 @@ extension [A](a: WithSymbol[A]) {
 
 enum Symbol {
   case NoSymbol
-  case OperationRef(service: String, operation: KnownOperation)
+  case SymbolRef(id: String)
 
-  def asOpRef =
-    this match {
-      case orr: OperationRef => orr
-      case NoSymbol          => throw new Exception("Not an operation reference")
-    }
+}
+
+enum SymbolDef {
+  case Operation(service: String, operation: KnownOperation)
 }
 
 enum Node {
@@ -71,13 +70,32 @@ object Context {
   def fromServiceIndex(services: Map[String, List[KnownOperation]]) = Context(services)
 }
 
+case class Compiler(var symbolTable: Map[String, SymbolDef]) {
+  def findSymbol(ref: Symbol): Either["NoSymbol" | "SymbolNotFound", SymbolDef] =
+    ref match {
+      case Symbol.NoSymbol      => Left("NoSymbol")
+      case Symbol.SymbolRef(id) => symbolTable.get(id).toRight("SymbolNotFound")
+    }
+}
+
 object Typer {
 
   def typecheckFile(
     sf: SourceFile,
     ctx: Context,
     onError: String => Unit,
+  )(
+    using c: Compiler
   ): SourceFile = {
+
+    ctx.availableServices.foreach { case (svcName, ops) =>
+      ops.foreach { knownOp =>
+        c.symbolTable +=
+          (operationSymbolId(svcName, knownOp.name) ->
+            SymbolDef
+              .Operation(svcName, knownOp))
+      }
+    }
 
     val (existingSvcs, nonexistingSvcs) = sf
       .importedServices
@@ -108,7 +126,17 @@ object Typer {
     sf.copy(rq = newRQ)
   }
 
-  def typecheckQuery(rq: RunQuery, ctx: Context, onError: String => Unit): RunQuery = {
+  def operationSymbolId(serviceName: String, opName: String): String =
+    s"service:$serviceName#operation:$opName"
+
+  def typecheckQuery(
+    rq: RunQuery,
+    ctx: Context,
+    onError: String => Unit,
+  )(
+    using c: Compiler
+  ): RunQuery = {
+
     val matchingServices = ctx
       .availableServices
       .filter((k, _) => ctx.importedServices.contains(k))
@@ -133,7 +161,7 @@ object Typer {
 
     val newInput = typecheckNode(rq.input, newCtx, onError)
     rq.copy(
-      opName = rq.opName.withSym(Symbol.OperationRef(matchingServiceName, op)),
+      opName = rq.opName.withSym(Symbol.SymbolRef(operationSymbolId(matchingServiceName, op.name))),
       input = newInput,
     )
   }
@@ -191,7 +219,11 @@ sampleQuery.rq.opName
 
 val errors = List.newBuilder[String]
 
+given c: Compiler = Compiler(Map.empty)
+
 val checked = Typer.typecheckFile(sampleQuery, ctx, errors.addOne)
+
+c.symbolTable
 
 val errorsList = errors.result()
 
@@ -199,9 +231,10 @@ assert(errorsList.isEmpty, errorsList.mkString("\n"))
 
 checked.rq.opName
 checked.rq.opName.sym
-checked.rq.opName.sym.asOpRef.operation.input
 
-checked.rq.opName.sym.asOpRef.operation.definitionSource
+c.findSymbol(checked.rq.opName.sym).toOption.get.asInstanceOf[SymbolDef.Operation].operation.input
+
+// checked.rq.opName.sym.asOpRef.operation.definitionSource
 
 // val sampleQueryElaborated = SourceFile(
 //   importedServices = List(("UserService", SymbolRef("service:UserService"))),
