@@ -70,7 +70,10 @@ object Context {
   def fromServiceIndex(services: Map[String, List[KnownOperation]]) = Context(services)
 }
 
-case class Compiler(var symbolTable: Map[String, SymbolDef]) {
+case class Compiler(
+  var symbolTable: Map[String, SymbolDef] = Map.empty,
+  var referenceMap: Map[String, List[Span]] = Map.empty,
+) {
   def findSymbol(ref: Symbol): Either["NoSymbol" | "SymbolNotFound", SymbolDef] =
     ref match {
       case Symbol.NoSymbol      => Left("NoSymbol")
@@ -157,11 +160,17 @@ object Typer {
     val (matchingServiceName, operations) = matchingServices.head
     val op = operations.find(_.name == rq.opName.value).get
 
+    val opSymbol = operationSymbolId(matchingServiceName, op.name)
+
+    c.referenceMap += (
+      opSymbol -> (c.referenceMap.getOrElse(opSymbol, Nil) :+ rq.opName.span)
+    )
+
     val newCtx = ctx.copy(currentSchema = op.input.some)
 
     val newInput = typecheckNode(rq.input, newCtx, onError)
     rq.copy(
-      opName = rq.opName.withSym(Symbol.SymbolRef(operationSymbolId(matchingServiceName, op.name))),
+      opName = rq.opName.withSym(Symbol.SymbolRef(opSymbol)),
       input = newInput,
     )
   }
@@ -233,6 +242,8 @@ checked.rq.opName
 checked.rq.opName.sym
 
 c.findSymbol(checked.rq.opName.sym).toOption.get.asInstanceOf[SymbolDef.Operation].operation.input
+
+c.referenceMap.getOrElse(checked.rq.opName.sym.asInstanceOf[Symbol.SymbolRef].id, Nil)
 
 // checked.rq.opName.sym.asOpRef.operation.definitionSource
 
