@@ -16,9 +16,10 @@ extension [A](a: WithSymbol[A]) {
 
 enum Symbol {
   case NoSymbol
-  case SymbolRef(id: String)
-
+  case SymbolRef(id: SymbolId)
 }
+
+case class SymbolId(id: String)
 
 enum SymbolDef {
   case Operation(service: String, operation: KnownOperation)
@@ -71,8 +72,8 @@ object Context {
 }
 
 case class Compiler(
-  var symbolTable: Map[String, SymbolDef] = Map.empty,
-  var referenceMap: Map[String, List[Span]] = Map.empty,
+  var symbolTable: Map[SymbolId, SymbolDef] = Map.empty,
+  var referenceMap: Map[SymbolId, List[Span]] = Map.empty,
 ) {
   def findSymbol(ref: Symbol): Either["NoSymbol" | "SymbolNotFound", SymbolDef] =
     ref match {
@@ -129,8 +130,9 @@ object Typer {
     sf.copy(rq = newRQ)
   }
 
-  def operationSymbolId(serviceName: String, opName: String): String =
+  def operationSymbolId(serviceName: String, opName: String): SymbolId = SymbolId(
     s"service:$serviceName#operation:$opName"
+  )
 
   def typecheckQuery(
     rq: RunQuery,
