@@ -22,6 +22,12 @@ object SymbolId {
 enum SymbolDef {
   case Service(name: String)
   case Operation(service: String, operation: KnownOperation)
+
+  def id: SymbolId =
+    this match {
+      case Service(name)      => Typer.serviceSymbolId(name)
+      case Operation(svc, op) => Typer.operationSymbolId(svc, op.name)
+    }
 }
 
 object SymbolDef {
@@ -48,7 +54,7 @@ enum Node {
 }
 
 case class SourceFile(
-  importedServices: List[String],
+  importedServices: List[WithSymbol[String]],
   variables: ListMap[String, Node],
   rq: RunQuery,
 )
@@ -92,6 +98,16 @@ case class Compiler(
     .get(ref)
     .toRight(("SymbolNotFound", ref))
 
+  def addSymbol(sym: SymbolDef): Unit = {
+    val id = sym.id
+    if (symbolTable.contains(id))
+      throw new Exception(s"Symbol $id already exists in the symbol table.")
+    symbolTable += (id -> sym)
+  }
+
+  def addReference(sym: SymbolId, span: Span): Unit =
+    referenceMap += (sym -> (referenceMap.getOrElse(sym, Nil) :+ span))
+
   lazy val definitionMap: Map[Span, List[SymbolId]] = referenceMap.toList.foldMap {
     case (definitionSymbol, referenceSpans) => referenceSpans.map(_ -> List(definitionSymbol)).toMap
   }
@@ -109,23 +125,23 @@ object Typer {
   ): SourceFile = {
 
     ctx.availableServices.foreach { case (svcName, ops) =>
-      c.symbolTable +=
-        (serviceSymbolId(svcName) -> SymbolDef.Service(svcName))
+      c.addSymbol(SymbolDef.Service(svcName))
 
       ops.foreach { knownOp =>
-        c.symbolTable +=
-          (operationSymbolId(svcName, knownOp.name) ->
-            SymbolDef
-              .Operation(svcName, knownOp))
+        c.addSymbol(SymbolDef.Operation(svcName, knownOp))
       }
     }
 
     val (existingSvcs, nonexistingSvcs) = sf
       .importedServices
-      .partition(ctx.availableServices.keySet.contains_)
+      .partition(s => ctx.availableServices.keySet.contains_(s.value))
 
     nonexistingSvcs.foreach { s =>
       onError(s"Service '$s' is not available.")
+    }
+
+    existingSvcs.foreach { useStatement =>
+      c.addReference(serviceSymbolId(useStatement.value), useStatement.span)
     }
 
     val resolvedVars =
@@ -141,7 +157,7 @@ object Typer {
 
     val newCtx = ctx.copy(
       // or pass them all, even the nonexisting ones?
-      importedServices = existingSvcs,
+      importedServices = existingSvcs.map(_.value),
       variablesInScope = resolvedVars.scope,
     )
 
@@ -253,15 +269,17 @@ object Typer {
 
     val opSymbol = operationSymbolId(matchingServiceName, op.name)
 
-    c.referenceMap += (
-      opSymbol -> (c.referenceMap.getOrElse(opSymbol, Nil) :+ rq.opName.opName.span)
+    c.addReference(
+      opSymbol,
+      rq.opName.opName.span,
     )
 
     val serviceSymbol = serviceSymbolId(matchingServiceName)
 
     rq.opName.serviceId.foreach { serviceId =>
-      c.referenceMap += (
-        serviceSymbol -> (c.referenceMap.getOrElse(serviceSymbol, Nil) :+ serviceId.span)
+      c.addReference(
+        serviceSymbol,
+        serviceId.span,
       )
     }
 
@@ -319,7 +337,7 @@ val ctx = Context.fromServiceIndex(
 )
 
 val sampleQuery = SourceFile(
-  importedServices = List("UserService"),
+  importedServices = List(WithSymbol("UserService", SymbolId.Empty, Span(0, 0))),
   variables = ListMap(
     "userLimit" -> Node.Num(10),
     "maxUsers" -> Node.Ident("userLimit"),
@@ -334,7 +352,10 @@ val sampleQuery = SourceFile(
 )
 
 val sampleQueryExplicitService = SourceFile(
-  importedServices = List("UserService"),
+  importedServices = List(
+    WithSymbol("OrderService", SymbolId.Empty, Span(21, 37)),
+    WithSymbol("UserService", SymbolId.Empty, Span(2, 5)),
+  ),
   variables = ListMap(
     "data" -> Node.Strink("20")
   ),
@@ -372,6 +393,9 @@ checked
 
 checked.rq.opName
 checked.rq.opName.opName.sym
+
+c.findSymbol(checked.rq.opName.serviceId.get.sym).toOption.get
+c.referenceMap(checked.rq.opName.serviceId.get.sym)
 
 c.findSymbol(checked.rq.opName.opName.sym)
   .toOption
