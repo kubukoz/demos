@@ -52,8 +52,13 @@ case class SourceFile(
   rq: RunQuery,
 )
 
-case class RunQuery(
+case class OperationName(
+  serviceId: Option[WithSymbol[String]],
   opName: WithSymbol[String],
+)
+
+case class RunQuery(
+  opName: OperationName,
   input: Node,
 )
 
@@ -144,6 +149,69 @@ object Typer {
     s"service:$serviceName#operation:$opName"
   )
 
+  def resolveServiceReference(
+    opName: String,
+    explicitRef: Option[String],
+    ctx: Context,
+    onError: String => Unit,
+  ): Option[(String, List[KnownOperation])] = resolveExplicitService(
+    opName,
+    explicitRef,
+    ctx,
+    onError,
+  ).getOrElse {
+    resolveImplicitService(opName, ctx, onError)
+  }
+
+  // outer option if "not explicit", inner option for actual failures (we don't attempt implicit resolution then)
+  private def resolveExplicitService(
+    opName: String,
+    explicitRef: Option[String],
+    ctx: Context,
+    onError: String => Unit,
+  ): Option[Option[(String, List[KnownOperation])]] =
+    // first check if there's an explicit ref
+    explicitRef.map { serviceId =>
+      // at this point it exists
+      val ops = ctx.availableServices(serviceId)
+      // check if the op is known
+      if (ops.exists(_.name == opName)) {
+        Some((serviceId, ops))
+      } else {
+        onError(s"Operation '$opName' not found in service '$serviceId'.")
+        None
+      }
+    }
+
+  private def resolveImplicitService(
+    opName: String,
+    ctx: Context,
+    onError: String => Unit,
+  ): Option[(String, List[KnownOperation])] = {
+
+    val matchingServices = ctx
+      .availableServices
+      .filter((k, _) => ctx.importedServices.contains(k))
+      .filter(_._2.map(_.name).contains_(opName))
+
+    if (matchingServices.size > 1) {
+      onError(
+        s"Operation '$opName' is ambiguous, found in services: ${matchingServices.keys.mkString(", ")}"
+      )
+    } else if (matchingServices.isEmpty) {
+      onError(
+        s"Operation '$opName' not found in imported services: ${ctx.importedServices.mkString(", ")}"
+      )
+    } else {
+      // all good
+    }
+
+    if (matchingServices.size != 1)
+      None
+    else
+      Some(matchingServices.head)
+  }
+
   def typecheckQuery(
     rq: RunQuery,
     ctx: Context,
@@ -151,40 +219,50 @@ object Typer {
   )(
     using c: Compiler
   ): RunQuery = {
-
-    val matchingServices = ctx
-      .availableServices
-      .filter((k, _) => ctx.importedServices.contains(k))
-      .filter(_._2.map(_.name).contains_(rq.opName.value))
-
-    if (matchingServices.size > 1) {
-      onError(
-        s"Operation '${rq.opName}' is ambiguous, found in services: ${matchingServices.keys.mkString(", ")}"
-      )
-    } else if (matchingServices.isEmpty) {
-      onError(
-        s"Operation '${rq.opName}' not found in imported services: ${ctx.importedServices.mkString(", ")}"
-      )
-    } else {
-      // all good
+    rq.opName.serviceId.foreach { explicitService =>
+      if (!ctx.availableServices.contains(explicitService.value))
+        onError(
+          s"Service '${explicitService.value}' is not known, cannot be used as an explicit service reference."
+        )
     }
 
-    val (matchingServiceName, operations) = matchingServices.head
-    val op = operations.find(_.name == rq.opName.value).get
+    val matchingService = resolveServiceReference(
+      rq.opName.opName.value,
+      rq.opName.serviceId.map(_.value),
+      ctx,
+      onError,
+    )
+
+    if (matchingService.isEmpty)
+      return rq
+
+    val (matchingServiceName, operations) = matchingService.get
+
+    val op =
+      operations
+        .find(_.name == rq.opName.opName.value) match {
+        case None     => return rq // should not happen, we filtered above
+        case Some(op) => op
+      }
 
     val opSymbol = operationSymbolId(matchingServiceName, op.name)
 
     c.referenceMap += (
-      opSymbol -> (c.referenceMap.getOrElse(opSymbol, Nil) :+ rq.opName.span)
+      opSymbol -> (c.referenceMap.getOrElse(opSymbol, Nil) :+ rq.opName.opName.span)
     )
 
     val newCtx = ctx.copy(currentSchema = op.input.some)
 
     val newInput = typecheckNode(rq.input, newCtx, onError)
     rq.copy(
-      opName = rq.opName.withSym(opSymbol),
+      opName = rq
+        .opName
+        .copy(
+          opName = rq.opName.opName.withSym(opSymbol)
+        ),
       input = newInput,
     )
+
   }
 
   def typecheckNode(node: Node, ctx: Context, onError: String => Unit): Node =
@@ -231,8 +309,25 @@ val sampleQuery = SourceFile(
     "maxUsers" -> Node.Ident("userLimit"),
   ),
   rq = RunQuery(
-    opName = WithSymbol("GetUsers", SymbolId.Empty, Span(10, 18)),
+    opName = OperationName(
+      serviceId = None,
+      opName = WithSymbol("GetUsers", SymbolId.Empty, Span(10, 18)),
+    ),
     input = Node.Ident("maxUsers"),
+  ),
+)
+
+val sampleQueryExplicitService = SourceFile(
+  importedServices = List("UserService"),
+  variables = ListMap(
+    "data" -> Node.Strink("20")
+  ),
+  rq = RunQuery(
+    opName = OperationName(
+      serviceId = Some(WithSymbol("OrderService", SymbolId.Empty, Span(0, 10))),
+      opName = WithSymbol("Refresh", SymbolId.Empty, Span(10, 18)),
+    ),
+    input = Node.Ident("data"),
   ),
 )
 
@@ -242,7 +337,7 @@ val errors = List.newBuilder[String]
 
 given c: Compiler = Compiler(Map.empty)
 
-val checked = Typer.typecheckFile(sampleQuery, ctx, errors.addOne)
+val checked = Typer.typecheckFile(sampleQueryExplicitService, ctx, errors.addOne)
 
 c.symbolTable
 
@@ -251,31 +346,16 @@ val errorsList = errors.result()
 assert(errorsList.isEmpty, errorsList.mkString("\n"))
 
 checked.rq.opName
-checked.rq.opName.sym
+checked.rq.opName.opName.sym
 
-c.findSymbol(checked.rq.opName.sym).toOption.get.asInstanceOf[SymbolDef.Operation].operation.input
+c.findSymbol(checked.rq.opName.opName.sym)
+  .toOption
+  .get
+  .asInstanceOf[SymbolDef.Operation]
+  .operation
+  .input
 
-c.referenceMap(checked.rq.opName.sym)
-c.definitionMap(checked.rq.opName.span)
+c.referenceMap(checked.rq.opName.opName.sym)
+c.definitionMap(checked.rq.opName.opName.span)
   .map(c.findSymbol(_).toOption.get)
   .map(_.definitionSource)
-
-// checked.rq.opName.sym.asOpRef.operation.definitionSource
-
-// val sampleQueryElaborated = SourceFile(
-//   importedServices = List(("UserService", SymbolRef("service:UserService"))),
-//   variables = Map(
-//     ("userLimit", SymbolDef("variable:userLimit")) -> Node.Num(10),
-//     ("maxUsers", SymbolDef("variable:maxUsers")) -> Node.Ident("userLimit", SymbolRef("variable:userLimit")),
-//   ),
-//   rq = RunQuery(
-//     opName = SymbolRef("GetUsers", "service:UserService#operation:GetUsers"),
-//     input = Node.NodeMap(
-//       Map(
-// Q: should this also be a symbol def?
-//         ("filter", SymbolRef("service:UserService#operation:GetUsers#input#key:filter")) -> Node.Strink("active"),
-//         ...
-//       )
-//     ),
-//   ),
-// )
