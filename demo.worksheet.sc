@@ -290,7 +290,9 @@ object Typer {
       if (ops.exists(_.name == opName)) {
         Some((serviceId, ops))
       } else {
-        onError(s"Operation '$opName' not found in service '$serviceId'.")
+        onError(
+          s"Operation '$opName' not found in service '$serviceId'. ${suggest(opName, ops.map(_.name))}"
+        )
         None
       }
     }
@@ -312,7 +314,7 @@ object Typer {
       )
     } else if (matchingServices.isEmpty) {
       onError(
-        s"Operation '$opName' not found in imported services: ${ctx.importedServices.mkString(", ")}"
+        s"Operation '$opName' not found in imported services: ${ctx.importedServices.mkString(", ")}. ${suggest(opName, ctx.importedServices.flatMap(svc => ctx.availableServices(svc).map(_.name)))}"
       )
     } else {
       // all good
@@ -322,6 +324,46 @@ object Typer {
       None
     else
       Some(matchingServices.head)
+  }
+
+  private def suggest(actual: String, available: List[String]) =
+    s"Perhaps you meant one of: ${available
+        .map(op => op -> levenshtein(op, actual))
+        .toList
+        .sortBy(_._2)
+        .take(3)
+        .map(_._1)
+        .mkString(", ")}"
+
+  // thanks gpt
+  def levenshtein(s1: String, s2: String): Int = {
+    val lenStr1 = s1.length
+    val lenStr2 = s2.length
+    val d = Array.ofDim[Int](lenStr1 + 1, lenStr2 + 1)
+
+    for (i <- 0 to lenStr1)
+      d(i)(0) = i
+    for (j <- 0 to lenStr2)
+      d(0)(j) = j
+
+    for {
+      i <- 1 to lenStr1
+      j <- 1 to lenStr2
+    } {
+      val cost =
+        if (s1(i - 1) == s2(j - 1))
+          0
+        else
+          1
+      d(i)(j) =
+        List(
+          d(i - 1)(j) + 1, // deletion
+          d(i)(j - 1) + 1, // insertion
+          d(i - 1)(j - 1) + cost, // substitution
+        ).min
+    }
+
+    d(lenStr1)(lenStr2)
   }
 
 }
@@ -339,7 +381,10 @@ val ctx = Context.fromServiceIndex(
 )
 
 val sampleQuery = SourceFile(
-  importedServices = List(WithSymbol("UserService", SymbolId.Empty, Span(0, 0))),
+  importedServices = List(
+    WithSymbol("OrderService", SymbolId.Empty, Span(21, 37)),
+    WithSymbol("UserService", SymbolId.Empty, Span(2, 5)),
+  ),
   variables = ListMap(
     "userLimit" -> Node.Num(10),
     "maxUsers" -> Node.Ident("userLimit"),
