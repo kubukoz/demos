@@ -20,6 +20,7 @@ object SymbolId {
 }
 
 enum SymbolDef {
+  case Service(name: String)
   case Operation(service: String, operation: KnownOperation)
 }
 
@@ -87,9 +88,9 @@ case class Compiler(
   var symbolTable: Map[SymbolId, SymbolDef] = Map.empty,
   var referenceMap: Map[SymbolId, List[Span]] = Map.empty,
 ) {
-  def findSymbol(ref: SymbolId): Either["SymbolNotFound", SymbolDef] = symbolTable
+  def findSymbol(ref: SymbolId): Either[("SymbolNotFound", SymbolId), SymbolDef] = symbolTable
     .get(ref)
-    .toRight("SymbolNotFound")
+    .toRight(("SymbolNotFound", ref))
 
   lazy val definitionMap: Map[Span, List[SymbolId]] = referenceMap.toList.foldMap {
     case (definitionSymbol, referenceSpans) => referenceSpans.map(_ -> List(definitionSymbol)).toMap
@@ -108,6 +109,9 @@ object Typer {
   ): SourceFile = {
 
     ctx.availableServices.foreach { case (svcName, ops) =>
+      c.symbolTable +=
+        (serviceSymbolId(svcName) -> SymbolDef.Service(svcName))
+
       ops.foreach { knownOp =>
         c.symbolTable +=
           (operationSymbolId(svcName, knownOp.name) ->
@@ -149,7 +153,9 @@ object Typer {
     s"service:$serviceName#operation:$opName"
   )
 
-  def resolveServiceReference(
+  def serviceSymbolId(serviceName: String): SymbolId = SymbolId(s"service:$serviceName")
+
+  private def resolveServiceReference(
     opName: String,
     explicitRef: Option[String],
     ctx: Context,
@@ -251,14 +257,24 @@ object Typer {
       opSymbol -> (c.referenceMap.getOrElse(opSymbol, Nil) :+ rq.opName.opName.span)
     )
 
+    val serviceSymbol = serviceSymbolId(matchingServiceName)
+
+    rq.opName.serviceId.foreach { serviceId =>
+      c.referenceMap += (
+        serviceSymbol -> (c.referenceMap.getOrElse(serviceSymbol, Nil) :+ serviceId.span)
+      )
+    }
+
     val newCtx = ctx.copy(currentSchema = op.input.some)
 
     val newInput = typecheckNode(rq.input, newCtx, onError)
+
     rq.copy(
       opName = rq
         .opName
         .copy(
-          opName = rq.opName.opName.withSym(opSymbol)
+          serviceId = rq.opName.serviceId.map(_.withSym(serviceSymbol)),
+          opName = rq.opName.opName.withSym(opSymbol),
         ),
       input = newInput,
     )
@@ -344,6 +360,15 @@ c.symbolTable
 val errorsList = errors.result()
 
 assert(errorsList.isEmpty, errorsList.mkString("\n"))
+
+checked.rq.opName.serviceId.map(_.sym)
+
+checked
+  .rq
+  .opName
+  .serviceId
+  .map(_.sym)
+  .map(c.findSymbol(_).fold(v => sys.error(v.toString()), identity))
 
 checked.rq.opName
 checked.rq.opName.opName.sym
