@@ -1,5 +1,6 @@
 //> using scala 3.7.3
 //> using dep org.typelevel::cats-effect:3.6.3
+//> using option -no-indent
 import cats.effect.IOApp
 import cats.effect.IO
 import cats.syntax.all.*
@@ -22,28 +23,32 @@ object Stream {
 
     def apply[A](stream: Stream[A]): Compile[A] =
       new Compile[A] {
-        def drain: IO[Unit] = {
-          def loop[A](s: Stream[A], onItem: A => IO[Unit]): IO[Unit] =
-            s match {
-              case Chunk(items)       => items.traverse_(onItem)
-              case EvalMap(stream, f) => loop(stream, f >=> onItem)
-              case Take(stream, n)    =>
-                IO.ref(0).flatMap { count =>
-                  loop(
-                    stream,
-                    a =>
-                      count.updateAndGet(_ + 1).flatMap {
-                        case c if c <= n => onItem(a)
-                        case _           => IO.unit
-                      },
-                  )
-                }
+        private def loop[A](s: Stream[A], onItem: A => IO[Unit]): IO[Unit] =
+          s match {
+            case Chunk(items)       => items.traverse_(onItem)
+            case EvalMap(stream, f) => loop(stream, f >=> onItem)
+            case Take(stream, n)    =>
+              IO.ref(0).flatMap { count =>
+                loop(
+                  stream,
+                  a =>
+                    count.updateAndGet(_ + 1).flatMap {
+                      case c if c <= n => onItem(a)
+                      case _           => IO.unit
+                    },
+                )
+              }
+          }
 
-            }
+        def drain: IO[Unit] = loop(stream, _ => IO.unit)
 
-          loop(stream, Function.const(IO.unit))
-        }
-        def toList: IO[List[A]] = ???
+        def toList: IO[List[A]] = IO
+          .ref(Vector.empty[A])
+          .flatTap { ref =>
+            loop(stream, item => ref.update(_ :+ item))
+          }
+          .flatMap(_.get)
+          .map(_.toList)
       }
 
   }
@@ -56,11 +61,11 @@ object Stream {
 
 object Demo extends IOApp.Simple {
 
-  def run: IO[Unit] =
-    Stream(1, 2, 3, 4, 5)
-      .take(3)
-      .evalMap(n => IO(println(s"Processing $n")).as(n + 1))
-      .compile
-      .drain
+  def run: IO[Unit] = Stream(1, 2, 3, 4, 5)
+    .take(3)
+    .evalMap(n => IO(println(s"Processing $n")).as(n * 10))
+    .compile
+    .toList
+    .flatMap(IO.println)
 
 }
