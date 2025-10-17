@@ -6,6 +6,8 @@ import cats.effect.IO
 import cats.syntax.all.*
 
 sealed trait Stream[A] {
+
+  def append(another: Stream[A]): Stream[A] = Stream.Concat(this, another)
   def take(n: Int): Stream[A] = Stream.FilterIndex(this, _ < n)
   def drop(n: Int): Stream[A] = Stream.FilterIndex(this, _ >= n)
   def evalMap[B](f: A => IO[B]): Stream[B] = Stream.EvalMap(this, f)
@@ -39,6 +41,7 @@ object Stream {
                     },
                 )
               }
+            case Concat(lhs, rhs) => loop(lhs, onItem) *> loop(rhs, onItem)
           }
 
         def drain: IO[Unit] = loop(stream, _ => IO.unit)
@@ -57,18 +60,26 @@ object Stream {
   final case class FilterIndex[A](stream: Stream[A], n: Int => Boolean) extends Stream[A]
   final case class EvalMap[A, B](stream: Stream[A], f: A => IO[B]) extends Stream[B]
   final case class Chunk[A](elements: Vector[A]) extends Stream[A]
+  final case class Concat[A](lhs: Stream[A], rhs: Stream[A]) extends Stream[A]
 
 }
 
 object Demo extends IOApp.Simple {
 
-  def run: IO[Unit] = Stream(1, 2, 3, 4, 5)
-    .evalMap(n => IO(println(s"1: Processing $n")).as(n * 10))
-    .take(3)
-    .drop(1)
-    .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
-    .compile
-    .toList
-    .flatMap(IO.println)
+  def run: IO[Unit] =
+
+    IO.ref(List[Int]()).flatMap { seen =>
+      Stream(1, 2, 3, 4, 5)
+        .append(Stream(6, 7, 8, 9, 10).evalMap(it => seen.update(_ :+ it).as(it)))
+        .evalMap(n => IO(println(s"1: Processing $n")).as(n * 10))
+        .take(3)
+        .drop(1)
+        .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
+        .compile
+        .toList
+        .flatMap(IO.println) *> seen.get.flatMap { seen =>
+        IO.println(s"seen items from second stream: $seen")
+      }
+    }
 
 }
