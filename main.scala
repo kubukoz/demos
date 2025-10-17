@@ -7,6 +7,7 @@ import cats.syntax.all.*
 
 sealed trait Stream[A] {
   def take(n: Int): Stream[A] = Stream.Take(this, n)
+  def drop(n: Int): Stream[A] = Stream.Drop(this, n)
   def evalMap[B](f: A => IO[B]): Stream[B] = Stream.EvalMap(this, f)
   def compile: Stream.Compile[A] = Stream.Compile(this)
 }
@@ -38,6 +39,17 @@ object Stream {
                     },
                 )
               }
+            case Drop(stream, n) =>
+              IO.ref(0).flatMap { count =>
+                loop(
+                  stream,
+                  a =>
+                    count.updateAndGet(_ + 1).flatMap {
+                      case c if c <= n => IO.unit
+                      case _           => onItem(a)
+                    },
+                )
+              }
           }
 
         def drain: IO[Unit] = loop(stream, _ => IO.unit)
@@ -54,6 +66,7 @@ object Stream {
   }
 
   final case class Take[A](stream: Stream[A], n: Int) extends Stream[A]
+  final case class Drop[A](stream: Stream[A], n: Int) extends Stream[A]
   final case class EvalMap[A, B](stream: Stream[A], f: A => IO[B]) extends Stream[B]
   final case class Chunk[A](elements: Vector[A]) extends Stream[A]
 
@@ -62,8 +75,10 @@ object Stream {
 object Demo extends IOApp.Simple {
 
   def run: IO[Unit] = Stream(1, 2, 3, 4, 5)
+    .evalMap(n => IO(println(s"1: Processing $n")).as(n * 10))
     .take(3)
-    .evalMap(n => IO(println(s"Processing $n")).as(n * 10))
+    .drop(1)
+    .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
     .compile
     .toList
     .flatMap(IO.println)
