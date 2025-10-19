@@ -146,13 +146,12 @@ object Stream {
 
     def liftF[A](fa: IO[A]): Pull[Nothing, A] = Lift(fa)
 
-    def succeed[A](a: A): Pull[Nothing, A] = Succeeded(a)
+    def succeed[A](a: A): Pull[Nothing, A] = liftF(a.pure[IO])
 
     final case class Uncons[A](stream: Pull[A, Unit]) extends Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]]
     final case class Output[A](items: NonEmptyList[A]) extends Pull[A, Unit]
     final case class Bind[A, B, C](source: Pull[A, B], f: B => Pull[A, C]) extends Pull[A, C]
     final case class Lift[A](fa: IO[A]) extends Pull[Nothing, A]
-    final case class Succeeded[A](a: A) extends Pull[Nothing, A]
 
     private[Stream] def unravel[A, B](s: Pull[A, B]): IO[Either[(NonEmptyList[A], Pull[A, B]), B]] =
       s match {
@@ -161,10 +160,9 @@ object Stream {
             case Right(result)       => unravel(f(result))
             case Left((chunk, rest)) => (chunk -> rest.flatMap(f)).asLeft.pure[IO]
           }
-        case Succeeded(v) => IO.pure(v.asRight)
-        case Output(vs)   => IO.pure((vs -> Stream.empty).asLeft)
-        case Lift(fa)     => fa.map(_.asRight)
-        case Uncons(v)    => unravel(v).map(_.left.toOption.asRight)
+        case Output(vs) => IO.pure((vs -> Stream.empty).asLeft)
+        case Lift(fa)   => fa.map(_.asRight)
+        case Uncons(v)  => unravel(v).map(_.left.toOption.asRight)
       }
 
     object pullaws {
