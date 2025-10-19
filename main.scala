@@ -1,66 +1,217 @@
 //> using scala 3.7.3
 //> using dep org.typelevel::cats-effect:3.6.3
 //> using option -no-indent
+//> using option -Wunused:all
+//> using option -Wvalue-discard
+//> using option -Wnonunit-statement
+//> using option -Xkind-projector
 import cats.effect.IOApp
 import cats.effect.IO
 import cats.syntax.all.*
+import cats.Monad
+import cats.StackSafeMonad
+import Stream.Pull
+import cats.data.NonEmptyList
+import cats.data.Chain
 
-sealed trait Stream[A] {
+opaque type Stream[A] = Stream.Pull[A, Unit]
 
-  def append(another: Stream[A]): Stream[A] = Stream.Concat(this, another)
-  def take(n: Int): Stream[A] = Stream.FilterIndex(this, _ < n)
-  def drop(n: Int): Stream[A] = Stream.FilterIndex(this, _ >= n)
-  def evalMap[B](f: A => IO[B]): Stream[B] = Stream.EvalMap(this, f)
-  def compile: Stream.Compile[A] = Stream.Compile(this)
+private enum TakeDecision {
+  case Keep
+  case Reject
+  case RejectNext
+}
+
+extension [A](self: Stream[A]) {
+
+  def append(another: => Stream[A]): Stream[A] = self.covary[A] >> another
+  def ++ = append
+
+  def take(n: Int): Stream[A] = zipWithIndex
+    .takeWhile_ {
+      case (_, index) if index == n => TakeDecision.RejectNext
+      case (_, index) if index < n  => TakeDecision.Keep
+      case _                        => TakeDecision.Reject
+    }
+    .map(_._1)
+
+  private def takeWhile_(cond: A => TakeDecision): Stream[A] = pull.uncons1.covary[A].flatMap {
+    _.traverse_ { (item, rest) =>
+      val c = cond(item)
+      c match {
+        case TakeDecision.Keep       => Pull.output1(item) *> rest.takeWhile_(cond)
+        case TakeDecision.RejectNext => Pull.output1(item)
+        case TakeDecision.Reject     => Pull.done
+      }
+    }
+  }
+
+  def zipWithIndex: Stream[(A, Int)] = {
+    def go(startIndex: Int, self: Stream[A]): Stream[(A, Int)] = self
+      .pull
+      .uncons1
+      .covary[(A, Int)]
+      .flatMap {
+        _.traverse_ { (item, rest) =>
+          Stream(item -> startIndex) ++ go(startIndex + 1, rest)
+        }
+      }
+
+    go(0, self)
+  }
+
+  def drop(n: Int): Stream[A] = zipWithIndex.dropWhile(_._2 < n).map(_._1)
+
+  def dropWhile(cond: A => Boolean): Stream[A] = pull.uncons1.covary[A].flatMap {
+    _.traverse_ { (item, rest) =>
+      if cond(item) then rest.dropWhile(cond)
+      else
+        Pull.output1(item) *> rest
+    }
+  }
+
+  def evalMap[B](f: A => IO[B]): Stream[B] = flatMap(f.andThen(Stream.eval))
+
+  def flatMap[B](f: A => Stream[B]): Stream[B] = pull.uncons1.covary[B].flatMap {
+    _.traverse_ { (item, rest) =>
+      f(item) ++ rest.flatMap(f)
+    }
+  }
+
+  def map[B](f: A => B): Stream[B] = evalMap(f.andThen(IO.pure))
+
+  def compile: Stream.Compile[A] = new Stream.Compile(self)
+  def pull: Stream.ToPull[A] = new Stream.ToPull(self)
+
 }
 
 object Stream {
-  def apply[A](as: A*): Stream[A] = Stream.Chunk(as.toVector)
+  def apply[A](a1: A, rest: A*): Stream[A] = Pull.Output(NonEmptyList(a1, rest.toList))
+  def emit[A](a: A): Stream[A] = emits(NonEmptyList.of(a))
+  def emits[A](as: NonEmptyList[A]): Stream[A] = Pull.Output(as)
+  def empty[A]: Stream[A] = Pull.done
 
-  trait Compile[A] {
-    def drain: IO[Unit]
-    def toList: IO[List[A]]
+  def eval[A](fa: IO[A]): Stream[A] = Pull.liftF(fa).covary[A].flatMap(Pull.output1)
+  def iterate[A](init: A)(f: A => A): Stream[A] = Pull.output1(init) ++ iterate(f(init))(f)
+
+  class Compile[A](stream: Stream[A]) {
+
+    def drain: IO[Unit] = stream.tailRecM(
+      Pull
+        .unravel(_)
+        .map(_.leftMap(_._2))
+    )
+
+    def toList: IO[List[A]] = IO
+      .ref(Chain.empty[A])
+      .flatTap { r =>
+        stream.evalMap(v => r.update(_.append(v))).compile.drain
+      }
+      .flatMap(_.get)
+      .map(_.toList)
+
   }
 
-  private object Compile {
+  class ToPull[A](stream: Stream[A]) {
+    def echo: Pull[A, Unit] = stream
 
-    def apply[A](stream: Stream[A]): Compile[A] =
-      new Compile[A] {
-        private def loop[A](s: Stream[A], onItem: A => IO[Unit]): IO[Unit] =
-          s match {
-            case Chunk(items)              => items.traverse_(onItem)
-            case EvalMap(stream, f)        => loop(stream, f >=> onItem)
-            case FilterIndex(stream, cond) =>
-              IO.ref(0).flatMap { count =>
-                loop(
-                  stream,
-                  a =>
-                    count.updateAndGet(_ + 1).flatMap {
-                      case c if cond(c) => onItem(a)
-                      case _            => IO.unit
-                    },
-                )
-              }
-            case Concat(lhs, rhs) => loop(lhs, onItem) *> loop(rhs, onItem)
+    def uncons1: Pull[Nothing, Option[(A, Stream[A])]] = uncons.map {
+      _.map { (hChunk, t) =>
+        val rest = hChunk.tail.toNel.fold(Stream.empty)(Stream.emits)
+
+        (hChunk.head, rest.append(t))
+      }
+    }
+
+    def uncons: Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]] = Pull.Uncons(stream)
+
+  }
+
+  sealed trait Pull[+A, +Out] {
+    def covary[B >: A]: Pull[B, Out] = this
+
+    def flatMap[AA >: A, B](f: Out => Pull[AA, B]): Pull[AA, B] = Pull.Bind(this, f)
+  }
+
+  object Pull {
+    val done: Pull[Nothing, Unit] = succeed(())
+
+    def output1[A](item: A): Pull[A, Unit] = Output(NonEmptyList.of(item))
+    def output[A](items: NonEmptyList[A]): Pull[A, Unit] = Output(items)
+
+    def liftF[A](fa: IO[A]): Pull[Nothing, A] = Lift(fa)
+
+    def succeed[A](a: A): Pull[Nothing, A] = Succeeded(a)
+
+    final case class Uncons[A](stream: Pull[A, Unit]) extends Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]]
+    final case class Output[A](items: NonEmptyList[A]) extends Pull[A, Unit]
+    final case class Bind[A, B, C](source: Pull[A, B], f: B => Pull[A, C]) extends Pull[A, C]
+    final case class Lift[A](fa: IO[A]) extends Pull[Nothing, A]
+    final case class Succeeded[A](a: A) extends Pull[Nothing, A]
+
+    private[Stream] def unravel[A, B](s: Pull[A, B]): IO[Either[(NonEmptyList[A], Pull[A, B]), B]] =
+      s match {
+        case Bind(lhs, f) =>
+          unravel(lhs).flatMap {
+            case Right(result)       => unravel(f(result))
+            case Left((chunk, rest)) => (chunk -> rest.flatMap(f)).asLeft.pure[IO]
           }
+        case Succeeded(v) => IO.pure(v.asRight)
+        case Output(vs)   => IO.pure((vs -> Stream.empty).asLeft)
+        case Lift(fa)     => fa.map(_.asRight)
+        case Uncons(v)    => unravel(v).map(_.left.toOption.asRight)
+      }
 
-        def drain: IO[Unit] = loop(stream, _ => IO.unit)
+    object pullaws {
 
-        def toList: IO[List[A]] = IO
-          .ref(Vector.empty[A])
-          .flatTap { ref =>
-            loop(stream, item => ref.update(_ :+ item))
-          }
-          .flatMap(_.get)
-          .map(_.toList)
+      case class Eqv[A](lhs: A, rhs: A)
+
+      extension [A](a: A) {
+
+        def <->[B](
+          another: B
+        )(
+          using B <:< A
+        ) = Eqv(a, another)
+
+      }
+
+      def unconsOutputIsPure[A](as: NonEmptyList[A]) = Uncons(Output(as)).covary <-> succeed((as, done).some)
+      def unconsLiftUnit(fa: IO[Unit]) = Uncons(Lift(fa)).covary <-> Lift(fa.as(none))
+
+      // monad laws
+      def monadAssociativity[S, A, B, C](lhs: Pull[S, A], f1: A => Pull[S, B], f2: B => Pull[S, C]) =
+        Bind(Bind(lhs, f1), f2).covary <-> Bind(lhs, a => Bind(f1(a), f2))
+      def monadFlatmapIdentity[S, A](lhs: Pull[S, A]) = Bind(lhs, Pull.succeed(_)).covary <-> lhs
+      def bindSucceed[S, A, B](a: A, f: A => Pull[S, B]) = Bind(succeed(a), f).covary <-> f(a)
+
+      // kinda useless I guess, but still true
+      def bindEval[S, A, B](fa: IO[A], f: A => Pull[S, B]) =
+        Bind(Lift(fa), f).covary <->
+          Bind(Lift(fa.map(f)), identity)
+
+      // just showing this is indeed a free monad in disguise
+      def pullFlatmapIsFree[A, B](fa: IO[A], f: A => IO[B]) =
+        Bind(Lift(fa), a => Lift(f(a))).covary <->
+          Lift(fa.flatMap(f))
+
+      def unconsBindOutput[S, A, B](ss: NonEmptyList[S], f: Unit => Pull[S, Unit]) =
+        Uncons(Bind(Output(ss), f)).covary <->
+          succeed(Some(ss, f(())))
+
+    }
+
+    extension [A](pull: Pull[A, Unit]) {
+      def stream: Stream[A] = pull
+    }
+
+    given [T]: Monad[Pull[T, *]] =
+      new StackSafeMonad[Pull[T, *]] {
+        def pure[A](x: A): Pull[T, A] = Pull.succeed(x)
+        def flatMap[A, B](fa: Pull[T, A])(f: A => Pull[T, B]): Pull[T, B] = fa.flatMap(f)
       }
 
   }
-
-  final case class FilterIndex[A](stream: Stream[A], n: Int => Boolean) extends Stream[A]
-  final case class EvalMap[A, B](stream: Stream[A], f: A => IO[B]) extends Stream[B]
-  final case class Chunk[A](elements: Vector[A]) extends Stream[A]
-  final case class Concat[A](lhs: Stream[A], rhs: Stream[A]) extends Stream[A]
 
 }
 
@@ -69,17 +220,30 @@ object Demo extends IOApp.Simple {
   def run: IO[Unit] =
 
     IO.ref(List[Int]()).flatMap { seen =>
-      Stream(1, 2, 3, 4, 5)
+      Stream
+        .iterate(1)(_ + 1)
+        .take(5)
         .append(Stream(6, 7, 8, 9, 10).evalMap(it => seen.update(_ :+ it).as(it)))
         .evalMap(n => IO(println(s"1: Processing $n")).as(n * 10))
-        .take(3)
+        .take(6)
         .drop(1)
-        .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
+        // .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
         .compile
         .toList
-        .flatMap(IO.println) *> seen.get.flatMap { seen =>
-        IO.println(s"seen items from second stream: $seen")
-      }
+        .debug()
+        *> seen.get.flatMap { seen =>
+          IO.println(s"seen items from second stream: $seen")
+        }
     }
+
+  // Stream
+  //   .eval(IO.unit)
+  //   .pull
+  //   .uncons
+  //   .flatMap(_ => Pull.done)
+  //   .stream
+  //   .compile
+  //   .drain
+  // Stream.iterate(0)(_ + 1).take(5).evalMap(IO.println(_)).compile.drain
 
 }
