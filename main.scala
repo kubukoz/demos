@@ -15,7 +15,7 @@ import Stream.Pull
 import cats.data.NonEmptyList
 import cats.data.Chain
 
-opaque type Stream[A] = Stream.Pull[A, Unit]
+opaque type Stream[+A] = Stream.Pull[A, Unit]
 
 private enum TakeDecision {
   case Keep
@@ -46,6 +46,18 @@ extension [A](self: Stream[A]) {
       }
     }
   }
+
+  def chunks: Stream[NonEmptyList[A]] = pull.uncons.flatMap {
+    _.traverse_((item, rest) => Pull.output1(item) *> rest.chunks.pull.echo)
+  }
+
+  def drain: Stream[Nothing] = pull.uncons.flatMap {
+    _.traverse_(_._2.drain)
+  }
+
+  def unchunks[B](
+    using ev: A <:< NonEmptyList[B]
+  ): Stream[B] = flatMap(Stream.emits)
 
   def zip[B](rhs: Stream[B]): Stream[(A, B)] =
     self
@@ -220,7 +232,7 @@ object Stream {
 
 object Demo extends IOApp.Simple {
 
-  def run: IO[Unit] = IO.ref(List[Int]()).flatMap { seen =>
+  def run: IO[Unit] = /* IO.ref(List[Int]()).flatMap { seen =>
     Stream
       .iterate(1)(_ + 1)
       .take(5)
@@ -232,10 +244,15 @@ object Demo extends IOApp.Simple {
       .compile
       .toList
       .debug()
-      *> seen.get.flatMap { seen =>
+     *> seen.get.flatMap { seen =>
         IO.println(s"seen items from second stream: $seen")
       }
-  }
+  } */
+    (Stream(1, 2, 3, 4, 5) ++ Stream
+      .eval(IO.unit)
+      .drain ++
+      Stream(1) ++
+      Stream(5, 6, 7, 7)).chunks.unchunks.compile.toList.flatMap(IO.println)
 
   // Stream
   //   .eval(IO.unit)
