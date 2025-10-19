@@ -252,7 +252,7 @@ object Demo extends IOApp.Simple {
       .eval(IO.unit)
       .drain ++
       Stream(1) ++
-      Stream(5, 6, 7, 7)).chunks.unchunks.compile.toList.flatMap(IO.println)
+      Stream(5, 6, 7, 8)).chunks.unchunks.compile.toList.flatMap(IO.println)
 
   // Stream
   //   .eval(IO.unit)
