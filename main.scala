@@ -1,5 +1,6 @@
 //> using scala 3.7.3
 //> using dep org.typelevel::cats-effect:3.6.3
+//> using dep co.fs2::fs2-core:3.12.2
 //> using option -no-indent
 //> using option -Wunused:all
 //> using option -Wvalue-discard
@@ -24,7 +25,7 @@ private enum TakeDecision {
 
 extension [A](self: Stream[A]) {
 
-  def append(another: => Stream[A]): Stream[A] = self.covary[A] >> another
+  def append(another: => Stream[A]): Stream[A] = self.asPull >> another
   def ++ = append
 
   def take(n: Int): Stream[A] = zipWithIndex
@@ -35,7 +36,7 @@ extension [A](self: Stream[A]) {
     }
     .map(_._1)
 
-  private def takeWhile_(cond: A => TakeDecision): Stream[A] = pull.uncons1.covary[A].flatMap {
+  private def takeWhile_(cond: A => TakeDecision): Stream[A] = pull.uncons1.asPull.flatMap {
     _.traverse_ { (item, rest) =>
       val c = cond(item)
       c match {
@@ -46,23 +47,27 @@ extension [A](self: Stream[A]) {
     }
   }
 
-  def zipWithIndex: Stream[(A, Int)] = {
-    def go(startIndex: Int, self: Stream[A]): Stream[(A, Int)] = self
+  def zip[B](rhs: Stream[B]): Stream[(A, B)] =
+    self
       .pull
       .uncons1
-      .covary[(A, Int)]
       .flatMap {
-        _.traverse_ { (item, rest) =>
-          Stream(item -> startIndex) ++ go(startIndex + 1, rest)
-        }
+        case None                       => Pull.done
+        case Some((leftItem, leftTail)) =>
+          rhs.pull.uncons1.flatMap {
+            case None                         => Pull.done
+            case Some((rightItem, rightTail)) =>
+              Pull.output1((leftItem, rightItem)) *>
+                leftTail.zip(rightTail)
+          }
       }
+      .stream
 
-    go(0, self)
-  }
+  def zipWithIndex: Stream[(A, Int)] = zip(Stream.iterate(0)(_ + 1))
 
   def drop(n: Int): Stream[A] = zipWithIndex.dropWhile(_._2 < n).map(_._1)
 
-  def dropWhile(cond: A => Boolean): Stream[A] = pull.uncons1.covary[A].flatMap {
+  def dropWhile(cond: A => Boolean): Stream[A] = pull.uncons1.asPull.flatMap {
     _.traverse_ { (item, rest) =>
       if cond(item) then rest.dropWhile(cond)
       else
@@ -72,7 +77,7 @@ extension [A](self: Stream[A]) {
 
   def evalMap[B](f: A => IO[B]): Stream[B] = flatMap(f.andThen(Stream.eval))
 
-  def flatMap[B](f: A => Stream[B]): Stream[B] = pull.uncons1.covary[B].flatMap {
+  def flatMap[B](f: A => Stream[B]): Stream[B] = pull.uncons1.flatMap {
     _.traverse_ { (item, rest) =>
       f(item) ++ rest.flatMap(f)
     }
@@ -91,7 +96,7 @@ object Stream {
   def emits[A](as: NonEmptyList[A]): Stream[A] = Pull.Output(as)
   def empty[A]: Stream[A] = Pull.done
 
-  def eval[A](fa: IO[A]): Stream[A] = Pull.liftF(fa).covary[A].flatMap(Pull.output1)
+  def eval[A](fa: IO[A]): Stream[A] = Pull.liftF(fa).flatMap(Pull.output1)
   def iterate[A](init: A)(f: A => A): Stream[A] = Pull.output1(init) ++ iterate(f(init))(f)
 
   class Compile[A](stream: Stream[A]) {
@@ -128,7 +133,7 @@ object Stream {
   }
 
   sealed trait Pull[+A, +Out] {
-    def covary[B >: A]: Pull[B, Out] = this
+    def asPull: Pull[A, Out] = this
 
     def flatMap[AA >: A, B](f: Out => Pull[AA, B]): Pull[AA, B] = Pull.Bind(this, f)
   }
@@ -176,27 +181,27 @@ object Stream {
 
       }
 
-      def unconsOutputIsPure[A](as: NonEmptyList[A]) = Uncons(Output(as)).covary <-> succeed((as, done).some)
-      def unconsLiftUnit(fa: IO[Unit]) = Uncons(Lift(fa)).covary <-> Lift(fa.as(none))
+      def unconsOutputIsPure[A](as: NonEmptyList[A]) = Uncons(Output(as)).asPull <-> succeed((as, done).some)
+      def unconsLiftUnit(fa: IO[Unit]) = Uncons(Lift(fa)).asPull <-> Lift(fa.as(none))
 
       // monad laws
       def monadAssociativity[S, A, B, C](lhs: Pull[S, A], f1: A => Pull[S, B], f2: B => Pull[S, C]) =
-        Bind(Bind(lhs, f1), f2).covary <-> Bind(lhs, a => Bind(f1(a), f2))
-      def monadFlatmapIdentity[S, A](lhs: Pull[S, A]) = Bind(lhs, Pull.succeed(_)).covary <-> lhs
-      def bindSucceed[S, A, B](a: A, f: A => Pull[S, B]) = Bind(succeed(a), f).covary <-> f(a)
+        Bind(Bind(lhs, f1), f2).asPull <-> Bind(lhs, a => Bind(f1(a), f2))
+      def monadFlatmapIdentity[S, A](lhs: Pull[S, A]) = Bind(lhs, Pull.succeed(_)).asPull <-> lhs
+      def bindSucceed[S, A, B](a: A, f: A => Pull[S, B]) = Bind(succeed(a), f).asPull <-> f(a)
 
       // kinda useless I guess, but still true
       def bindEval[S, A, B](fa: IO[A], f: A => Pull[S, B]) =
-        Bind(Lift(fa), f).covary <->
+        Bind(Lift(fa), f).asPull <->
           Bind(Lift(fa.map(f)), identity)
 
       // just showing this is indeed a free monad in disguise
       def pullFlatmapIsFree[A, B](fa: IO[A], f: A => IO[B]) =
-        Bind(Lift(fa), a => Lift(f(a))).covary <->
+        Bind(Lift(fa), a => Lift(f(a))).asPull <->
           Lift(fa.flatMap(f))
 
       def unconsBindOutput[S, A, B](ss: NonEmptyList[S], f: Unit => Pull[S, Unit]) =
-        Uncons(Bind(Output(ss), f)).covary <->
+        Uncons(Bind(Output(ss), f)).asPull <->
           succeed(Some(ss, f(())))
 
     }
@@ -217,24 +222,22 @@ object Stream {
 
 object Demo extends IOApp.Simple {
 
-  def run: IO[Unit] =
-
-    IO.ref(List[Int]()).flatMap { seen =>
-      Stream
-        .iterate(1)(_ + 1)
-        .take(5)
-        .append(Stream(6, 7, 8, 9, 10).evalMap(it => seen.update(_ :+ it).as(it)))
-        .evalMap(n => IO(println(s"1: Processing $n")).as(n * 10))
-        .take(6)
-        .drop(1)
-        // .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
-        .compile
-        .toList
-        .debug()
-        *> seen.get.flatMap { seen =>
-          IO.println(s"seen items from second stream: $seen")
-        }
-    }
+  def run: IO[Unit] = IO.ref(List[Int]()).flatMap { seen =>
+    Stream
+      .iterate(1)(_ + 1)
+      .take(5)
+      .append(Stream(6, 7, 8, 9, 10).evalMap(it => seen.update(_ :+ it).as(it)))
+      .evalMap(n => IO(println(s"1: Processing $n")).as(n * 10))
+      .take(6)
+      .drop(1)
+      // .evalMap(n => IO(println(s"2: Processing $n")).as(n * 10))
+      .compile
+      .toList
+      .debug()
+      *> seen.get.flatMap { seen =>
+        IO.println(s"seen items from second stream: $seen")
+      }
+  }
 
   // Stream
   //   .eval(IO.unit)
