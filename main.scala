@@ -1,5 +1,6 @@
 //> using scala 3.7.3
 //> using dep org.typelevel::cats-effect:3.6.3
+//> using dep org.typelevel::cats-free:2.13.0
 //> using dep co.fs2::fs2-core:3.12.2
 //> using option -no-indent
 //> using option -Wunused:all
