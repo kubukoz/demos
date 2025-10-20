@@ -10,13 +10,10 @@
 import cats.effect.IOApp
 import cats.effect.IO
 import cats.syntax.all.*
-import cats.Monad
-import cats.StackSafeMonad
-import Stream.Pull
 import cats.data.NonEmptyList
 import cats.data.Chain
 
-opaque type Stream[+A] = Stream.Pull[A, Unit]
+opaque type Stream[+A] = Pull[A, Unit]
 
 private enum TakeDecision {
   case Keep
@@ -25,7 +22,6 @@ private enum TakeDecision {
 }
 
 extension [A](self: Stream[A]) {
-
   def append(another: => Stream[A]): Stream[A] = self.asPull >> another
   def ++ = append
 
@@ -60,7 +56,9 @@ extension [A](self: Stream[A]) {
     using ev: A <:< NonEmptyList[B]
   ): Stream[B] = flatMap(Stream.emits)
 
-  def zip[B](rhs: Stream[B]): Stream[(A, B)] =
+  def zip[B](rhs: Stream[B]): Stream[(A, B)] = {
+    import Stream.stream
+
     self
       .pull
       .uncons1
@@ -75,6 +73,7 @@ extension [A](self: Stream[A]) {
           }
       }
       .stream
+  }
 
   def zipWithIndex: Stream[(A, Int)] = zip(Stream.iterate(0)(_ + 1))
 
@@ -112,6 +111,10 @@ object Stream {
   def eval[A](fa: IO[A]): Stream[A] = Pull.liftF(fa).flatMap(Pull.output1)
   def iterate[A](init: A)(f: A => A): Stream[A] = Pull.output1(init) ++ iterate(f(init))(f)
 
+  extension [A](pull: Pull[A, Unit]) {
+    def stream: Stream[A] = pull
+  }
+
   class Compile[A](stream: Stream[A]) {
 
     def drain: IO[Unit] = stream.tailRecM(
@@ -131,7 +134,7 @@ object Stream {
   }
 
   class ToPull[A](stream: Stream[A]) {
-    def echo: Pull[A, Unit] = stream
+    inline def echo: Pull[A, Unit] = stream
 
     def uncons1: Pull[Nothing, Option[(A, Stream[A])]] = uncons.map {
       _.map { (hChunk, t) =>
@@ -142,90 +145,6 @@ object Stream {
     }
 
     def uncons: Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]] = Pull.Uncons(stream)
-
-  }
-
-  sealed trait Pull[+A, +Out] {
-    def asPull: Pull[A, Out] = this
-
-    def flatMap[AA >: A, B](f: Out => Pull[AA, B]): Pull[AA, B] = Pull.Bind(this, f)
-  }
-
-  object Pull {
-    val done: Pull[Nothing, Unit] = succeed(())
-
-    def output1[A](item: A): Pull[A, Unit] = Output(NonEmptyList.of(item))
-    def output[A](items: NonEmptyList[A]): Pull[A, Unit] = Output(items)
-
-    def liftF[A](fa: IO[A]): Pull[Nothing, A] = Lift(fa)
-
-    def succeed[A](a: A): Pull[Nothing, A] = liftF(a.pure[IO])
-
-    final case class Uncons[A](stream: Pull[A, Unit]) extends Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]]
-    final case class Output[A](items: NonEmptyList[A]) extends Pull[A, Unit]
-    final case class Bind[A, B, C](source: Pull[A, B], f: B => Pull[A, C]) extends Pull[A, C]
-    final case class Lift[A](fa: IO[A]) extends Pull[Nothing, A]
-
-    private[Stream] def unravel[A, B](s: Pull[A, B]): IO[Either[(NonEmptyList[A], Pull[A, B]), B]] =
-      s match {
-        case Bind(lhs, f) =>
-          unravel(lhs).flatMap {
-            case Right(result)       => unravel(f(result))
-            case Left((chunk, rest)) => (chunk -> rest.flatMap(f)).asLeft.pure[IO]
-          }
-        case Output(vs) => IO.pure((vs -> Stream.empty).asLeft)
-        case Lift(fa)   => fa.map(_.asRight)
-        case Uncons(v)  => unravel(v).map(_.left.toOption.asRight)
-      }
-
-    object pullaws {
-
-      case class Eqv[A](lhs: A, rhs: A)
-
-      extension [A](a: A) {
-
-        def <->[B](
-          another: B
-        )(
-          using B <:< A
-        ) = Eqv(a, another)
-
-      }
-
-      def unconsOutputIsPure[A](as: NonEmptyList[A]) = Uncons(Output(as)).asPull <-> succeed((as, done).some)
-      def unconsLiftUnit(fa: IO[Unit]) = Uncons(Lift(fa)).asPull <-> Lift(fa.as(none))
-
-      // monad laws
-      def monadAssociativity[S, A, B, C](lhs: Pull[S, A], f1: A => Pull[S, B], f2: B => Pull[S, C]) =
-        Bind(Bind(lhs, f1), f2).asPull <-> Bind(lhs, a => Bind(f1(a), f2))
-      def monadFlatmapIdentity[S, A](lhs: Pull[S, A]) = Bind(lhs, Pull.succeed(_)).asPull <-> lhs
-      def bindSucceed[S, A, B](a: A, f: A => Pull[S, B]) = Bind(succeed(a), f).asPull <-> f(a)
-
-      // kinda useless I guess, but still true
-      def bindEval[S, A, B](fa: IO[A], f: A => Pull[S, B]) =
-        Bind(Lift(fa), f).asPull <->
-          Bind(Lift(fa.map(f)), identity)
-
-      // just showing this is indeed a free monad in disguise
-      def pullFlatmapIsFree[A, B](fa: IO[A], f: A => IO[B]) =
-        Bind(Lift(fa), a => Lift(f(a))).asPull <->
-          Lift(fa.flatMap(f))
-
-      def unconsBindOutput[S, A, B](ss: NonEmptyList[S], f: Unit => Pull[S, Unit]) =
-        Uncons(Bind(Output(ss), f)).asPull <->
-          succeed(Some(ss, f(())))
-
-    }
-
-    extension [A](pull: Pull[A, Unit]) {
-      def stream: Stream[A] = pull
-    }
-
-    given [T]: Monad[Pull[T, *]] =
-      new StackSafeMonad[Pull[T, *]] {
-        def pure[A](x: A): Pull[T, A] = Pull.succeed(x)
-        def flatMap[A, B](fa: Pull[T, A])(f: A => Pull[T, B]): Pull[T, B] = fa.flatMap(f)
-      }
 
   }
 
