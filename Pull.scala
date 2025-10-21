@@ -60,8 +60,8 @@ object Pull {
 
   def unravel[A, B](s: Pull[A, B]): IO[Either[(NonEmptyList[A], Pull[A, B]), B]] =
     s.resume match {
-      case Right(value)                                   => value.asRight.pure[IO]
-      case Left(moar: PullAlg[A, Free[PullAlg[A, *], B]]) =>
+      case Right(value) => value.asRight.pure[IO]
+      case Left(moar)   =>
         moar match {
           case Output(as, next) => (as, next).asLeft.pure[IO]
           case Lift(f)          => f.flatMap(unravel)
