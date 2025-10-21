@@ -13,7 +13,7 @@ import cats.syntax.all.*
 import cats.data.NonEmptyList
 import cats.data.Chain
 
-opaque type Stream[+A] = Pull[A, Unit]
+opaque type Stream[A] = Pull[A, Unit]
 
 private enum TakeDecision {
   case Keep
@@ -21,8 +21,10 @@ private enum TakeDecision {
   case RejectNext
 }
 
+import Stream.stream
+
 extension [A](self: Stream[A]) {
-  def append(another: => Stream[A]): Stream[A] = self.asPull >> another
+  def append(another: => Stream[A]): Stream[A] = (self.pull.echo >> another.pull.echo).stream
   def ++ = append
 
   def take(n: Int): Stream[A] = zipWithIndex
@@ -33,22 +35,32 @@ extension [A](self: Stream[A]) {
     }
     .map(_._1)
 
-  private def takeWhile_(cond: A => TakeDecision): Stream[A] = pull.uncons1.asPull.flatMap {
-    _.traverse_ { (item, rest) =>
-      val c = cond(item)
-      c match {
-        case TakeDecision.Keep       => Pull.output1(item) *> rest.takeWhile_(cond)
-        case TakeDecision.RejectNext => Pull.output1(item)
-        case TakeDecision.Reject     => Pull.done
+  private def takeWhile_(cond: A => TakeDecision): Stream[A] =
+    pull
+      .uncons1
+      .covary[A]
+      .flatMap {
+        _.traverse_ { (item, rest) =>
+          val c = cond(item)
+          c match {
+            case TakeDecision.Keep       => Pull.output1(item) *> rest.takeWhile_(cond).pull.echo
+            case TakeDecision.RejectNext => Pull.output1(item)
+            case TakeDecision.Reject     => Pull.done.covary[A]
+          }
+        }
       }
-    }
-  }
+      .stream
 
-  def chunks: Stream[NonEmptyList[A]] = pull.uncons.flatMap {
-    _.traverse_((item, rest) => Pull.output1(item) *> rest.chunks.pull.echo)
-  }
+  def chunks: Stream[NonEmptyList[A]] =
+    pull
+      .uncons
+      .covary[NonEmptyList[A]]
+      .flatMap {
+        _.traverse_((item, rest) => Pull.output1(item) *> rest.chunks.pull.echo)
+      }
+      .stream
 
-  def drain: Stream[Nothing] = pull.uncons.flatMap {
+  def drain[B]: Stream[B] = pull.uncons.covary[B].flatMap {
     _.traverse_(_._2.drain)
   }
 
@@ -62,14 +74,15 @@ extension [A](self: Stream[A]) {
     self
       .pull
       .uncons1
+      .covary[(A, B)]
       .flatMap {
-        case None                       => Pull.done
+        case None                       => Pull.done.covary[(A, B)]
         case Some((leftItem, leftTail)) =>
-          rhs.pull.uncons1.flatMap {
-            case None                         => Pull.done
+          rhs.pull.uncons1.covary[(A, B)].flatMap {
+            case None                         => Pull.done.covary[(A, B)]
             case Some((rightItem, rightTail)) =>
-              Pull.output1((leftItem, rightItem)) *>
-                leftTail.zip(rightTail)
+              Pull.output1((leftItem, rightItem)).covary[(A, B)] *>
+                leftTail.zip(rightTail).pull.echo
           }
       }
       .stream
@@ -79,21 +92,26 @@ extension [A](self: Stream[A]) {
 
   def drop(n: Int): Stream[A] = zipWithIndex.dropWhile(_._2 < n).map(_._1)
 
-  def dropWhile(cond: A => Boolean): Stream[A] = pull.uncons1.asPull.flatMap {
+  def dropWhile(cond: A => Boolean): Stream[A] = pull.uncons1.covary[A].flatMap {
     _.traverse_ { (item, rest) =>
-      if cond(item) then rest.dropWhile(cond)
+      if cond(item) then rest.dropWhile(cond).stream
       else
-        Pull.output1(item) *> rest
+        Pull.output1(item).covary[A] *> rest
     }
   }
 
   def evalMap[B](f: A => IO[B]): Stream[B] = flatMap(f.andThen(Stream.eval))
 
-  def flatMap[B](f: A => Stream[B]): Stream[B] = pull.uncons1.flatMap {
-    _.traverse_ { (item, rest) =>
-      f(item) ++ rest.flatMap(f)
-    }
-  }
+  def flatMap[B](f: A => Stream[B]): Stream[B] =
+    pull
+      .uncons1
+      .covary[B]
+      .flatMap {
+        _.traverse_ { (item, rest) =>
+          f(item).pull.echo *> rest.flatMap(f).pull.echo
+        }
+      }
+      .stream
 
   def map[B](f: A => B): Stream[B] = evalMap(f.andThen(IO.pure))
 
@@ -103,13 +121,13 @@ extension [A](self: Stream[A]) {
 }
 
 object Stream {
-  def apply[A](a1: A, rest: A*): Stream[A] = Pull.Output(NonEmptyList(a1, rest.toList))
+  def apply[A](a1: A, rest: A*): Stream[A] = Pull.output(NonEmptyList(a1, rest.toList))
   def emit[A](a: A): Stream[A] = emits(NonEmptyList.of(a))
-  def emits[A](as: NonEmptyList[A]): Stream[A] = Pull.Output(as)
-  def empty[A]: Stream[A] = Pull.done
+  def emits[A](as: NonEmptyList[A]): Stream[A] = Pull.output(as)
+  def empty[A]: Stream[A] = Pull.done.covary[A]
 
-  def eval[A](fa: IO[A]): Stream[A] = Pull.liftF(fa).flatMap(Pull.output1)
-  def iterate[A](init: A)(f: A => A): Stream[A] = Pull.output1(init) ++ iterate(f(init))(f)
+  def eval[A](fa: IO[A]): Stream[A] = Pull.liftF(fa).covary[A].flatMap(Pull.output1).stream
+  def iterate[A](init: A)(f: A => A): Stream[A] = Pull.output1(init).stream ++ iterate(f(init))(f)
 
   extension [A](pull: Pull[A, Unit]) {
     def stream: Stream[A] = pull
@@ -144,7 +162,7 @@ object Stream {
       }
     }
 
-    def uncons: Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]] = Pull.Uncons(stream)
+    def uncons: Pull[Nothing, Option[(NonEmptyList[A], Stream[A])]] = Pull.uncons(stream)
 
   }
 
