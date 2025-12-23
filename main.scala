@@ -5,7 +5,7 @@
 //> using dep io.get-coursier:interface:1.0.28
 //> using dep "com.lihaoyi::upickle:4.2.1"
 //> using dep "com.lihaoyi::os-lib:0.11.5"
-//> using scala 3.7.3-RC2
+//> using scala 3.7.4
 //> using options -no-indent
 import tui.*
 import tui.widgets.*
