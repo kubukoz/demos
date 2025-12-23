@@ -1,6 +1,6 @@
 {
   "version": "1.0",
   "maven": {
-    "dependencies": ["com.disneystreaming.alloy:alloy-protocol-tests:0.3.32"]
+    "dependencies": ["com.disneystreaming.alloy:alloy-protocol-tests:0.3.35"]
   }
 }
