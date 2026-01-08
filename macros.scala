@@ -24,32 +24,21 @@ object macros {
       }
     }
 
-    // Traverse to find flatMap/map with ctx calls and extract variable names
-    def collectPatterns(tree: Term): Unit = tree match {
-      case Apply(
-            TypeApply(Select(ctxCall @ CtxCall(_), "flatMap" | "map"), _),
-            List(Block(List(DefDef(_, List(TermParamClause(List(ValDef(varName, _, _)))), _, rhs)), _))
-          ) =>
-        ctxToVarName(ctxCall) = varName
-        rhs.foreach(collectPatterns)
-
-      case Block(stats, expr) =>
-        stats.foreach {
-          case term: Term => collectPatterns(term)
-          case defDef: DefDef => defDef.rhs.foreach(collectPatterns)
-          case _ => ()
-        }
-        collectPatterns(expr)
-      case Apply(fun, args) =>
-        collectPatterns(fun)
-        args.foreach(collectPatterns)
-      case TypeApply(fun, _) => collectPatterns(fun)
-      case Select(qual, _) => collectPatterns(qual)
-      case Inlined(_, _, expr) => collectPatterns(expr)
-      case _ => ()
+    // Use TreeTraverser to automatically handle recursion
+    object PatternCollector extends TreeTraverser {
+      override def traverseTree(tree: Tree)(owner: Symbol): Unit = tree match {
+        case Apply(
+              TypeApply(Select(ctxCall @ CtxCall(_), "flatMap" | "map"), _),
+              List(Block(List(DefDef(_, List(TermParamClause(List(ValDef(varName, _, _)))), _, _)), _))
+            ) =>
+          ctxToVarName(ctxCall) = varName
+          super.traverseTree(tree)(owner)
+        case _ =>
+          super.traverseTree(tree)(owner)
+      }
     }
 
-    collectPatterns(forComp.asTerm)
+    PatternCollector.traverseTree(forComp.asTerm)(Symbol.spliceOwner)
 
     // Transform ctx calls to return the variable name
     val transformer = new TreeMap {
