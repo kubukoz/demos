@@ -83,4 +83,10 @@ class MacrosTest extends munit.FunSuite {
     assertEquals(result, Some("myLongVariableName"))
   }
 
+  test("ctx without transform throws error") {
+    interceptMessage[AssertionError]("macros.ctx must be used inside macros.transform - this should have been transformed away at compile time") {
+      macros.ctx(42)
+    }
+  }
+
 }

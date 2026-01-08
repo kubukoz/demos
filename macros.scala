@@ -3,8 +3,12 @@ import scala.quoted.*
 
 object macros {
 
-  // Placeholder for the for-comprehension - not actually a macro
-  def ctx[A](a: A): Option[String] = None
+  // Must be used inside macros.transform
+  // If you see this error at runtime, you forgot to wrap your for-comprehension in macros.transform
+  def ctx[A](a: A): Option[String] =
+    throw new AssertionError(
+      "macros.ctx must be used inside macros.transform - this should have been transformed away at compile time"
+    )
 
   // Macro that wraps the entire for-comprehension
   inline def transform[A](inline forComp: A): A = ${ transformImpl('forComp) }
@@ -50,7 +54,7 @@ object macros {
             // Then, transform ctx calls using collected patterns
             case ctxCall @ CtxCall(_) =>
               ctxToVarName.get(ctxCall) match {
-                case Some(varName) => '{ Some(${ Expr(varName) }) }.asTerm
+                case Some(varName) => Expr(Some(varName)).asTerm
                 case None          => super.transformTerm(tree)(owner)
               }
 
