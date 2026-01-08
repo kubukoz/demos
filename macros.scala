@@ -24,9 +24,7 @@ object macros {
       def unapply(tree: Term): Option[Term] =
         tree match {
           case app @ Apply(TypeApply(Select(Ident("macros"), "ctx"), _), List(_)) => Some(app)
-          // Also match Inlined ctx calls (when the macro hasn't expanded yet)
-          case app @ Inlined(_, _, Apply(TypeApply(Select(Ident("macros"), "ctx"), _), List(_))) => Some(app)
-          case _ => None
+          case _                                                                  => None
         }
     }
 
@@ -57,10 +55,10 @@ object macros {
             case ctxCall @ CtxCall(_) =>
               ctxToVarName.get(ctxCall) match {
                 case Some(varName) => Expr(Some(varName)).asTerm
-                case None =>
+                case None          =>
                   report.errorAndAbort(
                     "Found macros.ctx call that wasn't transformed. Make sure it's used in a for-comprehension binding like: varName <- macros.ctx(value)",
-                    ctxCall.pos
+                    ctxCall.pos,
                   )
               }
 
