@@ -4,7 +4,7 @@ import scala.quoted.*
 object macros {
 
   // Must be used inside macros.transform
-  // If you see this error at runtime, you forgot to wrap your for-comprehension in macros.transform
+  // The transform macro will check at compile time that all ctx calls are properly transformed
   def ctx[A](a: A): Option[String] =
     throw new AssertionError(
       "macros.ctx must be used inside macros.transform - this should have been transformed away at compile time"
@@ -24,7 +24,9 @@ object macros {
       def unapply(tree: Term): Option[Term] =
         tree match {
           case app @ Apply(TypeApply(Select(Ident("macros"), "ctx"), _), List(_)) => Some(app)
-          case _                                                                  => None
+          // Also match Inlined ctx calls (when the macro hasn't expanded yet)
+          case app @ Inlined(_, _, Apply(TypeApply(Select(Ident("macros"), "ctx"), _), List(_))) => Some(app)
+          case _ => None
         }
     }
 
@@ -55,7 +57,11 @@ object macros {
             case ctxCall @ CtxCall(_) =>
               ctxToVarName.get(ctxCall) match {
                 case Some(varName) => Expr(Some(varName)).asTerm
-                case None          => super.transformTerm(tree)(owner)
+                case None =>
+                  report.errorAndAbort(
+                    "Found macros.ctx call that wasn't transformed. Make sure it's used in a for-comprehension binding like: varName <- macros.ctx(value)",
+                    ctxCall.pos
+                  )
               }
 
             case _ => super.transformTerm(tree)(owner)

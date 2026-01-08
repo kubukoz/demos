@@ -83,10 +83,29 @@ class MacrosTest extends munit.FunSuite {
     assertEquals(result, Some("myLongVariableName"))
   }
 
-  test("ctx without transform throws error") {
-    interceptMessage[AssertionError]("macros.ctx must be used inside macros.transform - this should have been transformed away at compile time") {
-      macros.ctx(42)
-    }
+  test("ctx not in for-comprehension binding fails at compile time") {
+    val errors = compileErrors("""
+      macros.transform {
+        val x = macros.ctx(42)
+        x
+      }
+    """)
+    assert(errors.nonEmpty, "Expected compilation to fail")
+    assert(
+      errors.contains("Found macros.ctx call that wasn't transformed"),
+      s"Expected error about transformation, got: $errors"
+    )
+  }
+
+  test("ctx in for-comprehension compiles successfully") {
+    val errors = compileErrors("""
+      macros.transform {
+        for {
+          a <- macros.ctx(42)
+        } yield a
+      }
+    """)
+    assertEquals(errors, "", "Expected compilation to succeed")
   }
 
 }
