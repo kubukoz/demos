@@ -15,8 +15,6 @@ object macros {
   ): Expr[A] = {
     import quotes.reflect.*
 
-    val ctxToVarName = scala.collection.mutable.Map[Term, String]()
-
     object CtxCall {
       def unapply(tree: Term): Option[Term] = tree match {
         case app @ Apply(TypeApply(Select(Ident("macros"), "ctx"), _), List(_)) => Some(app)
@@ -24,30 +22,27 @@ object macros {
       }
     }
 
-    // Use TreeTraverser to automatically handle recursion
-    object PatternCollector extends TreeTraverser {
-      override def traverseTree(tree: Tree)(owner: Symbol): Unit = tree match {
+    // Single pass: collect patterns and transform in one go
+    val transformer = new TreeMap {
+      val ctxToVarName = scala.collection.mutable.Map[Term, String]()
+
+      override def transformTerm(tree: Term)(owner: Symbol): Term = tree match {
+        // First, check if this is a flatMap/map with a ctx call - collect the pattern
         case Apply(
-              TypeApply(Select(ctxCall @ CtxCall(_), "flatMap" | "map"), _),
-              List(Block(List(DefDef(_, List(TermParamClause(List(ValDef(varName, _, _)))), _, _)), _))
+              TypeApply(Select(ctxCall @ CtxCall(_), "flatMap" | "map"), targs),
+              List(lambda @ Block(List(DefDef(name, List(TermParamClause(List(ValDef(varName, _, _)))), tpt, rhs)), closure))
             ) =>
           ctxToVarName(ctxCall) = varName
-          super.traverseTree(tree)(owner)
-        case _ =>
-          super.traverseTree(tree)(owner)
-      }
-    }
+          // Continue transforming this tree
+          super.transformTerm(tree)(owner)
 
-    PatternCollector.traverseTree(forComp.asTerm)(Symbol.spliceOwner)
-
-    // Transform ctx calls to return the variable name
-    val transformer = new TreeMap {
-      override def transformTerm(tree: Term)(owner: Symbol): Term = tree match {
+        // Then, transform ctx calls using collected patterns
         case ctxCall @ CtxCall(_) =>
           ctxToVarName.get(ctxCall) match {
             case Some(varName) => '{ Some(${ Expr(varName) }) }.asTerm
             case None => super.transformTerm(tree)(owner)
           }
+
         case _ => super.transformTerm(tree)(owner)
       }
     }
