@@ -1,0 +1,105 @@
+$version: "2.0"
+
+namespace lsp
+
+service LSPClient {
+    operations: [
+        CancelRequest
+        ClientRegisterCapabilityOp
+        ClientUnregisterCapabilityOp
+        LogTrace
+        Progress
+        TelemetryEvent
+        TextDocumentPublishDiagnostics
+        WindowLogMessage
+        WindowShowDocumentOp
+        WindowShowMessage
+        WindowShowMessageRequestOp
+        WindowWorkDoneProgressCreateOp
+        WorkspaceApplyEditOp
+        WorkspaceCodeLensRefreshOp
+        WorkspaceConfigurationOp
+        WorkspaceDiagnosticRefreshOp
+        WorkspaceInlayHintRefreshOp
+        WorkspaceInlineValueRefreshOp
+        WorkspaceSemanticTokensRefreshOp
+        WorkspaceWorkspaceFoldersOp
+    ]
+}
+
+service LSPServer {
+    operations: [
+        CallHierarchyIncomingCallsOp
+        CallHierarchyOutgoingCallsOp
+        CancelRequest
+        CodeActionResolveOp
+        CodeLensResolveOp
+        CompletionItemResolveOp
+        DocumentLinkResolveOp
+        Exit
+        Initialized
+        InitializeOp
+        InlayHintResolveOp
+        NotebookDocumentDidChange
+        NotebookDocumentDidClose
+        NotebookDocumentDidOpen
+        NotebookDocumentDidSave
+        Progress
+        SetTrace
+        ShutdownOp
+        TextDocumentCodeActionOp
+        TextDocumentCodeLensOp
+        TextDocumentColorPresentationOp
+        TextDocumentCompletionOp
+        TextDocumentDeclarationOp
+        TextDocumentDefinitionOp
+        TextDocumentDiagnosticOp
+        TextDocumentDidChange
+        TextDocumentDidClose
+        TextDocumentDidOpen
+        TextDocumentDidSave
+        TextDocumentDocumentColorOp
+        TextDocumentDocumentHighlightOp
+        TextDocumentDocumentLinkOp
+        TextDocumentDocumentSymbolOp
+        TextDocumentFoldingRangeOp
+        TextDocumentFormattingOp
+        TextDocumentHoverOp
+        TextDocumentImplementationOp
+        TextDocumentInlayHintOp
+        TextDocumentInlineValueOp
+        TextDocumentLinkedEditingRangeOp
+        TextDocumentMonikerOp
+        TextDocumentOnTypeFormattingOp
+        TextDocumentPrepareCallHierarchyOp
+        TextDocumentPrepareRenameOp
+        TextDocumentPrepareTypeHierarchyOp
+        TextDocumentRangeFormattingOp
+        TextDocumentReferencesOp
+        TextDocumentRenameOp
+        TextDocumentSelectionRangeOp
+        TextDocumentSemanticTokensFullDeltaOp
+        TextDocumentSemanticTokensFullOp
+        TextDocumentSemanticTokensRangeOp
+        TextDocumentSignatureHelpOp
+        TextDocumentTypeDefinitionOp
+        TextDocumentWillSave
+        TextDocumentWillSaveWaitUntilOp
+        TypeHierarchySubtypesOp
+        TypeHierarchySupertypesOp
+        WindowWorkDoneProgressCancel
+        WorkspaceDiagnosticOp
+        WorkspaceDidChangeConfiguration
+        WorkspaceDidChangeWatchedFiles
+        WorkspaceDidChangeWorkspaceFolders
+        WorkspaceDidCreateFiles
+        WorkspaceDidDeleteFiles
+        WorkspaceDidRenameFiles
+        WorkspaceExecuteCommandOp
+        WorkspaceSymbolOp
+        WorkspaceSymbolResolveOp
+        WorkspaceWillCreateFilesOp
+        WorkspaceWillDeleteFilesOp
+        WorkspaceWillRenameFilesOp
+    ]
+}
