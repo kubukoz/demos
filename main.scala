@@ -13,6 +13,7 @@ import jsonrpclib.JsonRpcNotificationTrait
 import software.amazon.smithy.model.shapes.ServiceShape
 import software.amazon.smithy.model.shapes.ModelSerializer
 import software.amazon.smithy.model.shapes.SmithyIdlModelSerializer
+import jsonrpclib.JsonRpcTrait
 
 case class RequestSmall(method: String, messageDirection: String) derives ReadWriter
 case class MetaModelSmall(requests: List[RequestSmall], notifications: List[RequestSmall])
@@ -51,13 +52,15 @@ case class MetaModelSmall(requests: List[RequestSmall], notifications: List[Requ
 
   val serverService = ServiceShape
     .builder()
-    .id("lsp#LSPServer")
+    .id("lsp.services#LSPServer")
     .operations(serverOps.asJava)
+    .addTrait(JsonRpcTrait.builder().build())
     .build()
   val clientService = ServiceShape
     .builder()
-    .id("lsp#LSPClient")
+    .id("lsp.services#LSPClient")
     .operations(clientOps.asJava)
+    .addTrait(JsonRpcTrait.builder().build())
     .build()
 
   val newModel = model.toBuilder().addShape(serverService).addShape(clientService).build()
