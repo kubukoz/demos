@@ -115,7 +115,7 @@ val playdateBuildImpl =
     val gameDir = baseDirectory.value / "game"
     val buildDir = gameDir / "build"
     val sourceDir = gameDir / "Source"
-    val pdxDir = gameDir / "HelloWorld.pdx"
+    val pdxDir = gameDir / "RatLife.pdx"
 
     IO.createDirectory(buildDir)
 
@@ -124,8 +124,7 @@ val playdateBuildImpl =
     // C sources to compile (not part of Scala Native)
     val cSources = Seq(
       gameDir / "main.c",
-      gameDir / "pdnewlib.c",
-      gameDir / "setup.c",
+      playdateSdk / "C_API" / "buildsupport" / "setup.c",
     )
 
     val cFlags = playdateCompileFlags.value ++ Seq(s"-I${gameDir}")

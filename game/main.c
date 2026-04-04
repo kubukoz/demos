@@ -8,9 +8,6 @@
 #include <time.h>
 #include <stdbool.h>
 
-// from pdnewlib.c
-int eventHandler_pdnewlib(PlaydateAPI *, PDSystemEvent event, uint32_t arg);
-
 #ifndef PLAYDATE_HOLDER
 #define PLAYDATE_HOLDER
 PlaydateAPI *_pd;
@@ -61,9 +58,6 @@ void pd_httpbin_request(void);
 
 int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 {
-
-    // This is required, otherwise linker errors abound
-    eventHandler_pdnewlib(pd, event, arg);
 
     if (event == kEventInit)
     {
