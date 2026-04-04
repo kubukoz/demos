@@ -6,17 +6,21 @@ import scala.scalanative.build.BuildTarget
 import scala.scalanative.build.Mode
 
 val playdateSdk = file(
-  sys.env.getOrElse(
-    "PLAYDATE_SDK_PATH",
-    sys.error("PLAYDATE_SDK_PATH not set! If you're on mac, consider ~/Developer/PlaydateSDK."),
-  )
+  sys
+    .env
+    .getOrElse(
+      "PLAYDATE_SDK_PATH",
+      sys.error("PLAYDATE_SDK_PATH not set! If you're on mac, consider ~/Developer/PlaydateSDK."),
+    )
 )
 
 val devicePath = file(
-  sys.env.getOrElse(
-    "PLAYDATE_DEVICE_PATH",
-    sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
-  )
+  sys
+    .env
+    .getOrElse(
+      "PLAYDATE_DEVICE_PATH",
+      sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
+    )
 )
 
 val pdutilPath = playdateSdk / "bin" / "pdutil"
@@ -32,7 +36,8 @@ import scala.annotation.tailrec
 
 @tailrec
 def waitUntil(b: => Boolean): Unit =
-  if (b) ()
+  if (b)
+    ()
   else {
     Thread.sleep(1000)
     waitUntil(b)
@@ -102,15 +107,27 @@ val playdateBuildImpl =
 
     val cFlags = Seq(
       "-g3",
-      "-mthumb", "-mcpu=cortex-m7",
-      "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16", "-D__FPU_USED=1",
+      "-mthumb",
+      "-mcpu=cortex-m7",
+      "-mfloat-abi=hard",
+      "-mfpu=fpv5-sp-d16",
+      "-D__FPU_USED=1",
       "-O2",
-      "-falign-functions=16", "-fomit-frame-pointer",
+      "-falign-functions=16",
+      "-fomit-frame-pointer",
       "-gdwarf-2",
-      "-Wall", "-Wno-unused", "-Wno-unknown-pragmas", "-Wdouble-promotion",
-      "-ffunction-sections", "-fdata-sections", "-fno-common",
-      "-DTARGET_PLAYDATE=1", "-DTARGET_EXTENSION=1", "-DPD_DEBUG=1",
-      "-D__HEAP_SIZE=8388208", "-D__STACK_SIZE=61800",
+      "-Wall",
+      "-Wno-unused",
+      "-Wno-unknown-pragmas",
+      "-Wdouble-promotion",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-fno-common",
+      "-DTARGET_PLAYDATE=1",
+      "-DTARGET_EXTENSION=1",
+      // "-DPD_DEBUG=1",
+      "-D__HEAP_SIZE=8388208",
+      "-D__STACK_SIZE=61800",
       s"-I${sdk / "C_API"}",
       s"-I${gameDir}",
     )
@@ -131,17 +148,21 @@ val playdateBuildImpl =
 
     val ldFlags = Seq(
       "-nostartfiles",
-      "-mthumb", "-mcpu=cortex-m7",
-      "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16",
+      "-mthumb",
+      "-mcpu=cortex-m7",
+      "-mfloat-abi=hard",
+      "-mfpu=fpv5-sp-d16",
       s"-T${ldScript}",
       s"-Wl,-Map=${buildDir / "game.map"},--cref,--gc-sections,--no-warn-mismatch,--emit-relocs",
-      "--entry", "eventHandlerShim",
+      "--entry",
+      "eventHandlerShim",
       "-Wl,--defsym=_fini=0",
       "-Wl,--defsym=__exidx_start=0",
       "-Wl,--defsym=__exidx_end=0",
     )
 
-    val linkCmd = Seq(gcc) ++ ldFlags ++ objects.map(_.toString) ++ Seq(staticLib.toString, "-o", elf.toString)
+    val linkCmd =
+      Seq(gcc) ++ ldFlags ++ objects.map(_.toString) ++ Seq(staticLib.toString, "-o", elf.toString)
     log.info("Linking pdex.elf")
     val linkRc = Process(linkCmd).!
     require(linkRc == 0, "Linking failed")
@@ -231,6 +252,39 @@ val root = project
         )
         .withMultithreading(false)
     ),
+    Compile / envVars := Map(
+      "SCALANATIVE_GC_LOG_LEVEL" -> "error"
+    ),
+    Compile / resourceGenerators += Def.task {
+      val vars = (Compile / envVars).value
+      val outDir = (Compile / resourceManaged).value / "scala-native"
+      IO.createDirectory(outDir)
+      val outFile = outDir / "pd_env.c"
+
+      val cases = vars
+        .map { case (k, v) =>
+          val ek = k.replace("\\", "\\\\").replace("\"", "\\\"")
+          val ev = v.replace("\\", "\\\\").replace("\"", "\\\"")
+          s"""    if (strcmp(name, "$ek") == 0) return "$ev";"""
+        }
+        .mkString("\n")
+
+      val content =
+        s"""|#include <string.h>
+            |
+            |#ifdef TARGET_PLAYDATE
+            |
+            |char *getenv(const char *name) {
+            |$cases
+            |    return (char *)0;
+            |}
+            |
+            |#endif
+            |""".stripMargin
+
+      IO.write(outFile, content)
+      Seq(outFile)
+    },
     playdateBuildImpl,
     playdateRunImpl,
     pdutilDatadiskImpl,

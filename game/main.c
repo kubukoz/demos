@@ -3,12 +3,13 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pd_api.h>
-// from pdnewlib.c
-int eventHandler_pdnewlib(PlaydateAPI*, PDSystemEvent event, uint32_t arg);
 #include "mylib.h"
 #include <stdarg.h>
 #include <time.h>
 #include <stdbool.h>
+
+// from pdnewlib.c
+int eventHandler_pdnewlib(PlaydateAPI *, PDSystemEvent event, uint32_t arg);
 
 #ifndef PLAYDATE_HOLDER
 #define PLAYDATE_HOLDER
@@ -56,6 +57,7 @@ static int update(void *userdata)
 
 void log_old_errors(void);
 void truncate_errors(void);
+void pd_httpbin_request(void);
 
 int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 {
@@ -69,6 +71,8 @@ int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
         ScalaNativeInit();
 
         pd->system->setUpdateCallback(update, pd);
+
+        pd_httpbin_request();
     }
 
     // log_old_errors();
@@ -336,4 +340,101 @@ float pd_system_getElapsedTime()
 void pd_system_resetElapsedTime()
 {
     _pd->system->resetElapsedTime();
+}
+
+// --- HTTPBin sample request ---
+
+static const struct playdate_http *_http;
+static HTTPConnection *_httpbin_conn;
+
+static void httpbin_header_received(HTTPConnection *conn, const char *key, const char *value)
+{
+    _pd->system->logToConsole("httpbin: header %s = %s", key, value);
+}
+
+static void httpbin_headers_read(HTTPConnection *conn)
+{
+    int status = _http->getResponseStatus(conn);
+    _pd->system->logToConsole("httpbin: headers done, HTTP %d", status);
+}
+
+static void httpbin_response(HTTPConnection *conn)
+{
+    _pd->system->logToConsole("httpbin: response callback");
+    int avail = _http->getBytesAvailable(conn);
+    _pd->system->logToConsole("httpbin: %d bytes available", (int)avail);
+}
+
+static void httpbin_request_complete(HTTPConnection *conn)
+{
+    PDNetErr err = _http->getError(conn);
+    if (err != NET_OK)
+    {
+        _pd->system->logToConsole("httpbin: request error %d", err);
+        _http->release(conn);
+        _httpbin_conn = NULL;
+        return;
+    }
+
+    _pd->system->logToConsole("httpbin: request complete");
+
+    int avail;
+    while ((avail = _http->getBytesAvailable(conn)) > 0)
+    {
+        char buf[512];
+        int n = _http->read(conn, buf, sizeof(buf) - 1);
+        if (n > 0)
+        {
+            buf[n] = '\0';
+            _pd->system->logToConsole("%s", buf);
+        }
+    }
+
+    _http->release(conn);
+    _httpbin_conn = NULL;
+}
+
+static void httpbin_closed(HTTPConnection *conn)
+{
+    PDNetErr err = _http->getError(conn);
+    _pd->system->logToConsole("httpbin: connection closed, err=%d", err);
+}
+
+static void httpbin_do_request(void)
+{
+    _httpbin_conn = _http->newConnection("192.168.1.96", 8000, false);
+    _http->setHeaderReceivedCallback(_httpbin_conn, httpbin_header_received);
+    _http->setHeadersReadCallback(_httpbin_conn, httpbin_headers_read);
+    _http->setResponseCallback(_httpbin_conn, httpbin_response);
+    _http->setRequestCompleteCallback(_httpbin_conn, httpbin_request_complete);
+    _http->setConnectionClosedCallback(_httpbin_conn, httpbin_closed);
+
+    PDNetErr err = _http->get(_httpbin_conn, "/game/mylib.h", NULL, 0);
+    _pd->system->logToConsole("httpbin: GET /get sent, err=%d", err);
+}
+
+static void httpbin_access_callback(bool allowed, void *userdata)
+{
+    _pd->system->logToConsole("httpbin: access %s", allowed ? "granted" : "denied");
+    if (allowed)
+        httpbin_do_request();
+}
+
+void pd_httpbin_request(void)
+{
+    if (_pd->network == NULL)
+    {
+        _pd->system->logToConsole("httpbin: network is NULL");
+        return;
+    }
+    _http = _pd->network->http;
+    if (_http == NULL)
+    {
+        _pd->system->logToConsole("httpbin: http is NULL");
+        return;
+    }
+
+    enum accessReply reply = _http->requestAccess("192.168.1.96", 8000, false, "HTTP test", httpbin_access_callback, NULL);
+    if (reply == kAccessAllow)
+        httpbin_do_request();
 }
