@@ -79,6 +79,30 @@ def runOnPlaydate(buildPdxPath: File) = {
   pdutil("run", s"/Games/$pdxFileName")
 }
 
+def commonCFlags(sdk: File) = Seq(
+  "-g3",
+  "-mthumb",
+  "-mcpu=cortex-m7",
+  "-mfloat-abi=hard",
+  "-mfpu=fpv5-sp-d16",
+  "-D__FPU_USED=1",
+  "-O2",
+  "-falign-functions=16",
+  "-fomit-frame-pointer",
+  "-gdwarf-2",
+  "-Wdouble-promotion",
+  "-ffunction-sections",
+  "-fdata-sections",
+  "-fno-common",
+  "-DTARGET_PLAYDATE=1",
+  "-DTARGET_EXTENSION=1",
+  // "-DPD_DEBUG=1",
+  s"-I${sdk / "C_API"}",
+)
+
+val playdateCompileFlags = settingKey[Seq[String]]("C compile flags for the final Playdate build")
+val playdateLinkFlags = settingKey[Seq[String]]("Linker flags for the final Playdate build")
+
 val playdateBuild = taskKey[File]("Build the game for Playdate")
 
 val playdateBuildImpl =
@@ -96,7 +120,6 @@ val playdateBuildImpl =
     IO.createDirectory(buildDir)
 
     val gcc = "arm-none-eabi-gcc"
-    val sdk = playdateSdk
 
     // C sources to compile (not part of Scala Native)
     val cSources = Seq(
@@ -105,32 +128,7 @@ val playdateBuildImpl =
       gameDir / "setup.c",
     )
 
-    val cFlags = Seq(
-      "-g3",
-      "-mthumb",
-      "-mcpu=cortex-m7",
-      "-mfloat-abi=hard",
-      "-mfpu=fpv5-sp-d16",
-      "-D__FPU_USED=1",
-      "-O2",
-      "-falign-functions=16",
-      "-fomit-frame-pointer",
-      "-gdwarf-2",
-      "-Wall",
-      "-Wno-unused",
-      "-Wno-unknown-pragmas",
-      "-Wdouble-promotion",
-      "-ffunction-sections",
-      "-fdata-sections",
-      "-fno-common",
-      "-DTARGET_PLAYDATE=1",
-      "-DTARGET_EXTENSION=1",
-      // "-DPD_DEBUG=1",
-      "-D__HEAP_SIZE=8388208",
-      "-D__STACK_SIZE=61800",
-      s"-I${sdk / "C_API"}",
-      s"-I${gameDir}",
-    )
+    val cFlags = playdateCompileFlags.value ++ Seq(s"-I${gameDir}")
 
     // Compile each C source to .o
     val objects = cSources.map { src =>
@@ -143,23 +141,12 @@ val playdateBuildImpl =
     }
 
     // Link everything into pdex.elf
-    val ldScript = sdk / "C_API" / "buildsupport" / "link_map.ld"
     val elf = buildDir / "pdex.elf"
 
-    val ldFlags = Seq(
-      "-nostartfiles",
-      "-mthumb",
-      "-mcpu=cortex-m7",
-      "-mfloat-abi=hard",
-      "-mfpu=fpv5-sp-d16",
-      s"-T${ldScript}",
-      s"-Wl,-Map=${buildDir / "game.map"},--cref,--gc-sections,--no-warn-mismatch,--emit-relocs",
-      "--entry",
-      "eventHandlerShim",
-      "-Wl,--defsym=_fini=0",
-      "-Wl,--defsym=__exidx_start=0",
-      "-Wl,--defsym=__exidx_end=0",
-    )
+    val ldFlags =
+      playdateLinkFlags.value ++ Seq(
+        s"-Wl,-Map=${buildDir / "game.map"},--cref,--gc-sections,--no-warn-mismatch,--emit-relocs"
+      )
 
     val linkCmd =
       Seq(gcc) ++ ldFlags ++ objects.map(_.toString) ++ Seq(staticLib.toString, "-o", elf.toString)
@@ -171,7 +158,7 @@ val playdateBuildImpl =
     IO.copyFile(elf, sourceDir / "pdex.elf", CopyOptions().withOverwrite(true))
 
     // Run pdc to produce .pdx
-    val pdc = sdk / "bin" / "pdc"
+    val pdc = playdateSdk / "bin" / "pdc"
     val pdcCmd = Seq(pdc.toString, sourceDir.toString, pdxDir.toString)
     log.info("Running pdc")
     val pdcRc = Process(pdcCmd).!
@@ -210,6 +197,38 @@ val pdutilDatadiskImpl =
   pdutilDatadisk :=
     pdutil("datadisk")
 
+val generateEnvCImpl =
+  Compile / resourceGenerators += Def.task {
+    val vars = (Compile / envVars).value
+    val outDir = (Compile / resourceManaged).value / "scala-native"
+    IO.createDirectory(outDir)
+    val outFile = outDir / "pd_env.c"
+
+    val cases = vars
+      .map { case (k, v) =>
+        val ek = k.replace("\\", "\\\\").replace("\"", "\\\"")
+        val ev = v.replace("\\", "\\\\").replace("\"", "\\\"")
+        s"""    if (strcmp(name, "$ek") == 0) return "$ev";"""
+      }
+      .mkString("\n")
+
+    val content =
+      s"""|#include <string.h>
+          |
+          |#ifdef TARGET_PLAYDATE
+          |
+          |char *getenv(const char *name) {
+          |$cases
+          |    return (char *)0;
+          |}
+          |
+          |#endif
+          |""".stripMargin
+
+    IO.write(outFile, content)
+    Seq(outFile)
+  }
+
 val root = project
   .in(file("."))
   .enablePlugins(ScalaNativePlugin)
@@ -222,29 +241,10 @@ val root = project
         .withTargetTriple("arm-none-eabi")
         .withGC(GC.immix)
         .withCompileOptions(
-          Seq(
-            "-g3",
-            "-mthumb",
-            "-mcpu=cortex-m7",
-            "-mfloat-abi=hard",
-            "-mfpu=fpv5-sp-d16",
-            "-D__FPU_USED=1",
-            "-O2",
-            "-falign-functions=16",
-            "-fomit-frame-pointer",
-            "-gdwarf-2",
+          commonCFlags(playdateSdk) ++ Seq(
             "-fverbose-asm",
-            "-Wdouble-promotion",
-            "-fno-common",
-            "-ffunction-sections",
-            "-fdata-sections",
-            "-DTARGET_PLAYDATE=1",
-            "-DTARGET_EXTENSION=1",
-            "-DPD_DEBUG=1",
-            "-D_LIBCPP_HAS_THREAD_API_PTHREAD=1",
             "-MD",
             "-MP",
-            s"-I${playdateSdk / "C_API"}",
             "-march=armv7-m",
             "-m32",
             "-ferror-limit=1000",
@@ -255,36 +255,31 @@ val root = project
     Compile / envVars := Map(
       "SCALANATIVE_GC_LOG_LEVEL" -> "error"
     ),
-    Compile / resourceGenerators += Def.task {
-      val vars = (Compile / envVars).value
-      val outDir = (Compile / resourceManaged).value / "scala-native"
-      IO.createDirectory(outDir)
-      val outFile = outDir / "pd_env.c"
-
-      val cases = vars
-        .map { case (k, v) =>
-          val ek = k.replace("\\", "\\\\").replace("\"", "\\\"")
-          val ev = v.replace("\\", "\\\\").replace("\"", "\\\"")
-          s"""    if (strcmp(name, "$ek") == 0) return "$ev";"""
-        }
-        .mkString("\n")
-
-      val content =
-        s"""|#include <string.h>
-            |
-            |#ifdef TARGET_PLAYDATE
-            |
-            |char *getenv(const char *name) {
-            |$cases
-            |    return (char *)0;
-            |}
-            |
-            |#endif
-            |""".stripMargin
-
-      IO.write(outFile, content)
-      Seq(outFile)
+    playdateCompileFlags :=
+      commonCFlags(playdateSdk) ++ Seq(
+        "-Wall",
+        "-Wno-unused",
+        "-Wno-unknown-pragmas",
+        "-D__HEAP_SIZE=8388208",
+        "-D__STACK_SIZE=61800",
+      ),
+    playdateLinkFlags := {
+      val ldScript = playdateSdk / "C_API" / "buildsupport" / "link_map.ld"
+      Seq(
+        "-nostartfiles",
+        "-mthumb",
+        "-mcpu=cortex-m7",
+        "-mfloat-abi=hard",
+        "-mfpu=fpv5-sp-d16",
+        s"-T${ldScript}",
+        "--entry",
+        "eventHandlerShim",
+        "-Wl,--defsym=_fini=0",
+        "-Wl,--defsym=__exidx_start=0",
+        "-Wl,--defsym=__exidx_end=0",
+      )
     },
+    generateEnvCImpl,
     playdateBuildImpl,
     playdateRunImpl,
     pdutilDatadiskImpl,
