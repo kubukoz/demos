@@ -150,14 +150,9 @@ val root = project
   .in(file("."))
   .enablePlugins(ScalaNativePlugin)
   .settings(
-    scalaVersion := "3.3.3",
+    scalaVersion := "3.8.3",
     scalacOptions += "-Wunused:all",
     scalacOptions += "-no-indent",
-    libraryDependencies ++= Seq(
-      "io.circe" %%% "circe-core" % "0.14.15",
-      "io.circe" %%% "circe-parser" % "0.14.15",
-      "io.circe" %%% "circe-literal" % "0.14.15",
-    ),
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
         .withTargetTriple("arm-none-eabi")

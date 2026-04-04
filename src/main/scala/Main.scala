@@ -1,8 +1,7 @@
 package demo
 
-import scalanative.unsafe._
-import scalanative.unsigned._
-import io.circe.Codec
+import scalanative.unsafe.*
+import scalanative.unsigned.*
 
 object pdapiBindings {
 
@@ -244,17 +243,23 @@ enum Obstacle {
 
 }
 
-case class Score(value: Int) derives CanEqual {
-  def +(other: Score): Score = Score(value + other.value)
-  def *(other: Int): Score = Score(value * other)
-  def >(other: Score): Boolean = value > other.value
-  def max(other: Score): Score = Score(value.max(other.value))
-  def nonZero: Boolean = value != 0
-}
+opaque type Score = Int
 
 object Score {
-  val Init: Score = Score(0)
-  val passedTram: Score = Score(10)
+
+  extension (value: Score) {
+
+    def +(other: Score): Score = value + other
+    def *(other: Int): Score = value * other
+    def >(other: Score): Boolean = value > other
+    infix def max(other: Score): Score = math.max(value, other)
+    def nonZero: Boolean = value != 0
+
+    def value: Int = value
+  }
+
+  val Init: Score = 0
+  val passedTram: Score = 10
 
   extension (l: List[Score]) def combineAll: Score = l.foldLeft(Score.Init)(_ + _)
 }
@@ -465,7 +470,7 @@ object MainGame {
         wompPlayer = wompPlayer,
       )
       // todo: read from file
-      highScore = Score(0)
+      highScore = Score.Init
     } yield initState(assets, ctx, highScore = highScore)
 
   def initState(assets: GameAssets, ctx: GameContext, highScore: Score): GameState = GameState(
@@ -516,7 +521,7 @@ object MainGame {
               offsetX + tramWidth - passThreshold > state.offsetX &&
               offsetX + tramWidth - passThreshold <= newOffset
             }
-            .map { case t: Obstacle.Tram => Score.passedTram }
+            .map { case _: Obstacle.Tram => Score.passedTram }
             .combineAll
 
         state
@@ -958,7 +963,7 @@ object Main {
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     event.match {
       case `kEventInit` =>
-        game.init(deriveContext(pd)).compile() match {
+        game.init(deriveContext()).compile() match {
           case (state, cleanupState) =>
             this.state = state
             this.cleanupState = cleanupState
@@ -981,7 +986,7 @@ object Main {
     pd: Ptr[PlaydateAPI]
   ): Int = {
     debug("updateNative start")
-    val ctx: GameContext = deriveContext(pd)
+    val ctx: GameContext = deriveContext()
     debug("derived context")
     val newState = game.update(ctx)(state)
 
@@ -1081,7 +1086,7 @@ object Main {
     b = buttons.!.is(kButtonB),
   )
 
-  def deriveContext(pd: Ptr[PlaydateAPI]): GameContext = {
+  def deriveContext(): GameContext = {
     // todo: maybe these can be optimized into fields somehow?
     val current = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
     val pressed = stackalloc[CUnsignedInt](1).asInstanceOf[Ptr[PDButtons]]
