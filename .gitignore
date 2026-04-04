@@ -8,4 +8,4 @@ node_modules/
 
 .vscode/c_cpp_properties.json
 crashlog.txt
-game/build
+modules/game/src/main/playdate/build

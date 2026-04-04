@@ -116,7 +116,7 @@ val playdateBuildImpl =
     val log = streams.value.log
     val staticLib = (Compile / nativeLink).value
 
-    val gameDir = baseDirectory.value / "game"
+    val gameDir = baseDirectory.value / "src" / "main" / "playdate"
     val buildDir = gameDir / "build"
     val sourceDir = gameDir / "Source"
     val pdxDir = gameDir / "RatLife.pdx"
@@ -243,8 +243,8 @@ val generateEnvCImpl =
     Seq(outFile)
   }
 
-val root = project
-  .in(file("."))
+val game = project
+  .in(file("modules") / "game")
   .enablePlugins(ScalaNativePlugin)
   .settings(
     scalaVersion := "3.8.3",
@@ -299,3 +299,7 @@ val root = project
     pdutilDatadiskImpl,
     playdateCopyCrashLogsImpl,
   )
+
+val root = project
+  .in(file("."))
+  .aggregate(game)

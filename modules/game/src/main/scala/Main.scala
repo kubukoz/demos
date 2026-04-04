@@ -3,7 +3,6 @@ package demo
 import scalanative.unsafe.*
 import scalanative.unsigned.*
 import demo.pdapiBindings.pd_log_error_raw
-import cats.Semigroup
 
 object pdapiBindings {
 
