@@ -1,8 +1,10 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <pd_api.h>
-#include <pdcpp/pdnewlib.h>
+// from pdnewlib.c
+int eventHandler_pdnewlib(PlaydateAPI*, PDSystemEvent event, uint32_t arg);
 #include "mylib.h"
 #include <stdarg.h>
 #include <time.h>

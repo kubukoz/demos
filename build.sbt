@@ -1,40 +1,28 @@
 import java.nio.file.Files
-
 import java.nio.file.Paths
-
 import scala.scalanative.build.GC
-
 import scala.scalanative.build.LTO
-
 import scala.scalanative.build.BuildTarget
-
 import scala.scalanative.build.Mode
 
 val playdateSdk = file(
-  sys
-    .env
-    .getOrElse(
-      "PLAYDATE_SDK_PATH",
-      sys.error("PLAYDATE_SDK_PATH not set! If you're on mac, consider ~/Developer/PlaydateSDK."),
-    )
+  sys.env.getOrElse(
+    "PLAYDATE_SDK_PATH",
+    sys.error("PLAYDATE_SDK_PATH not set! If you're on mac, consider ~/Developer/PlaydateSDK."),
+  )
 )
 
 val devicePath = file(
-  sys
-    .env
-    .getOrElse(
-      "PLAYDATE_DEVICE_PATH",
-      sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
-    )
+  sys.env.getOrElse(
+    "PLAYDATE_DEVICE_PATH",
+    sys.error("PLAYDATE_DEVICE_PATH not set, look at flake.nix for an example"),
+  )
 )
 
 val pdutilPath = playdateSdk / "bin" / "pdutil"
 
-def pdutil(
-  args: String*
-) = {
+def pdutil(args: String*) = {
   import sys.process._
-
   val cmd = pdutilPath.toString :: devicePath.toString :: args.toList
   println("running " + cmd.mkString(" "))
   println(cmd.!!)
@@ -44,8 +32,7 @@ import scala.annotation.tailrec
 
 @tailrec
 def waitUntil(b: => Boolean): Unit =
-  if (b)
-    ()
+  if (b) ()
   else {
     Thread.sleep(1000)
     waitUntil(b)
@@ -53,12 +40,10 @@ def waitUntil(b: => Boolean): Unit =
 
 def waitForVolume() = {
   import sys.process._
-
   println("waiting for volume...")
   waitUntil {
     "ls /Volumes/PLAYDATE/Games".! == 0
   }
-
 }
 
 def runOnPlaydate(buildPdxPath: File) = {
@@ -87,7 +72,6 @@ def runOnPlaydate(buildPdxPath: File) = {
 
   println("launching game")
   pdutil("run", s"/Games/$pdxFileName")
-
 }
 
 val playdateBuild = taskKey[File]("Build the game for Playdate")
@@ -96,30 +80,89 @@ val playdateBuildImpl =
   playdateBuild := {
     import sys.process._
 
+    val log = streams.value.log
     val staticLib = (Compile / nativeLink).value
 
-    val buildBase = baseDirectory.value / "game"
+    val gameDir = baseDirectory.value / "game"
+    val buildDir = gameDir / "build"
+    val sourceDir = gameDir / "Source"
+    val pdxDir = gameDir / "HelloWorld.pdx"
 
-    IO.copyFile(
-      staticLib,
-      buildBase / staticLib.name,
-      CopyOptions().withOverwrite(true),
-    )
-    require(
-      Process("make", buildBase).! == 0,
-      "make failed",
+    IO.createDirectory(buildDir)
+
+    val gcc = "arm-none-eabi-gcc"
+    val sdk = playdateSdk
+
+    // C sources to compile (not part of Scala Native)
+    val cSources = Seq(
+      gameDir / "main.c",
+      gameDir / "pdnewlib.c",
+      gameDir / "setup.c",
     )
 
-    buildBase / "HelloWorld.pdx"
+    val cFlags = Seq(
+      "-g3",
+      "-mthumb", "-mcpu=cortex-m7",
+      "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16", "-D__FPU_USED=1",
+      "-O2",
+      "-falign-functions=16", "-fomit-frame-pointer",
+      "-gdwarf-2",
+      "-Wall", "-Wno-unused", "-Wno-unknown-pragmas", "-Wdouble-promotion",
+      "-ffunction-sections", "-fdata-sections", "-fno-common",
+      "-DTARGET_PLAYDATE=1", "-DTARGET_EXTENSION=1", "-DPD_DEBUG=1",
+      "-D__HEAP_SIZE=8388208", "-D__STACK_SIZE=61800",
+      s"-I${sdk / "C_API"}",
+      s"-I${gameDir}",
+    )
+
+    // Compile each C source to .o
+    val objects = cSources.map { src =>
+      val obj = buildDir / src.name.replaceAll("\\.c$", ".o")
+      val cmd = Seq(gcc, "-c") ++ cFlags ++ Seq(src.toString, "-o", obj.toString)
+      log.info(s"Compiling ${src.name}")
+      val rc = Process(cmd).!
+      require(rc == 0, s"Failed to compile ${src.name}")
+      obj
+    }
+
+    // Link everything into pdex.elf
+    val ldScript = sdk / "C_API" / "buildsupport" / "link_map.ld"
+    val elf = buildDir / "pdex.elf"
+
+    val ldFlags = Seq(
+      "-nostartfiles",
+      "-mthumb", "-mcpu=cortex-m7",
+      "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16",
+      s"-T${ldScript}",
+      s"-Wl,-Map=${buildDir / "game.map"},--cref,--gc-sections,--no-warn-mismatch,--emit-relocs",
+      "--entry", "eventHandlerShim",
+      "-Wl,--defsym=_fini=0",
+      "-Wl,--defsym=__exidx_start=0",
+      "-Wl,--defsym=__exidx_end=0",
+    )
+
+    val linkCmd = Seq(gcc) ++ ldFlags ++ objects.map(_.toString) ++ Seq(staticLib.toString, "-o", elf.toString)
+    log.info("Linking pdex.elf")
+    val linkRc = Process(linkCmd).!
+    require(linkRc == 0, "Linking failed")
+
+    // Copy elf into Source/ for pdc
+    IO.copyFile(elf, sourceDir / "pdex.elf", CopyOptions().withOverwrite(true))
+
+    // Run pdc to produce .pdx
+    val pdc = sdk / "bin" / "pdc"
+    val pdcCmd = Seq(pdc.toString, sourceDir.toString, pdxDir.toString)
+    log.info("Running pdc")
+    val pdcRc = Process(pdcCmd).!
+    require(pdcRc == 0, "pdc failed")
+
+    pdxDir
   }
 
 val playdateRunImpl =
   run := {
     val pdx = playdateBuild.value
-
-    runOnPlaydate(
-      buildPdxPath = pdx
-    )
+    runOnPlaydate(buildPdxPath = pdx)
   }
 
 val playdateCopyCrashLogs = taskKey[Unit]("Copy crash logs from the connected Playdate device")
@@ -156,7 +199,6 @@ val root = project
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
         .withTargetTriple("arm-none-eabi")
-        // .withGC(GC.none)
         .withGC(GC.immix)
         .withCompileOptions(
           Seq(
@@ -178,16 +220,13 @@ val root = project
             "-DTARGET_PLAYDATE=1",
             "-DTARGET_EXTENSION=1",
             "-DPD_DEBUG=1",
-            // "-DDEBUG_PRINT=1",
             "-D_LIBCPP_HAS_THREAD_API_PTHREAD=1",
-            // "-DSCALANATIVE_USING_CPP_EXCEPTIONS=1",
             "-MD",
             "-MP",
             s"-I${playdateSdk / "C_API"}",
             "-march=armv7-m",
             "-m32",
             "-ferror-limit=1000",
-            // "-v",
           )
         )
         .withMultithreading(false)
@@ -197,5 +236,3 @@ val root = project
     pdutilDatadiskImpl,
     playdateCopyCrashLogsImpl,
   )
-
-// resolvers ++= Resolver.sonatypeOssRepos("snapshots")

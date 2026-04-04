@@ -1,0 +1,14 @@
+2026/04/04 16:45:38
+boot
+Run loop stalled for more than 10 seconds pc=0x240B664A lr=0x24098D3B
+
+
+2026/04/04 18:54:55
+/Games/HelloWorld.pdx
+stack overflow in task gameTask
+
+2026/04/04 20:45:28
+/Games/HelloWorld.pdx
+Error: .init is not implemented.
+If you are a developer, please ensure that the event handler in setup.c is up-to-date and implements .init_array execution.
+
