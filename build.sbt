@@ -143,9 +143,8 @@ val playdateCopyCrashLogsImpl =
 val pdutilDatadisk = taskKey[Unit]("Boot into datadisk mode")
 
 val pdutilDatadiskImpl =
-  pdutilDatadisk := {
+  pdutilDatadisk :=
     pdutil("datadisk")
-  }
 
 val root = project
   .in(file("."))
@@ -153,6 +152,12 @@ val root = project
   .settings(
     scalaVersion := "3.3.3",
     scalacOptions += "-Wunused:all",
+    scalacOptions += "-no-indent",
+    libraryDependencies ++= Seq(
+      "io.circe" %%% "circe-core" % "0.14.15",
+      "io.circe" %%% "circe-parser" % "0.14.15",
+      "io.circe" %%% "circe-literal" % "0.14.15",
+    ),
     nativeConfig ~= (
       _.withBuildTarget(BuildTarget.libraryStatic)
         .withTargetTriple("arm-none-eabi")

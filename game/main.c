@@ -17,13 +17,29 @@ LCDFont *font;
 
 void pd_log_error(char *str, ...);
 
+unsigned int pd_getCurrentTimeMilliseconds(void)
+{
+    return _pd->system->getCurrentTimeMilliseconds();
+}
+
 void pd_scalanative_init(PlaydateAPI *pd)
 {
     _pd = pd;
 }
 
+extern void scalanative_GC_setStackBottom(void *stackbottom);
+
 static int update(void *userdata)
 {
+    // Refresh the GC's stack bottom to the current frame. The GC needs
+    // accurate stack bounds for its conservative root scan. stackBottom was
+    // originally set during GC_init (called from eventHandler), but the
+    // Playdate SDK calls update() from a different stack depth, so we must
+    // update it here before any Scala code (which may trigger GC) runs.
+    // See Marker_markProgramStack in Marker.c for the full explanation.
+    volatile int stackMarker = 0;
+    scalanative_GC_setStackBottom((void *)&stackMarker);
+
     PlaydateAPI *pd = userdata;
 
     PDButtons pressed;
@@ -89,6 +105,18 @@ void pd_log_error(char *str, ...)
     vsprintf(buffer, str, args);
     va_end(args);
     pd_log_error_raw(buffer);
+}
+
+void scalanative_pd_exit(int status, const char *file, int line)
+{
+    pd_log_error("exit(%d) called at %s:%d", status, file, line);
+    _exit(status);
+}
+
+void scalanative_pd_abort(const char *file, int line)
+{
+    pd_log_error("abort() called at %s:%d", file, line);
+    _exit(1);
 }
 
 int errno = 0;

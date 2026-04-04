@@ -2,6 +2,7 @@ package demo
 
 import scalanative.unsafe._
 import scalanative.unsigned._
+import io.circe.Codec
 
 object pdapiBindings {
 
@@ -402,9 +403,7 @@ object MainGame {
   def config: GameConfig = GameConfig(fps = 50)
 
   private def generateObstacles(dice: Dice): List[Obstacle] = {
-    // SN issue? ranges (0 until 10) seem to crash. So does List.iterate with about 100 items.
-
-    // generate obstacles whose distance from the previous one is at least 50 pixels, and at most 200 pixels from the previous one.
+    debug("generating offsets. dice: " + dice)
 
     val offsets =
       dice
@@ -413,12 +412,15 @@ object MainGame {
         .scanLeft(200)(_ + _ + tramWidth)
         .tail
 
-    println("generated offsets: " + offsets)
+    debug("generated offsets: " + offsets)
 
-    offsets
+    val obstacles = offsets
       .zipWithIndex
       .flatMap { (offsetX, index) =>
-        val offsetY = if index % 2 == 0 then 10 else -100
+        val offsetY =
+          if index % 2 == 0 then 10
+          else
+            -100
         val t1 = Obstacle.Tram(
           direction = TramDirection.Vertical,
           offsetX = offsetX,
@@ -433,6 +435,9 @@ object MainGame {
 
         t1 :: t2 :: Nil
       }
+
+    debug("generated obstacles: " + obstacles)
+    obstacles
   }
 
   def init(ctx: GameContext): Resource[GameState] =
@@ -487,7 +492,8 @@ object MainGame {
         val newBoost =
           if ctx.buttons.pressed.a then true
           else if ctx.buttons.released.a then false
-          else state.boost
+          else
+            state.boost
 
         state.copy(boost = newBoost)
       }
@@ -521,7 +527,8 @@ object MainGame {
           .addEvents(
             if scoreGains.nonZero
             then GameEvent.Scored :: Nil
-            else Nil
+            else
+              Nil
           )
       }
 
@@ -560,10 +567,11 @@ object MainGame {
       state => {
         val newRotation =
           if state.rat.y == ratMarginY || state
-              .rat
-              .y == ctx.screen.height - ratHeight - ratMarginY
+            .rat
+            .y == ctx.screen.height - ratHeight - ratMarginY
           then state.rat.rotation * 0.9
-          else state.rat.rotation
+          else
+            state.rat.rotation
 
         state.copy(rat = state.rat.copy(rotation = newRotation))
       }
@@ -574,6 +582,12 @@ object MainGame {
         val newObstacles = state.obstacles.filter { case Obstacle.Tram(_, offsetX, _) =>
           offsetX + tramWidth > state.offsetX
         }
+
+        debug(
+          "recycling obstacles. count before: " + state
+            .obstacles
+            .size + ", count after: " + newObstacles.size
+        )
 
         state.copy(obstacles = newObstacles)
       }
@@ -595,20 +609,30 @@ object MainGame {
               generateObstacles(ctx.dice).map(_.moveX(offsetX + tramWidth))
             }
 
+        debug("New obstacle count: " + newObstacles.size)
+
         state.copy(obstacles = newObstacles)
       }
 
     val playAgain: GameState => GameState =
       state =>
-        if ctx.buttons.pressed.a then
-          initState(state.assets, ctx, highScore = state.highScore max state.score)
-        else state
+        if ctx.buttons.pressed.a then initState(
+          state.assets,
+          ctx,
+          highScore = state.highScore max state.score,
+        )
+        else
+          state
 
     val gameOver: GameState => GameState =
-      state =>
-        if obstacleHit(state) then
-          state.copy(mode = GameMode.GameOver).addEvents(List(GameEvent.GameOver))
-        else state
+      if true then identity
+      else
+        state =>
+          if obstacleHit(state) then state
+            .copy(mode = GameMode.GameOver)
+            .addEvents(List(GameEvent.GameOver))
+          else
+            state
 
     clearEvents.andThen(getMode.flatMap {
       case GameMode.GameOver =>
@@ -804,7 +828,7 @@ enum Color derives CanEqual {
 
 enum Render derives CanEqual {
   case FPS(x: Int, y: Int)
-  case Combine(a: Render, b: Render)
+  case CombineAll(renders: List[Render])
   case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill)
 
   case Bitmap(
@@ -828,9 +852,12 @@ enum Render derives CanEqual {
 
   def |+|(another: Render): Render =
     (this, another) match {
-      case (Empty, _) => another
-      case (_, Empty) => this
-      case _          => Combine(this, another)
+      case (Empty, _)                     => another
+      case (_, Empty)                     => this
+      case (CombineAll(l), CombineAll(r)) => CombineAll(l ++ r)
+      case (CombineAll(l), r)             => CombineAll(l :+ r)
+      case (l, CombineAll(r))             => CombineAll(l +: r)
+      case (l, r)                         => CombineAll(List(l, r))
     }
 
 }
@@ -953,18 +980,26 @@ object Main {
   def updateNative(
     pd: Ptr[PlaydateAPI]
   ): Int = {
+    debug("updateNative start")
     val ctx: GameContext = deriveContext(pd)
+    debug("derived context")
     val newState = game.update(ctx)(state)
 
-    if (newState == state)
+    if newState == state then {
+      debug("state unchanged")
       0
-    else {
+    } else {
+      debug("state changed")
       state = newState
+      debug("rendering...")
       val actions = game.render(ctx, newState)
+      debug("rendered")
 
-      if (actions.isEmpty)
+      if actions.isEmpty then {
+        debug("no actions to execute")
         0
-      else {
+      } else {
+        debug("executing actions")
         executeActions(pd, actions)
 
         1
@@ -1019,9 +1054,7 @@ object Main {
             y,
           )
         }
-      case Render.Combine(a, b) =>
-        executeActions(pd, a)
-        executeActions(pd, b)
+      case Render.CombineAll(renders)           => renders.foreach(executeActions(pd, _))
       case Render.Rect(x, y, w, h, color, fill) =>
         fill match {
           case Fill.Fill =>
@@ -1092,4 +1125,8 @@ object Main {
     pd: Ptr[PlaydateAPI]
   ): Int = updateNative(pd)
 
+}
+
+inline def debug(msg: String): Unit = {
+  // println(msg)
 }
