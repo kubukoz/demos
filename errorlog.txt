@@ -12,3 +12,18 @@ stack overflow in task gameTask
 Error: .init is not implemented.
 If you are a developer, please ensure that the event handler in setup.c is up-to-date and implements .init_array execution.
 
+2026/04/04 22:23:08
+/Games/HelloWorld.pdx
+Error: .init is not implemented.
+If you are a developer, please ensure that the event handler in setup.c is up-to-date and implements .init_array execution.
+
+2026/04/04 22:23:58
+/Games/RatLife.pdx
+Error: .init is not implemented.
+If you are a developer, please ensure that the event handler in setup.c is up-to-date and implements .init_array execution.
+
+2026/04/04 21:33:05
+/Games/RatLife.pdx
+Run loop stalled for more than 10 seconds pc=0x24039E92 lr=0x0000006D
+
+

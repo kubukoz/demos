@@ -7,6 +7,11 @@
 #include <stdarg.h>
 #include <time.h>
 #include <stdbool.h>
+#include <sys/stat.h>
+#include <errno.h>
+#ifdef errno
+#undef errno
+#endif
 
 #ifndef PLAYDATE_HOLDER
 #define PLAYDATE_HOLDER
@@ -124,6 +129,129 @@ int errno = 0;
 int *__error(void)
 {
     return &errno;
+}
+
+// newlib stubs — backed by Playdate file API where possible
+
+void _exit(int code)
+{
+    while (1)
+    {
+        _pd->system->error("exited with code %d.", code);
+    }
+}
+int _kill(int pid, int sig) { return 0; }
+int _getpid(void) { return 1; }
+
+#define HANDLE_STDIN 0
+#define HANDLE_STDOUT 1
+#define HANDLE_STDERR 2
+#define MAXFILES 32
+#define FILEHANDLEOFF 3
+
+static SDFile *openfiles[MAXFILES];
+
+int _isatty(int file) { return file >= 0 && file <= HANDLE_STDERR; }
+
+int _write(int handle, char *data, int size)
+{
+    if (size == 0 || data == NULL)
+        return 0;
+
+    if (handle == HANDLE_STDOUT || handle == HANDLE_STDERR)
+    {
+        if (_pd == NULL)
+            return size;
+        char buf[256];
+        int n = size < 255 ? size : 255;
+        memcpy(buf, data, n);
+        buf[n] = '\0';
+        _pd->system->logToConsole("%s", buf);
+        return size;
+    }
+    else if (handle >= FILEHANDLEOFF && handle < FILEHANDLEOFF + MAXFILES)
+    {
+        SDFile *f = openfiles[handle - FILEHANDLEOFF];
+        if (f)
+        {
+            int s = _pd->file->write(f, data, size);
+            return s < 0 ? -1 : s;
+        }
+    }
+    return -1;
+}
+
+int _read(int handle, char *ptr, int len)
+{
+    if (handle >= FILEHANDLEOFF && handle < FILEHANDLEOFF + MAXFILES)
+    {
+        SDFile *f = openfiles[handle - FILEHANDLEOFF];
+        if (f)
+        {
+            int s = _pd->file->read(f, ptr, len);
+            return s < 0 ? -1 : s;
+        }
+    }
+    return 0;
+}
+
+int _open(const char *name, int flags, int mode)
+{
+    for (size_t i = 0; i < MAXFILES; ++i)
+    {
+        if (!openfiles[i])
+        {
+            openfiles[i] = _pd->file->open(name, mode);
+            if (openfiles[i] == NULL)
+            {
+                errno = ENOENT;
+                return -1;
+            }
+            return FILEHANDLEOFF + i;
+        }
+    }
+    errno = ENFILE;
+    return -1;
+}
+
+int _close(int handle)
+{
+    if (handle >= FILEHANDLEOFF && handle < FILEHANDLEOFF + MAXFILES)
+    {
+        int idx = handle - FILEHANDLEOFF;
+        SDFile *f = openfiles[idx];
+        if (f != NULL)
+        {
+            if (_pd->file->close(f))
+                return -1;
+            openfiles[idx] = NULL;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int _lseek(int handle, int pos, int whence)
+{
+    if (handle >= FILEHANDLEOFF && handle < FILEHANDLEOFF + MAXFILES)
+    {
+        SDFile *f = openfiles[handle - FILEHANDLEOFF];
+        if (f)
+        {
+            if (_pd->file->seek(f, pos, whence))
+                return -1;
+            return _pd->file->tell(f);
+        }
+    }
+    return -1;
+}
+
+int _fstat(int file, struct stat *st)
+{
+    memset(st, 0, sizeof(*st));
+    if (_isatty(file))
+        st->st_mode = S_IFCHR;
+    return 0;
 }
 
 void log_old_errors()
@@ -296,6 +424,11 @@ void pd_graphics_drawScaledBitmap(LCDBitmap *bitmap, int x, int y, float xscale,
 int pd_graphics_getTextWidth(LCDFont *font, const char *text, size_t len, PDStringEncoding encoding, int tracking)
 {
     return _pd->graphics->getTextWidth(font, text, len, encoding, tracking);
+}
+
+int pd_graphics_getTextHeightForMaxWidth(LCDFont *font, const char *text, size_t len, int maxWidth, PDStringEncoding encoding, PDTextWrappingMode wrap, int tracking, int extraLeading)
+{
+    return _pd->graphics->getTextHeightForMaxWidth(font, text, len, maxWidth, encoding, wrap, tracking, extraLeading);
 }
 
 void pd_graphics_drawRotatedBitmap(LCDBitmap *bitmap, int x, int y, float rotation, float centerx, float centery, float xscale, float yscale)

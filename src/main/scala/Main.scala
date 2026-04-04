@@ -27,6 +27,13 @@ object pdapiBindings {
 
     opaque type PDStringEncoding = Int
     val kUTF8Encoding: PDStringEncoding = 1
+
+    opaque type PDTextWrappingMode = Int
+
+    val kWrapClip: PDTextWrappingMode = 0
+    val kWrapCharacter: PDTextWrappingMode = 1
+    val kWrapWord: PDTextWrappingMode = 2
+
     opaque type LCDFont = Nothing
     opaque type PDSystemEvent = Int
     val kEventInit: PDSystemEvent = 0
@@ -164,6 +171,21 @@ object pdapiBindings {
     yscale: Float,
   ): Unit = extern
 
+  @extern def pd_graphics_getTextHeightForMaxWidth(
+    font: Ptr[LCDFont],
+    text: CString,
+    len: CSize,
+    maxWidth: Int,
+    encoding: PDStringEncoding,
+    wrap: PDTextWrappingMode,
+    tracking: Int,
+    extraLeading: Int,
+  ): Int = extern
+
+  @extern def pd_graphics_getFontHeight(
+    font: Ptr[LCDFont]
+  ): Int = extern
+
   @extern def pd_graphics_getTextWidth(
     font: Ptr[LCDFont],
     text: CString,
@@ -266,7 +288,7 @@ object Score {
 }
 
 enum GameMode derives CanEqual {
-  case Initial
+  case Initial(rendered: Boolean)
   case Playing // (score: Score, scoring: Boolean, boost: Boolean)
   case GameOver
 }
@@ -281,6 +303,7 @@ case class GameState(
   boost: Boolean,
   mode: GameMode,
   isDeadly: Boolean,
+  crankDocked: Boolean,
   // Vector is broken, apparently
   events: List[GameEvent],
 ) derives CanEqual {
@@ -484,9 +507,10 @@ object MainGame {
     score = Score.Init,
     highScore = highScore,
     boost = false,
-    mode = GameMode.Initial,
+    mode = GameMode.Initial(rendered = false),
     events = Nil,
     isDeadly = true,
+    crankDocked = ctx.crank.docked,
   )
 
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
@@ -494,6 +518,10 @@ object MainGame {
   def update(ctx: GameContext): GameState => GameState = {
 
     val clearEvents: GameState => GameState = state => state.copy(events = Nil)
+
+    val updatePlatform: GameState => GameState =
+      state => state.copy(crankDocked = ctx.crank.docked)
+
     val getMode: GameState => GameMode = _.mode
     val setBoost: GameState => GameState =
       state => {
@@ -629,12 +657,20 @@ object MainGame {
           state.assets,
           ctx,
           highScore = state.highScore max state.score,
-        )
+        ).copy(mode = GameMode.Playing)
         else
           state
 
     val setDeadly: GameState => GameState =
       state => state.copy(isDeadly = ctx.buttons.current.b)
+
+    val setRendered: GameState => GameState =
+      state =>
+        if state.mode == GameMode.Initial(false) then state.copy(mode =
+          GameMode.Initial(rendered = true)
+        )
+        else
+          state
 
     val startGame: GameState => GameState =
       state =>
@@ -650,31 +686,39 @@ object MainGame {
         else
           state
 
-    clearEvents.andThen(getMode.flatMap {
-      case GameMode.Initial => startGame
-
-      case GameMode.Playing =>
-        Function.chain(
-          List(
-            setBoost,
-            movement,
-            rotateRat,
-            moveRat,
-            equalizeRat,
-            recycleObstacles,
-            addObstacles,
-            setDeadly,
-            gameOver,
+    clearEvents
+      .andThen(updatePlatform)
+      .andThen(getMode.flatMap {
+        case GameMode.Initial(_) =>
+          Function.chain(
+            List(
+              setRendered,
+              startGame,
+            )
           )
-        )
 
-      case GameMode.GameOver =>
-        Function.chain(
-          List(
-            playAgain
+        case GameMode.Playing =>
+          Function.chain(
+            List(
+              setBoost,
+              movement,
+              rotateRat,
+              moveRat,
+              equalizeRat,
+              recycleObstacles,
+              addObstacles,
+              setDeadly,
+              gameOver,
+            )
           )
-        )
-    })
+
+        case GameMode.GameOver =>
+          Function.chain(
+            List(
+              playAgain
+            )
+          )
+      })
   }
 
   def obstacleHit(state: GameState): Boolean = {
@@ -749,7 +793,7 @@ object MainGame {
     // )
 
     val crankIndicator =
-      Render.cond(ctx.crank.docked) {
+      Render.cond(state.crankDocked) {
         val text = "Use the crank!"
 
         Render.withTextWidth(text) { w =>
@@ -783,66 +827,68 @@ object MainGame {
 
     val isGameOver = state.mode == GameMode.GameOver
 
-    def gameInit = textBox(
-      ctx,
-      """Welcome to Rat Racer!
-        |Press A to start!""".stripMargin,
-    )
+    def gameInit =
+      textBox(
+        ctx,
+        """Welcome to Rat Racer!
+          |Press A to start!""".stripMargin,
+      )
+        |+| crankIndicator.unless(isGameOver)
 
-    def gameOver = {
-
-      val text =
+    def gameOver =
+      textBox(
+        ctx,
         s"""Game over!
            |Final score: ${state.score.value}
            |Last high score: ${state.highScore.value}
-           |Press A to try again!""".stripMargin
-
-      textBox(ctx, text)
-    }
+           |Press A to try again!""".stripMargin,
+      )
 
     state.mode match {
-      case GameMode.Initial =>
-        Clear(Color.White) |+|
-          gameInit
+      case GameMode.Initial(_) =>
+        Clear(Color.White)
+          |+| gameInit
 
       case _ =>
-        Clear(Color.White) |+|
-          obstacles |+|
-          rat |+|
-          crankIndicator.unless(isGameOver) |+|
-          // debug |+|
-          score.unless(isGameOver) |+|
-          events |+|
-          gameOver.when(isGameOver) |+|
-          FPS(0, 0)
+        Clear(Color.White)
+          |+| obstacles
+          |+| rat
+          |+| crankIndicator.unless(isGameOver)
+          // |+| debug
+          |+| score.unless(isGameOver)
+          |+| events
+          |+| gameOver.when(isGameOver)
+          |+| FPS(0, 0)
     }
   }
 
   def textBox(ctx: GameContext, text: String): Render =
+
     Render.withTextWidth(text) { textWidth =>
-      val paddingW = 20
-      val paddingH = 20
+      Render.withTextHeight(text, textWidth) { textHeight =>
+        info("text height: " + textHeight)
+        val paddingW = 20
+        val paddingH = 20
 
-      val textHeight = 80 // todo: measure
-
-      val boxWidth = textWidth + paddingW * 2
-      val boxHeight = textHeight + paddingH * 2
-      val rect: Render.Rect = Render.Rect(
-        x = (ctx.screen.width - boxWidth) / 2,
-        y = (ctx.screen.height - boxHeight) / 2,
-        w = boxWidth,
-        h = boxHeight,
-        color = Color.White,
-        fill = Fill.Fill,
-      )
-
-      rect |+|
-        rect.copy(fill = Fill.Draw, color = Color.Black) |+|
-        Render.Text(
-          x = (ctx.screen.width - textWidth) / 2,
-          y = (ctx.screen.height - textHeight) / 2,
-          text = text,
+        val boxWidth = textWidth + paddingW * 2
+        val boxHeight = textHeight + paddingH * 2
+        val rect: Render.Rect = Render.Rect(
+          x = (ctx.screen.width - boxWidth) / 2,
+          y = (ctx.screen.height - boxHeight) / 2,
+          w = boxWidth,
+          h = boxHeight,
+          color = Color.White,
+          fill = Fill.Fill,
         )
+
+        rect
+          |+| rect.copy(fill = Fill.Draw, color = Color.Black)
+          |+| Render.Text(
+            x = (ctx.screen.width - textWidth) / 2,
+            y = (ctx.screen.height - textHeight) / 2,
+            text = text,
+          )
+      }
     }
 
 }
@@ -883,7 +929,8 @@ enum Render derives CanEqual {
   case Text(x: Int, y: Int, text: String)
   case Empty
   case Clear(color: Color)
-  case WithTextWidth(s: String, f: Int => Render)
+  case WithTextHeight(text: String, maxWidth: Int, f: Int => Render)
+  case WithTextWidth(text: String, f: Int => Render)
   case Play(sample: Ptr[SamplePlayer])
 
   def isEmpty: Boolean = this == Empty
@@ -902,7 +949,13 @@ enum Render derives CanEqual {
 
 object Render {
 
-  def withTextWidth(s: String)(f: Int => Render): Render = Render.WithTextWidth(s, f)
+  def withTextHeight(text: String, maxWidth: Int)(f: Int => Render): Render = Render.WithTextHeight(
+    text,
+    maxWidth,
+    f,
+  )
+
+  def withTextWidth(text: String)(f: Int => Render): Render = Render.WithTextWidth(text, f)
 
   def renderIf(
     cond: Boolean
@@ -1011,8 +1064,6 @@ object Main {
         val cfg = game.config
         pd_display_setRefreshRate(cfg.fps)
 
-        renderState(ctx, state, pd)
-
       case `kEventTerminate` =>
         cleanupState()
         state = null
@@ -1078,6 +1129,26 @@ object Main {
           yscale = yscale,
         )
 
+      case Render.WithTextHeight(text, textWidthPx, f) =>
+        val height = Zone {
+          val str = toCString(text)
+          val len = strlen(str)
+
+          val maxWidthPx = textWidthPx
+
+          pd_graphics_getTextHeightForMaxWidth(
+            font = null,
+            text = str,
+            len = len,
+            maxWidth = maxWidthPx,
+            encoding = kUTF8Encoding,
+            wrap = kWrapCharacter,
+            tracking = pd_graphics_getTextTracking(),
+            extraLeading = 0,
+          )
+        }
+
+        executeActions(pd, f(height))
       case Render.WithTextWidth(text, f) =>
         val width = Zone {
           val str = toCString(text)
