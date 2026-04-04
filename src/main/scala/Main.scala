@@ -18,8 +18,8 @@ object pdapiBindings {
     val kBitmapFlippedY: LCDBitmapFlip = 2
     val kBitmapFlippedXY: LCDBitmapFlip = 3
 
-    extension (pdbuttons: PDButtons) {
-      def is(button: PDButtons): Boolean = (pdbuttons & button) != 0
+    extension (pdbuttons: Ptr[PDButtons]) {
+      def is(button: PDButtons): Boolean = (!pdbuttons & button) != 0
     }
 
     given Tag[PDButtons] = Tag.UInt
@@ -1082,8 +1082,8 @@ object Main {
     }
 
   def deriveButtons(buttons: Ptr[PDButtons]): ButtonState = ButtonState(
-    a = buttons.!.is(kButtonA),
-    b = buttons.!.is(kButtonB),
+    a = buttons.is(kButtonA),
+    b = buttons.is(kButtonB),
   )
 
   def deriveContext(): GameContext = {
