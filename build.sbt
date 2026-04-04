@@ -1,3 +1,4 @@
+import PlaydateRuntime.ProjectMatrixPlaydateOps
 import scala.util.control.NonFatal
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -116,7 +117,7 @@ val playdateBuildImpl =
     val log = streams.value.log
     val staticLib = (Compile / nativeLink).value
 
-    val gameDir = baseDirectory.value / "src" / "main" / "playdate"
+    val gameDir = (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate"
     val buildDir = gameDir / "build"
     val sourceDir = gameDir / "Source"
     val pdxDir = gameDir / "RatLife.pdx"
@@ -243,63 +244,67 @@ val generateEnvCImpl =
     Seq(outFile)
   }
 
-val game = project
+val game = projectMatrix
   .in(file("modules") / "game")
-  .enablePlugins(ScalaNativePlugin)
-  .settings(
-    scalaVersion := "3.8.3",
-    scalacOptions += "-Wunused:all",
-    scalacOptions += "-no-indent",
-    nativeConfig ~= (
-      _.withBuildTarget(BuildTarget.libraryStatic)
-        .withTargetTriple("arm-none-eabi")
-        .withGC(GC.immix)
-        .withCompileOptions(
-          commonCFlags(playdateSdk) ++ Seq(
-            "-fverbose-asm",
-            "-MD",
-            "-MP",
-            "-march=armv7-m",
-            "-m32",
-            "-ferror-limit=1000",
+  .playdateRow(PlaydateRuntime.Device) {
+    _.settings(
+      moduleName := "game",
+      scalacOptions += "-Wunused:all",
+      scalacOptions += "-no-indent",
+      nativeConfig ~= (
+        _.withBuildTarget(BuildTarget.libraryStatic)
+          .withTargetTriple("arm-none-eabi")
+          .withGC(GC.immix)
+          .withCompileOptions(
+            commonCFlags(playdateSdk) ++ Seq(
+              "-fverbose-asm",
+              "-MD",
+              "-MP",
+              "-march=armv7-m",
+              "-m32",
+              "-ferror-limit=1000",
+            )
           )
-        )
-        .withMultithreading(false)
-    ),
-    Compile / envVars := Map(
-      "SCALANATIVE_GC_LOG_LEVEL" -> "error"
-    ),
-    playdateCompileFlags :=
-      commonCFlags(playdateSdk) ++ Seq(
-        "-Wall",
-        "-Wno-unused",
-        "-Wno-unknown-pragmas",
-        "-D__HEAP_SIZE=8388208",
-        "-D__STACK_SIZE=61800",
+          .withMultithreading(false)
       ),
-    playdateLinkFlags := {
-      val ldScript = playdateSdk / "C_API" / "buildsupport" / "link_map.ld"
-      Seq(
-        "-nostartfiles",
-        "-mthumb",
-        "-mcpu=cortex-m7",
-        "-mfloat-abi=hard",
-        "-mfpu=fpv5-sp-d16",
-        s"-T${ldScript}",
-        "--entry",
-        "eventHandlerShim",
-        "-Wl,--defsym=_fini=0",
-        "-Wl,--defsym=__exidx_start=0",
-        "-Wl,--defsym=__exidx_end=0",
-      )
-    },
-    generateEnvCImpl,
-    playdateBuildImpl,
-    playdateRunImpl,
-    pdutilDatadiskImpl,
-    playdateCopyCrashLogsImpl,
-  )
+      Compile / envVars := Map(
+        "SCALANATIVE_GC_LOG_LEVEL" -> "error"
+      ),
+      playdateCompileFlags :=
+        commonCFlags(playdateSdk) ++ Seq(
+          "-Wall",
+          "-Wno-unused",
+          "-Wno-unknown-pragmas",
+          "-D__HEAP_SIZE=8388208",
+          "-D__STACK_SIZE=61800",
+        ),
+      playdateLinkFlags := {
+        val ldScript = playdateSdk / "C_API" / "buildsupport" / "link_map.ld"
+        Seq(
+          "-nostartfiles",
+          "-mthumb",
+          "-mcpu=cortex-m7",
+          "-mfloat-abi=hard",
+          "-mfpu=fpv5-sp-d16",
+          s"-T${ldScript}",
+          "--entry",
+          "eventHandlerShim",
+          "-Wl,--defsym=_fini=0",
+          "-Wl,--defsym=__exidx_start=0",
+          "-Wl,--defsym=__exidx_end=0",
+        )
+      },
+      generateEnvCImpl,
+      playdateBuildImpl,
+      playdateRunImpl,
+      pdutilDatadiskImpl,
+      playdateCopyCrashLogsImpl,
+    )
+  }
 
 val root = project
   .in(file("."))
-  .aggregate(game)
+  .settings(
+    scalaVersion := "3.8.3",
+  )
+  .aggregate(game.projectRefs: _*)
