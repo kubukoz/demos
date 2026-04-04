@@ -19,7 +19,7 @@
           name = "clang-nix-shell";
           shellHook = ''
             # Works on Mac
-            export PLAYDATE_SDK_PATH=~/Developer/PlaydateSDK-2.1.1
+            export PLAYDATE_SDK_PATH=~/Developer/PlaydateSDK-3.0.3
             # Works for me.
             export PLAYDATE_DEVICE_PATH=/dev/cu.usbmodemPDU1_Y0669441
 
