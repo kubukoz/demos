@@ -3,6 +3,7 @@ package demo
 import scalanative.unsafe.*
 import scalanative.unsigned.*
 import demo.pdapiBindings.pd_log_error_raw
+import cats.Semigroup
 
 object pdapiBindings {
 
@@ -743,7 +744,7 @@ object MainGame {
     }
   }
 
-  def render(ctx: GameContext, state: GameState): Render = {
+  def render(ctx: GameContext, state: GameState): Render[Unit] = {
     import Render._
 
     val rat = Render.Bitmap(
@@ -796,7 +797,7 @@ object MainGame {
       Render.cond(state.crankDocked) {
         val text = "Use the crank!"
 
-        Render.withTextWidth(text) { w =>
+        Render.TextWidth(text).flatMap { w =>
           Render.Text(
             x = ctx.screen.width - w - 10,
             y = ctx.screen.height - 24 - 10,
@@ -807,7 +808,7 @@ object MainGame {
 
     val score = {
       val text = "Score: " + state.score.value
-      Render.withTextWidth(text) { w =>
+      Render.TextWidth(text).flatMap { w =>
         Render.Text(
           x = ctx.screen.width - w - 10,
           y = 10,
@@ -862,10 +863,10 @@ object MainGame {
     }
   }
 
-  def textBox(ctx: GameContext, text: String): Render =
+  def textBox(ctx: GameContext, text: String): Render[Unit] =
 
-    Render.withTextWidth(text) { textWidth =>
-      Render.withTextHeight(text, textWidth) { textHeight =>
+    Render.TextWidth(text).flatMap { textWidth =>
+      Render.TextHeight(text, textWidth).flatMap { textHeight =>
         info("text height: " + textHeight)
         val paddingW = 20
         val paddingH = 20
@@ -910,10 +911,10 @@ enum Color derives CanEqual {
 
 }
 
-enum Render derives CanEqual {
-  case FPS(x: Int, y: Int)
-  case CombineAll(renders: List[Render])
-  case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill)
+enum Render[A] derives CanEqual {
+  case FPS(x: Int, y: Int) extends Render[Unit]
+  case CombineAll(renders: List[Render[Unit]]) extends Render[Unit]
+  case Rect(x: Int, y: Int, w: Int, h: Int, color: Color, fill: Fill) extends Render[Unit]
 
   case Bitmap(
     x: Int,
@@ -924,59 +925,73 @@ enum Render derives CanEqual {
     centerY: Float,
     xscale: Float,
     yscale: Float,
-  )
+  ) extends Render[Unit]
 
-  case Text(x: Int, y: Int, text: String)
-  case Empty
-  case Clear(color: Color)
-  case WithTextHeight(text: String, maxWidth: Int, f: Int => Render)
-  case WithTextWidth(text: String, f: Int => Render)
-  case Play(sample: Ptr[SamplePlayer])
+  case Text(x: Int, y: Int, text: String) extends Render[Unit]
+  case Empty() extends Render[Unit]
+  case Clear(color: Color) extends Render[Unit]
+  case TextHeight(text: String, maxWidth: Int) extends Render[Int]
+  case TextWidth(text: String) extends Render[Int]
+  case Play(sample: Ptr[SamplePlayer]) extends Render[Unit]
+  case FlatMap[A, B](render: Render[A], f: A => Render[B]) extends Render[B]
 
-  def isEmpty: Boolean = this == Empty
-
-  def |+|(another: Render): Render =
-    (this, another) match {
-      case (Empty, _)                     => another
-      case (_, Empty)                     => this
-      case (CombineAll(l), CombineAll(r)) => CombineAll(l ++ r)
-      case (CombineAll(l), r)             => CombineAll(l :+ r)
-      case (l, CombineAll(r))             => CombineAll(l +: r)
-      case (l, r)                         => CombineAll(List(l, r))
+  def isEmpty(
+    using ev: A =:= Unit
+  ): Boolean =
+    ev.substituteCo(this) match {
+      case Empty() => true
+      case _       => false
     }
+
+  def flatMap[B](
+    f: A => Render[B]
+  ): Render[B] =
+    FlatMap(this, f)
 
 }
 
 object Render {
 
-  def withTextHeight(text: String, maxWidth: Int)(f: Int => Render): Render = Render.WithTextHeight(
-    text,
-    maxWidth,
-    f,
-  )
-
-  def withTextWidth(text: String)(f: Int => Render): Render = Render.WithTextWidth(text, f)
-
-  def renderIf(
+  def renderIf[A](
     cond: Boolean
   )(
-    ifTrue: => Render,
-    ifFalse: => Render,
-  ): Render =
+    ifTrue: => Render[A],
+    ifFalse: => Render[A],
+  ): Render[A] =
     if (cond)
       ifTrue
     else
       ifFalse
 
-  def cond(condition: Boolean)(ifTrue: => Render): Render = renderIf(condition)(ifTrue, Empty)
+  def cond(condition: Boolean)(ifTrue: => Render[Unit]): Render[Unit] =
+    renderIf(condition)(ifTrue, Empty())
 
-  extension (l: List[Render]) def combineAll: Render =
-    if l.isEmpty then Empty
+  extension (l: List[Render[Unit]]) def combineAll: Render[Unit] =
+    if l.isEmpty then Empty()
     else
       Render.CombineAll(l)
 
-  extension (r: => Render) def unless(condition: Boolean): Render = cond(!condition)(r)
-  extension (r: => Render) def when(condition: Boolean): Render = cond(condition)(r)
+  extension (r: => Render[Unit]) {
+    def unless(condition: Boolean): Render[Unit] = cond(!condition)(r)
+    def when(condition: Boolean): Render[Unit] = cond(condition)(r)
+  }
+
+  extension (r: Render[Unit]) {
+
+    def |+|(
+      another: Render[Unit]
+    ): Render[Unit] =
+      (r, another) match {
+        case (Empty(), _)                   => another
+        case (_, Empty())                   => r
+        case (CombineAll(l), CombineAll(r)) => CombineAll(l ++ r)
+        case (CombineAll(l), r)             => CombineAll(l :+ r)
+        case (l, CombineAll(r))             => CombineAll(l +: r)
+        case (l, r)                         => CombineAll(List(l, r))
+      }
+
+  }
+
 }
 
 case class ButtonState(
@@ -1108,12 +1123,16 @@ object Main {
     }
   }
 
-  def executeActions(
+  def executeActions[A](
     pd: Ptr[PlaydateAPI],
-    actions: Render,
-  ): Unit =
+    actions: Render[A],
+  ): A =
     actions match {
-      case Render.Empty        => ()
+      case Render.Empty()            => ()
+      case Render.FlatMap(render, f) =>
+        val a = executeActions(pd, render)
+        executeActions(pd, f(a))
+
       case Render.Clear(c)     => pd_graphics_clear(c.toInt)
       case Render.FPS(x, y)    => pd_system_drawFPS(x, y)
       case Render.Play(sample) => pd_sound_sampleplayer_play(sample, 1, 1)
@@ -1129,8 +1148,8 @@ object Main {
           yscale = yscale,
         )
 
-      case Render.WithTextHeight(text, textWidthPx, f) =>
-        val height = Zone {
+      case Render.TextHeight(text, textWidthPx) =>
+        Zone {
           val str = toCString(text)
           val len = strlen(str)
 
@@ -1147,10 +1166,8 @@ object Main {
             extraLeading = 0,
           )
         }
-
-        executeActions(pd, f(height))
-      case Render.WithTextWidth(text, f) =>
-        val width = Zone {
+      case Render.TextWidth(text) =>
+        Zone {
           val str = toCString(text)
           val len = strlen(str)
           pd_graphics_getTextWidth(
@@ -1161,8 +1178,6 @@ object Main {
             tracking = pd_graphics_getTextTracking(),
           )
         }
-
-        executeActions(pd, f(width))
 
       case Render.Text(x, y, text) =>
         Zone {
