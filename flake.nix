@@ -2,7 +2,13 @@
   inputs.nixpkgs.url = "github:nixos/nixpkgs";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, flake-utils, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      ...
+    }@inputs:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
@@ -13,7 +19,7 @@
           name = "clang-nix-shell";
           shellHook = ''
             # Works on Mac
-            export PLAYDATE_SDK_PATH=~/Developer/PlaydateSDK
+            export PLAYDATE_SDK_PATH=~/Developer/PlaydateSDK-2.1.1
             # Works for me.
             export PLAYDATE_DEVICE_PATH=/dev/cu.usbmodemPDU1_Y0669441
 
@@ -24,4 +30,3 @@
       }
     );
 }
-
