@@ -1,3 +1,4 @@
+import scala.util.control.NonFatal
 import java.nio.file.Files
 import java.nio.file.Paths
 import scala.scalanative.build.GC
@@ -47,16 +48,19 @@ def waitForVolume() = {
   import sys.process._
   println("waiting for volume...")
   waitUntil {
-    "ls /Volumes/PLAYDATE/Games".! == 0
+    isVolumeAvailable()
   }
+}
+
+def isVolumeAvailable() = {
+  import sys.process._
+  "ls /Volumes/PLAYDATE/Games".! == 0
 }
 
 def runOnPlaydate(buildPdxPath: File) = {
   import sys.process._
 
-  println("booting into datadisk")
-  pdutil("datadisk")
-  waitForVolume()
+  datadisk()
 
   println("replacing game")
   val pdxFileName = buildPdxPath.name
@@ -121,7 +125,6 @@ val playdateBuildImpl =
 
     val gcc = "arm-none-eabi-gcc"
 
-    // C sources to compile (not part of Scala Native)
     val cSources = Seq(
       gameDir / "main.c",
       playdateSdk / "C_API" / "buildsupport" / "setup.c",
@@ -174,14 +177,26 @@ val playdateRunImpl =
 
 val playdateCopyCrashLogs = taskKey[Unit]("Copy crash logs from the connected Playdate device")
 
+def datadisk() = {
+
+  println("booting into datadisk")
+
+  try pdutil("datadisk")
+  catch {
+    case NonFatal(e) =>
+      println("Couldn't boot into datadisk mode. But is the device connected?")
+      if (isVolumeAvailable())
+        println("Volume available! Continuing...")
+      else
+        throw e
+  }
+
+  waitForVolume()
+}
+
 val playdateCopyCrashLogsImpl =
   playdateCopyCrashLogs := {
-    import sys.process._
-
-    println("booting into datadisk")
-    pdutil("datadisk")
-
-    waitForVolume()
+    datadisk()
 
     IO.copyFile(
       file(s"/Volumes/PLAYDATE/crashlog.txt"),
