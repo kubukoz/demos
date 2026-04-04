@@ -52,11 +52,11 @@ void _free_r(struct _reent* _REENT, void* ptr ) { pdrealloc(ptr,0); }
 
 PDEventHandler* PD_eventHandler __attribute__((section(".capi_handler"))) = &eventHandlerShim;
 
-extern uint32_t __bss_start__;
-uint32_t* _bss_start __attribute__((section(".bss_start"))) = &__bss_start__;
+extern uint32_t bssStart asm("__bss_start__");
+uint32_t* _bss_start __attribute__((section(".bss_start"))) = &bssStart;
 
-extern uint32_t __bss_end__;
-uint32_t* _bss_end __attribute__((section(".bss_end"))) = &__bss_end__;
+extern uint32_t bssEnd asm("__bss_end__");
+uint32_t* _bss_end __attribute__((section(".bss_end"))) = &bssEnd;
 
 #else
 

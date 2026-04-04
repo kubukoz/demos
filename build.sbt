@@ -93,7 +93,39 @@ val playdateBuildImpl =
     val gcc = "arm-none-eabi-gcc"
     val sdk = playdateSdk
 
-    // Link libroot.a (which now contains all C and Scala code) into pdex.elf
+    // C sources to compile (not part of Scala Native)
+    val cSources = Seq(
+      gameDir / "main.c",
+      gameDir / "pdnewlib.c",
+      gameDir / "setup.c",
+    )
+
+    val cFlags = Seq(
+      "-g3",
+      "-mthumb", "-mcpu=cortex-m7",
+      "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16", "-D__FPU_USED=1",
+      "-O2",
+      "-falign-functions=16", "-fomit-frame-pointer",
+      "-gdwarf-2",
+      "-Wall", "-Wno-unused", "-Wno-unknown-pragmas", "-Wdouble-promotion",
+      "-ffunction-sections", "-fdata-sections", "-fno-common",
+      "-DTARGET_PLAYDATE=1", "-DTARGET_EXTENSION=1", "-DPD_DEBUG=1",
+      "-D__HEAP_SIZE=8388208", "-D__STACK_SIZE=61800",
+      s"-I${sdk / "C_API"}",
+      s"-I${gameDir}",
+    )
+
+    // Compile each C source to .o
+    val objects = cSources.map { src =>
+      val obj = buildDir / src.name.replaceAll("\\.c$", ".o")
+      val cmd = Seq(gcc, "-c") ++ cFlags ++ Seq(src.toString, "-o", obj.toString)
+      log.info(s"Compiling ${src.name}")
+      val rc = Process(cmd).!
+      require(rc == 0, s"Failed to compile ${src.name}")
+      obj
+    }
+
+    // Link everything into pdex.elf
     val ldScript = sdk / "C_API" / "buildsupport" / "link_map.ld"
     val elf = buildDir / "pdex.elf"
 
@@ -102,21 +134,14 @@ val playdateBuildImpl =
       "-mthumb", "-mcpu=cortex-m7",
       "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16",
       s"-T${ldScript}",
-      s"-Wl,-Map=${buildDir / "game.map"},--cref,--gc-sections,--no-warn-mismatch,--emit-relocs,--allow-multiple-definition",
+      s"-Wl,-Map=${buildDir / "game.map"},--cref,--gc-sections,--no-warn-mismatch,--emit-relocs",
       "--entry", "eventHandlerShim",
       "-Wl,--defsym=_fini=0",
       "-Wl,--defsym=__exidx_start=0",
       "-Wl,--defsym=__exidx_end=0",
     )
 
-    val linkCmd = Seq(gcc) ++ ldFlags ++ Seq(
-      // --whole-archive forces all objects from libroot.a to be included,
-      // not just those resolving undefined symbols. Without this, the linker
-      // would discard setup.c/main.c/pdnewlib.c since nothing inside the
-      // archive references them — they're referenced by the Playdate runtime.
-      "-Wl,--whole-archive", staticLib.toString, "-Wl,--no-whole-archive",
-      "-o", elf.toString,
-    )
+    val linkCmd = Seq(gcc) ++ ldFlags ++ objects.map(_.toString) ++ Seq(staticLib.toString, "-o", elf.toString)
     log.info("Linking pdex.elf")
     val linkRc = Process(linkCmd).!
     require(linkRc == 0, "Linking failed")
