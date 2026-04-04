@@ -2,6 +2,7 @@ package demo
 
 import scalanative.unsafe.*
 import scalanative.unsigned.*
+import demo.pdapiBindings.pd_log_error_raw
 
 object pdapiBindings {
 
@@ -38,6 +39,8 @@ object pdapiBindings {
   }
 
   import primitives._
+
+  @extern def pd_log_error_raw(msg: CString): Unit = extern
 
   @extern def pd_sound_sampleplayer_newPlayer(): Ptr[SamplePlayer] = extern
 
@@ -211,8 +214,6 @@ object util {
 
 }
 
-import util._
-
 enum DirectionX {
   case Left, Right
 }
@@ -265,6 +266,7 @@ object Score {
 }
 
 enum GameMode derives CanEqual {
+  case Initial
   case Playing // (score: Score, scoring: Boolean, boost: Boolean)
   case GameOver
 }
@@ -278,6 +280,7 @@ case class GameState(
   highScore: Score,
   boost: Boolean,
   mode: GameMode,
+  isDeadly: Boolean,
   // Vector is broken, apparently
   events: List[GameEvent],
 ) derives CanEqual {
@@ -481,8 +484,9 @@ object MainGame {
     score = Score.Init,
     highScore = highScore,
     boost = false,
-    mode = GameMode.Playing,
+    mode = GameMode.Initial,
     events = Nil,
+    isDeadly = true,
   )
 
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
@@ -629,23 +633,25 @@ object MainGame {
         else
           state
 
+    val setDeadly: GameState => GameState =
+      state => state.copy(isDeadly = ctx.buttons.current.b)
+
+    val startGame: GameState => GameState =
+      state =>
+        if ctx.buttons.pressed.a then state.copy(mode = GameMode.Playing)
+        else
+          state
+
     val gameOver: GameState => GameState =
-      if true then identity
-      else
-        state =>
-          if obstacleHit(state) then state
-            .copy(mode = GameMode.GameOver)
-            .addEvents(List(GameEvent.GameOver))
-          else
-            state
+      state =>
+        if obstacleHit(state) && state.isDeadly then state
+          .copy(mode = GameMode.GameOver)
+          .addEvents(List(GameEvent.GameOver))
+        else
+          state
 
     clearEvents.andThen(getMode.flatMap {
-      case GameMode.GameOver =>
-        Function.chain(
-          List(
-            playAgain
-          )
-        )
+      case GameMode.Initial => startGame
 
       case GameMode.Playing =>
         Function.chain(
@@ -657,7 +663,15 @@ object MainGame {
             equalizeRat,
             recycleObstacles,
             addObstacles,
+            setDeadly,
             gameOver,
+          )
+        )
+
+      case GameMode.GameOver =>
+        Function.chain(
+          List(
+            playAgain
           )
         )
     })
@@ -769,48 +783,67 @@ object MainGame {
 
     val isGameOver = state.mode == GameMode.GameOver
 
-    val gameOver =
-      Render.cond(isGameOver) {
+    def gameInit = textBox(
+      ctx,
+      """Welcome to Rat Racer!
+        |Press A to start!""".stripMargin,
+    )
 
-        val w = 200
-        val h = 100
-        val rect: Render.Rect = Render.Rect(
-          x = (ctx.screen.width - w) / 2,
-          y = (ctx.screen.height - h) / 2,
-          w = w,
-          h = h,
-          color = Color.White,
-          fill = Fill.Fill,
-        )
+    def gameOver = {
 
-        rect |+|
-          rect.copy(fill = Fill.Draw, color = Color.Black) |+| {
-            val text =
-              s"""Game over!
-                 |Final score: ${state.score.value}
-                 |Last high score: ${state.highScore.value}
-                 |Press A to try again!""".stripMargin
+      val text =
+        s"""Game over!
+           |Final score: ${state.score.value}
+           |Last high score: ${state.highScore.value}
+           |Press A to try again!""".stripMargin
 
-            Render.withTextWidth(text) { w =>
-              Render.Text(
-                x = (ctx.screen.width - w) / 2,
-                y = (ctx.screen.height - 80) / 2,
-                text = text,
-              )
-            }
-          }
-      }
+      textBox(ctx, text)
+    }
 
-    Clear(Color.White) |+|
-      obstacles |+|
-      rat |+|
-      crankIndicator.unless(isGameOver) |+|
-      // debug |+|
-      score.unless(isGameOver) |+|
-      events |+|
-      gameOver |+|
-      FPS(0, 0)
+    state.mode match {
+      case GameMode.Initial =>
+        Clear(Color.White) |+|
+          gameInit
+
+      case _ =>
+        Clear(Color.White) |+|
+          obstacles |+|
+          rat |+|
+          crankIndicator.unless(isGameOver) |+|
+          // debug |+|
+          score.unless(isGameOver) |+|
+          events |+|
+          gameOver.when(isGameOver) |+|
+          FPS(0, 0)
+    }
   }
+
+  def textBox(ctx: GameContext, text: String): Render =
+    Render.withTextWidth(text) { textWidth =>
+      val paddingW = 20
+      val paddingH = 20
+
+      val textHeight = 80 // todo: measure
+
+      val boxWidth = textWidth + paddingW * 2
+      val boxHeight = textHeight + paddingH * 2
+      val rect: Render.Rect = Render.Rect(
+        x = (ctx.screen.width - boxWidth) / 2,
+        y = (ctx.screen.height - boxHeight) / 2,
+        w = boxWidth,
+        h = boxHeight,
+        color = Color.White,
+        fill = Fill.Fill,
+      )
+
+      rect |+|
+        rect.copy(fill = Fill.Draw, color = Color.Black) |+|
+        Render.Text(
+          x = (ctx.screen.width - textWidth) / 2,
+          y = (ctx.screen.height - textHeight) / 2,
+          text = text,
+        )
+    }
 
 }
 
@@ -884,8 +917,13 @@ object Render {
 
   def cond(condition: Boolean)(ifTrue: => Render): Render = renderIf(condition)(ifTrue, Empty)
 
-  extension (l: List[Render]) def combineAll: Render = l.foldLeft(Render.Empty)(_ |+| _)
+  extension (l: List[Render]) def combineAll: Render =
+    if l.isEmpty then Empty
+    else
+      Render.CombineAll(l)
+
   extension (r: => Render) def unless(condition: Boolean): Render = cond(!condition)(r)
+  extension (r: => Render) def when(condition: Boolean): Render = cond(condition)(r)
 }
 
 case class ButtonState(
@@ -963,7 +1001,8 @@ object Main {
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     event.match {
       case `kEventInit` =>
-        game.init(deriveContext()).compile() match {
+        val ctx = deriveContext()
+        game.init(ctx).compile() match {
           case (state, cleanupState) =>
             this.state = state
             this.cleanupState = cleanupState
@@ -971,6 +1010,8 @@ object Main {
 
         val cfg = game.config
         pd_display_setRefreshRate(cfg.fps)
+
+        renderState(ctx, state, pd)
 
       case `kEventTerminate` =>
         cleanupState()
@@ -996,19 +1037,23 @@ object Main {
     } else {
       debug("state changed")
       state = newState
-      debug("rendering...")
-      val actions = game.render(ctx, newState)
-      debug("rendered")
+      renderState(ctx, newState, pd)
+    }
+  }
 
-      if actions.isEmpty then {
-        debug("no actions to execute")
-        0
-      } else {
-        debug("executing actions")
-        executeActions(pd, actions)
+  def renderState(ctx: GameContext, state: GameState, pd: Ptr[PlaydateAPI]): Int = {
+    debug("rendering...")
+    val actions = game.render(ctx, state)
+    debug("rendered")
 
-        1
-      }
+    if actions.isEmpty then {
+      debug("no actions to execute")
+      0
+    } else {
+      debug("executing actions")
+      executeActions(pd, actions)
+
+      1
     }
   }
 
@@ -1132,6 +1177,9 @@ object Main {
 
 }
 
-inline def debug(msg: String): Unit = {
-  // println(msg)
-}
+inline def debug(msg: String): Unit =
+  // Zone(pd_log_error_raw(toCString(msg)))
+  ()
+
+inline def info(msg: String): Unit =
+  Zone(pd_log_error_raw(toCString(msg)))
