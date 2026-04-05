@@ -61,6 +61,7 @@ __attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSyste
 
         ScalaNativeInit();
         pd->system->setUpdateCallback(update, pd);
+        pd_httpbin_request();
     }
 
     // log_old_errors();
@@ -522,15 +523,17 @@ static void httpbin_closed(HTTPConnection *conn)
 
 static void httpbin_do_request(void)
 {
-    _httpbin_conn = _http->newConnection("192.168.1.96", 8000, false);
+    _httpbin_conn = _http->newConnection("localhost", 9000, false);
     _http->setHeaderReceivedCallback(_httpbin_conn, httpbin_header_received);
     _http->setHeadersReadCallback(_httpbin_conn, httpbin_headers_read);
     _http->setResponseCallback(_httpbin_conn, httpbin_response);
     _http->setRequestCompleteCallback(_httpbin_conn, httpbin_request_complete);
     _http->setConnectionClosedCallback(_httpbin_conn, httpbin_closed);
 
-    PDNetErr err = _http->get(_httpbin_conn, "/game/mylib.h", NULL, 0);
-    _pd->system->logToConsole("httpbin: GET /get sent, err=%d", err);
+    const char *body = "{\"name\":\"Playdate\"}";
+    const char *headers = "Content-Type: application/json\r\n";
+    PDNetErr err = _http->post(_httpbin_conn, "/greet", headers, strlen(headers), body, strlen(body));
+    _pd->system->logToConsole("greet: POST /greet sent, err=%d", err);
 }
 
 static void httpbin_access_callback(bool allowed, void *userdata)
@@ -554,7 +557,7 @@ void pd_httpbin_request(void)
         return;
     }
 
-    enum accessReply reply = _http->requestAccess("192.168.1.96", 8000, false, "HTTP test", httpbin_access_callback, NULL);
+    enum accessReply reply = _http->requestAccess("localhost", 9000, false, "Greet API", httpbin_access_callback, NULL);
     if (reply == kAccessAllow)
         httpbin_do_request();
 }

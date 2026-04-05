@@ -319,6 +319,44 @@ val generateEnvCImpl =
     Seq(outFile)
   }
 
+val smithy4sNativeVersion = "0.18.42-12-add7fa11-20260405-0330-SNAPSHOT"
+
+val shared =
+  projectMatrix
+    .in(file("modules") / "shared")
+    .enablePlugins(Smithy4sCodegenPlugin)
+    .jvmPlatform(
+      scalaVersions = Seq("3.8.3"),
+      settings = Seq(
+        libraryDependencies ++= Seq(
+          "com.disneystreaming.smithy4s" %% "smithy4s-core" % smithy4sVersion.value
+        )
+      ),
+    )
+    .nativePlatform(
+      scalaVersions = Seq("3.8.3"),
+      settings = Seq(
+        libraryDependencies ++= Seq(
+          "com.disneystreaming.smithy4s" %%% "smithy4s-core" % smithy4sNativeVersion
+        )
+      ),
+    )
+    .settings(
+      scalacOptions += "-no-indent",
+    )
+
+val backend = project
+  .in(file("modules") / "backend")
+  .settings(
+    scalaVersion := "3.8.3",
+    scalacOptions += "-no-indent",
+    libraryDependencies ++= Seq(
+      "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
+      "org.http4s" %% "http4s-ember-server" % "0.23.30",
+    ),
+  )
+  .dependsOn(shared.jvm("3.8.3"))
+
 val commonGameSettings = Seq(
   moduleName := "game",
   scalacOptions += "-Wunused:all",
@@ -329,14 +367,14 @@ val commonGameSettings = Seq(
   ),
   generateEnvCImpl,
   libraryDependencies ++= Seq(
-    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % "0.18.42-12-add7fa11-20260405-0330-SNAPSHOT"
+    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % smithy4sNativeVersion
   ),
 )
 
 val game =
   projectMatrix
     .in(file("modules") / "game")
-    .enablePlugins(Smithy4sCodegenPlugin)
+    .dependsOn(shared)
     .playdateRow(PlaydateRuntime.Device) {
       _.settings(commonGameSettings)
         .settings(
@@ -418,4 +456,4 @@ val root = project
   .settings(
     scalaVersion := "3.8.3"
   )
-  .aggregate(game.projectRefs: _*)
+  .aggregate((shared.projectRefs ++ game.projectRefs :+ (backend: ProjectReference)): _*)
