@@ -58,7 +58,7 @@ def isVolumeAvailable() = {
   "ls /Volumes/PLAYDATE/Games".! == 0
 }
 
-def runOnPlaydate(buildPdxPath: File) = {
+def runOnPlaydate(buildPdxPath: File, launchArgs: Seq[String] = Seq.empty) = {
   import sys.process._
 
   datadisk()
@@ -80,8 +80,12 @@ def runOnPlaydate(buildPdxPath: File) = {
     s"ls $devicePath".! == 0
   }
 
-  println("launching game")
-  pdutil("run", s"/Games/$pdxFileName")
+  val pdxPath =
+    if (launchArgs.isEmpty) s"/Games/$pdxFileName"
+    else s"/Games/$pdxFileName?${launchArgs.mkString("&")}"
+
+  println(s"launching game with path: $pdxPath")
+  pdutil("run", pdxPath)
 }
 
 def deviceCFlags(sdk: File) = Seq(
@@ -185,11 +189,14 @@ val playdateDeviceBuildImpl =
     pdxDir
   }
 
-val playdateDeviceRunImpl =
+val playdateDeviceRunImpl = Seq(
+  run / Keys.aggregate := false,
   run := {
     val pdx = playdateBuild.value
-    runOnPlaydate(buildPdxPath = pdx)
-  }
+    val args = Def.spaceDelimited("<launch args>").parsed
+    runOnPlaydate(buildPdxPath = pdx, launchArgs = args)
+  },
+)
 
 val simulatorNativeSourcesImpl =
   Compile / resourceGenerators += Def.task {
@@ -319,8 +326,6 @@ val generateEnvCImpl =
     Seq(outFile)
   }
 
-val smithy4sNativeVersion = "0.18.42-12-add7fa11-20260405-0330-SNAPSHOT"
-
 val shared =
   projectMatrix
     .in(file("modules") / "shared")
@@ -337,12 +342,18 @@ val shared =
       scalaVersions = Seq("3.8.3"),
       settings = Seq(
         libraryDependencies ++= Seq(
-          "com.disneystreaming.smithy4s" %%% "smithy4s-core" % smithy4sNativeVersion
+          "com.disneystreaming.smithy4s" %%% "smithy4s-core" % smithy4sVersion.value
         )
       ),
     )
     .settings(
-      scalacOptions += "-no-indent"
+      scalacOptions += "-no-indent",
+      libraryDependencies ++= Seq(
+        "tech.neander" % "jsonrpclib-smithy" % "0.1.0+3-fe111ed5+20260405-1915-SNAPSHOT" % Smithy4s,
+        "tech.neander" %%% "jsonrpclib-smithy4s" % "0.1.0+3-fe111ed5+20260405-1915-SNAPSHOT",
+        "tech.neander" %%% "jsonrpclib-fs2" % "0.1.0+3-fe111ed5+20260405-1915-SNAPSHOT",
+        "co.fs2" %%% "fs2-io" % "3.13.0",
+      ),
     )
 
 val backend = project
@@ -351,7 +362,7 @@ val backend = project
     scalaVersion := "3.8.3",
     scalacOptions += "-no-indent",
     libraryDependencies ++= Seq(
-      "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
+      "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % "0.18.50",
       "org.http4s" %% "http4s-ember-server" % "0.23.30",
     ),
   )
@@ -367,7 +378,7 @@ val commonGameSettings = Seq(
   ),
   generateEnvCImpl,
   libraryDependencies ++= Seq(
-    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % smithy4sNativeVersion,
+    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % smithy4sVersion.value,
     "org.typelevel" %%% "cats-effect" % "3.7.0",
   ),
 )
@@ -405,6 +416,8 @@ val game =
             ),
           playdateLinkFlags := {
             val ldScript = playdateSdk / "C_API" / "buildsupport" / "link_map.ld"
+            val discardScript =
+              (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate" / "discard-arm-exceptions.ld"
             Seq(
               "-nostartfiles",
               "-mthumb",
@@ -412,6 +425,7 @@ val game =
               "-mfloat-abi=hard",
               "-mfpu=fpv5-sp-d16",
               s"-T${ldScript}",
+              s"-T${discardScript}",
               "--entry",
               "eventHandlerShim",
               "-Wl,--defsym=_fini=0",
@@ -420,7 +434,9 @@ val game =
             )
           },
           playdateDeviceBuildImpl,
-          playdateDeviceRunImpl,
+        )
+        .settings(playdateDeviceRunImpl)
+        .settings(
           pdutilDatadiskImpl,
           playdateCopyCrashLogsImpl,
         )

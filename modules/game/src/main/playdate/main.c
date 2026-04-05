@@ -116,7 +116,7 @@ void scalanative_pd_exit(int status, const char *file, int line)
 void scalanative_pd_abort(const char *file, int line)
 {
     pd_log_error("abort() called at %s:%d", file, line);
-    _exit(1);
+    _exit(42069);
 }
 
 #ifdef TARGET_PLAYDATE
@@ -461,9 +461,56 @@ float pd_system_getElapsedTime()
     return _pd->system->getElapsedTime();
 }
 
+const char *pd_system_getLaunchArgs()
+{
+    const char *outpath;
+    const char *args = _pd->system->getLaunchArgs(&outpath);
+    return args;
+}
+
 void pd_system_resetElapsedTime()
 {
     _pd->system->resetElapsedTime();
+}
+
+// --- Playdate TCP API bindings ---
+
+typedef void (*pd_tcp_open_callback)(TCPConnection *conn, PDNetErr err, void *ud);
+typedef void (*pd_tcp_connection_callback)(TCPConnection *conn, PDNetErr err);
+
+static const struct playdate_tcp *pd_tcp(void)
+{
+    return _pd->network->tcp;
+}
+
+TCPConnection *pd_tcp_newConnection(const char *server, int port, int usessl)
+{
+    return pd_tcp()->newConnection(server, port, usessl);
+}
+
+int pd_tcp_open(TCPConnection *conn, pd_tcp_open_callback cb, void *ud)
+{
+    return pd_tcp()->open(conn, cb, ud);
+}
+
+int pd_tcp_write(TCPConnection *conn, const void *buffer, size_t length)
+{
+    return pd_tcp()->write(conn, buffer, length);
+}
+
+int pd_tcp_read(TCPConnection *conn, void *buffer, size_t length)
+{
+    return pd_tcp()->read(conn, buffer, length);
+}
+
+size_t pd_tcp_getBytesAvailable(TCPConnection *conn)
+{
+    return pd_tcp()->getBytesAvailable(conn);
+}
+
+void pd_tcp_setReadTimeout(TCPConnection *conn, int ms)
+{
+    pd_tcp()->setReadTimeout(conn, ms);
 }
 
 // --- Playdate HTTP API bindings ---

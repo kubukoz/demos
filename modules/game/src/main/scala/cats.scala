@@ -27,22 +27,22 @@ def mkCatsRuntime(): (IORuntime, TaskRunner) = {
       def runPendingTasks(): Unit = {
         val now = nowNanos()
         val scheduledDue = scheduled.dequeueAll((targetNanos, _) => targetNanos <= now)
-        if scheduledDue.nonEmpty then info(s"Found ${scheduledDue.size} scheduled tasks due to run")
+        // if scheduledDue.nonEmpty then info(s"Found ${scheduledDue.size} scheduled tasks due to run")
         // else if scheduledDue.isEmpty then info(
         //   s"No scheduled tasks due to run. Now is ${now}, next task is at ${scheduled.headOption.map(_._1)} (in ns: ${scheduled.headOption.map(_._1 - now)})"
         // )
 
         scheduledDue.foreach { case (_, task) =>
-          info(s"Running due scheduled task")
+          // info(s"Running due scheduled task")
           task.run()
         }
 
         val pendingDue = tasks.dequeueAll(_ => true)
 
-        if pendingDue.nonEmpty then info(s"Found ${pendingDue.size} pending tasks to run")
+        // if pendingDue.nonEmpty then info(s"Found ${pendingDue.size} pending tasks to run")
 
         pendingDue.foreach { task =>
-          info("Running pending task")
+          // info("Running pending task")
           task.run()
         }
       }
@@ -51,15 +51,13 @@ def mkCatsRuntime(): (IORuntime, TaskRunner) = {
   val compute: ExecutionContext =
     new {
 
-      def execute(runnable: Runnable): Unit = {
-        info("execute called on compute execution context")
+      def execute(runnable: Runnable): Unit =
+        // info("execute called on compute execution context")
         tasks.enqueue(runnable)
-      }
 
-      def reportFailure(cause: Throwable): Unit = {
-        info(s"reportFailure called with cause: ${cause.getMessage}")
+      def reportFailure(cause: Throwable): Unit =
+        // info(s"reportFailure called with cause: ${cause.getMessage}")
         cause.printStackTrace()
-      }
     }
 
   val blocking = compute
@@ -78,16 +76,15 @@ def mkCatsRuntime(): (IORuntime, TaskRunner) = {
       def sleep(delay: FiniteDuration, task: Runnable): Runnable = {
         val scheduledAtNanos: Nanos = monotonicNanos()
         val targetNanos: Nanos = scheduledAtNanos + delay.toNanos
-        info(
-          s"Scheduling task to run in ${delay.toMillis} ms (at targetNanos: $targetNanos, which is in ${targetNanos - monotonicNanos()} ns from now)"
-        )
+        // info(
+        //   s"Scheduling task to run in ${delay.toMillis} ms (at targetNanos: $targetNanos, which is in ${targetNanos - monotonicNanos()} ns from now)"
+        // )
 
         scheduled.enqueue((targetNanos, task))
 
-        () => {
-          info(s"Cancelling scheduled task $task")
+        () =>
+          // info(s"Cancelling scheduled task $task")
           scheduled.dequeueAll { case (_, t) => t eq task }
-        }
       }
     }
 

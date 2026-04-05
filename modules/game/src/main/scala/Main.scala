@@ -12,6 +12,7 @@ import cats.effect.IO
 import cats.syntax.all.*
 import cats.kernel.Monoid
 import scala.concurrent.duration.*
+import examples.smithy.client.SmithyClientMain
 
 object pdapiBindings {
 
@@ -53,6 +54,7 @@ object pdapiBindings {
     opaque type LCDBitmap = Nothing
     opaque type LCDSprite = Nothing
     opaque type HTTPConnection = Nothing
+    opaque type TCPConnection = Nothing
 
     opaque type PDNetErr = Int
     val NET_OK: PDNetErr = 0
@@ -131,6 +133,8 @@ object pdapiBindings {
   @extern def pd_system_getElapsedTime(): Float = extern
 
   @extern def pd_system_resetElapsedTime(): Unit = extern
+
+  @extern def pd_system_getLaunchArgs(): CString = extern
 
   @extern def pd_getCurrentTimeMilliseconds(): CUnsignedInt = extern
 
@@ -244,6 +248,41 @@ object pdapiBindings {
   @extern def pd_display_setRefreshRate(
     rate: Float
   ): Unit = extern
+
+  // TCP API
+
+  @extern def pd_tcp_newConnection(
+    server: CString,
+    port: Int,
+    usessl: Int,
+  ): Ptr[TCPConnection] = extern
+
+  @extern def pd_tcp_open(
+    conn: Ptr[TCPConnection],
+    callback: CFuncPtr3[Ptr[TCPConnection], PDNetErr, Ptr[Byte], Unit],
+    userdata: Ptr[Byte],
+  ): PDNetErr = extern
+
+  @extern def pd_tcp_write(
+    conn: Ptr[TCPConnection],
+    buffer: Ptr[Byte],
+    length: CSize,
+  ): Int = extern
+
+  @extern def pd_tcp_read(
+    conn: Ptr[TCPConnection],
+    buffer: Ptr[Byte],
+    length: CSize,
+  ): Int = extern
+
+  @extern def pd_tcp_setReadTimeout(
+    conn: Ptr[TCPConnection],
+    ms: Int,
+  ): Unit = extern
+
+  @extern def pd_tcp_getBytesAvailable(
+    conn: Ptr[TCPConnection]
+  ): CSize = extern
 
   // HTTP API
 
@@ -1181,19 +1220,19 @@ object Main {
     event.match {
       case `kEventInit` =>
         // Test exception handling
-        try {
-          info("About to throw...")
-          throw new RuntimeException("Hello from Playdate exceptions!")
-        } catch {
-          case e: RuntimeException =>
-            info("Caught exception: " + e.getMessage())
-            val trace = e.getStackTrace()
-            info("Stack trace length: " + trace.length)
-            trace.foreach { elem =>
-              info("  at " + elem.toString())
-            }
-        }
-        info("Exception test passed!")
+        // try {
+        //   info("About to throw...")
+        //   throw new RuntimeException("Hello from Playdate exceptions!")
+        // } catch {
+        //   case e: RuntimeException =>
+        //     info("Caught exception: " + e.getMessage())
+        //     val trace = e.getStackTrace()
+        //     info("Stack trace length: " + trace.length)
+        //     trace.foreach { elem =>
+        //       info("  at " + elem.toString())
+        //     }
+        // }
+        // info("Exception test passed!")
 
         val ctx = deriveContext()
         game.init(ctx).compile() match {
@@ -1225,22 +1264,30 @@ object Main {
             s"result computed in: ${result}"
           }
 
-        val client = makeClient(GreetService, "192.168.1.96", 9000)
+        // val client = makeClient(GreetService, "192.168.1.96", 9000)
 
-        prog
-          .flatMap { msg =>
-            client
-              .greet(s"playdate world!\n$msg")
+        // val httpProg = prog
+        //   .flatMap { msg =>
+        //     client
+        //       .greet(s"playdate world!\n$msg")
+        //   }
+        //   .flatMap { response =>
+        //     IO {
+        //       info("got response from backend: " + response.greeting)
+        //       state = state.copy(
+        //         serverGreeting = Some(response.greeting),
+        //         mode = GameMode.Initial(rendered = false),
+        //       )
+        //     }
+        //   }
+
+        val tcpProg = SmithyClientMain
+          .run
+          .handleErrorWith { e =>
+            IO(info(s"TCP client failed: ${e.getMessage}"))
           }
-          .flatMap { response =>
-            IO {
-              info("got response from backend: " + response.greeting)
-              state = state.copy(
-                serverGreeting = Some(response.greeting),
-                mode = GameMode.Initial(rendered = false),
-              )
-            }
-          }
+
+        tcpProg
           .unsafeRunAndForget()(
             using runtime
           )

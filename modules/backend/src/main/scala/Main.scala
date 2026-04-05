@@ -7,6 +7,7 @@ import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.middleware.Logger
 import smithy4s.http4s.SimpleRestJsonBuilder
 import demosmithy.*
+import examples.smithy.server.ServerMain
 
 object Main extends IOApp.Simple {
 
@@ -32,6 +33,6 @@ object Main extends IOApp.Simple {
           .withHttpApp(app)
           .build
       }
-      .useForever
+      .useForever <& ServerMain.run
 
 }
