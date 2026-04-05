@@ -60,8 +60,6 @@ __attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSyste
         pd->system->logToConsole("eventHandler(kEventInit) stack @ %p", &ehMarker);
 
         ScalaNativeInit();
-
-        sn_event(pd, kEventInit);
         pd->system->setUpdateCallback(update, pd);
     }
 

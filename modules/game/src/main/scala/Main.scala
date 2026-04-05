@@ -3,6 +3,9 @@ package demo
 import scalanative.unsafe.*
 import scalanative.unsigned.*
 import demo.pdapiBindings.pd_log_error_raw
+import demosmithy.Foo
+import smithy4s.json.Json
+import smithy4s.Blob
 
 object pdapiBindings {
 
@@ -1078,6 +1081,12 @@ object Main {
 
         val cfg = game.config
         pd_display_setRefreshRate(cfg.fps)
+
+        val input = Foo("hello!")
+        val encoded = Json.writePrettyString(input)
+        info("encoded: " + encoded)
+        val decoded = Json.read[Foo](Blob(encoded))
+        info("decoded: " + decoded)
 
       case `kEventTerminate` =>
         cleanupState()

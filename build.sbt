@@ -329,7 +329,7 @@ val commonGameSettings = Seq(
   ),
   generateEnvCImpl,
   libraryDependencies ++= Seq(
-    // "com.disneystreaming.smithy4s" %%% "smithy4s-json" % "0.18.42-12-add7fa11-20260405-0324-SNAPSHOT"
+    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % "0.18.42-12-add7fa11-20260405-0330-SNAPSHOT"
   ),
 )
 
