@@ -16,7 +16,7 @@ val playdateSdk = file(
     )
 )
 
-val devicePath = file(
+lazy val devicePath = file(
   sys
     .env
     .getOrElse(
@@ -84,7 +84,7 @@ def runOnPlaydate(buildPdxPath: File) = {
   pdutil("run", s"/Games/$pdxFileName")
 }
 
-def commonCFlags(sdk: File) = Seq(
+def deviceCFlags(sdk: File) = Seq(
   "-g3",
   "-mthumb",
   "-mcpu=cortex-m7",
@@ -105,24 +105,39 @@ def commonCFlags(sdk: File) = Seq(
   s"-I${sdk / "C_API"}",
 )
 
+def simulatorCFlags(sdk: File) = Seq(
+  "-DTARGET_SIMULATOR=1",
+  "-DTARGET_EXTENSION=1",
+  s"-I${sdk / "C_API"}",
+  "-Wall",
+  "-Wstrict-prototypes",
+  "-Wno-unknown-pragmas",
+  "-Wdouble-promotion",
+  "-fPIC",
+)
+
 val playdateCompileFlags = settingKey[Seq[String]]("C compile flags for the final Playdate build")
 val playdateLinkFlags = settingKey[Seq[String]]("Linker flags for the final Playdate build")
+val playdateGameName = settingKey[String]("Name of the Playdate game (used for .pdx output)")
 
 val playdateBuild = taskKey[File]("Build the game for Playdate")
 
-val playdateBuildImpl =
+val playdateDeviceBuildImpl =
   playdateBuild := {
     import sys.process._
 
     val log = streams.value.log
     val staticLib = (Compile / nativeLink).value
 
-    val gameDir = (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate"
-    val buildDir = gameDir / "build"
-    val sourceDir = gameDir / "Source"
-    val pdxDir = gameDir / "RatLife.pdx"
+    val gameDir =
+      (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate"
+    val outDir = target.value / "playdate"
+    val buildDir = outDir / "build"
+    val sourceDir = outDir / "Source"
+    val pdxDir = outDir / s"${playdateGameName.value}.pdx"
 
     IO.createDirectory(buildDir)
+    IO.copyDirectory(gameDir / "Source", sourceDir)
 
     val gcc = "arm-none-eabi-gcc"
 
@@ -170,10 +185,70 @@ val playdateBuildImpl =
     pdxDir
   }
 
-val playdateRunImpl =
+val playdateDeviceRunImpl =
   run := {
     val pdx = playdateBuild.value
     runOnPlaydate(buildPdxPath = pdx)
+  }
+
+val simulatorNativeSourcesImpl =
+  Compile / resourceGenerators += Def.task {
+    val outDir = (Compile / resourceManaged).value / "scala-native"
+    IO.createDirectory(outDir)
+
+    val gameDir =
+      (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate"
+    val sources = Seq(
+      gameDir / "main.c"
+    )
+
+    val copied = sources.map { src =>
+      val dest = outDir / src.name
+      IO.copyFile(src, dest, CopyOptions().withOverwrite(true))
+      dest
+    }
+
+    copied
+  }
+
+val playdateSimulatorBuildImpl =
+  playdateBuild := {
+    import sys.process._
+
+    val log = streams.value.log
+    val dylib = (Compile / nativeLink).value
+
+    val gameDir =
+      (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate"
+    val outDir = target.value / "playdate"
+    val sourceDir = outDir / "Source"
+    val pdxDir = outDir / s"${playdateGameName.value}.pdx"
+
+    IO.copyDirectory(gameDir / "Source", sourceDir)
+
+    // Copy dylib into Source/ as pdex.dylib for pdc
+    IO.copyFile(dylib, sourceDir / "pdex.dylib", CopyOptions().withOverwrite(true))
+
+    // Run pdc to produce .pdx
+    val pdc = playdateSdk / "bin" / "pdc"
+    val pdcCmd = Seq(pdc.toString, sourceDir.toString, pdxDir.toString)
+    log.info("Running pdc")
+    val pdcRc = Process(pdcCmd).!
+    require(pdcRc == 0, "pdc failed")
+
+    pdxDir
+  }
+
+val playdateSimulatorRunImpl =
+  run := {
+    import sys.process._
+    val pdx = playdateBuild.value
+    val simulator =
+      playdateSdk / "bin" / "Playdate Simulator.app" / "Contents" / "MacOS" / "Playdate Simulator"
+    val cmd = Seq(simulator.toString, pdx.getAbsolutePath)
+    streams.value.log.info(s"Launching Playdate Simulator")
+    val rc = Process(cmd).!
+    require(rc == 0, s"Simulator exited with code $rc")
   }
 
 val playdateCopyCrashLogs = taskKey[Unit]("Copy crash logs from the connected Playdate device")
@@ -244,67 +319,103 @@ val generateEnvCImpl =
     Seq(outFile)
   }
 
-val game = projectMatrix
-  .in(file("modules") / "game")
-  .playdateRow(PlaydateRuntime.Device) {
-    _.settings(
-      moduleName := "game",
-      scalacOptions += "-Wunused:all",
-      scalacOptions += "-no-indent",
-      nativeConfig ~= (
-        _.withBuildTarget(BuildTarget.libraryStatic)
-          .withTargetTriple("arm-none-eabi")
-          .withGC(GC.immix)
-          .withCompileOptions(
-            commonCFlags(playdateSdk) ++ Seq(
-              "-fverbose-asm",
-              "-MD",
-              "-MP",
-              "-march=armv7-m",
-              "-m32",
-              "-ferror-limit=1000",
+val commonGameSettings = Seq(
+  moduleName := "game",
+  scalacOptions += "-Wunused:all",
+  scalacOptions += "-no-indent",
+  playdateGameName := "RatLife",
+  Compile / envVars := Map(
+    "SCALANATIVE_GC_LOG_LEVEL" -> "error"
+  ),
+  generateEnvCImpl,
+  libraryDependencies ++= Seq(
+    // "com.disneystreaming.smithy4s" %%% "smithy4s-json" % "0.18.42-12-add7fa11-20260405-0324-SNAPSHOT"
+  ),
+)
+
+val game =
+  projectMatrix
+    .in(file("modules") / "game")
+    .enablePlugins(Smithy4sCodegenPlugin)
+    .playdateRow(PlaydateRuntime.Device) {
+      _.settings(commonGameSettings)
+        .settings(
+          nativeConfig ~= (
+            _.withBuildTarget(BuildTarget.libraryStatic)
+              .withTargetTriple("arm-none-eabi")
+              .withGC(GC.immix)
+              .withCompileOptions(
+                deviceCFlags(playdateSdk) ++ Seq(
+                  "-fverbose-asm",
+                  "-MD",
+                  "-MP",
+                  "-march=armv7-m",
+                  "-m32",
+                  "-ferror-limit=1000",
+                )
+              )
+              .withMultithreading(false)
+          ),
+          playdateCompileFlags :=
+            deviceCFlags(playdateSdk) ++ Seq(
+              "-Wall",
+              "-Wno-unused",
+              "-Wno-unknown-pragmas",
+              "-D__HEAP_SIZE=8388208",
+              "-D__STACK_SIZE=61800",
+            ),
+          playdateLinkFlags := {
+            val ldScript = playdateSdk / "C_API" / "buildsupport" / "link_map.ld"
+            Seq(
+              "-nostartfiles",
+              "-mthumb",
+              "-mcpu=cortex-m7",
+              "-mfloat-abi=hard",
+              "-mfpu=fpv5-sp-d16",
+              s"-T${ldScript}",
+              "--entry",
+              "eventHandlerShim",
+              "-Wl,--defsym=_fini=0",
+              "-Wl,--defsym=__exidx_start=0",
+              "-Wl,--defsym=__exidx_end=0",
             )
-          )
-          .withMultithreading(false)
-      ),
-      Compile / envVars := Map(
-        "SCALANATIVE_GC_LOG_LEVEL" -> "error"
-      ),
-      playdateCompileFlags :=
-        commonCFlags(playdateSdk) ++ Seq(
-          "-Wall",
-          "-Wno-unused",
-          "-Wno-unknown-pragmas",
-          "-D__HEAP_SIZE=8388208",
-          "-D__STACK_SIZE=61800",
-        ),
-      playdateLinkFlags := {
-        val ldScript = playdateSdk / "C_API" / "buildsupport" / "link_map.ld"
-        Seq(
-          "-nostartfiles",
-          "-mthumb",
-          "-mcpu=cortex-m7",
-          "-mfloat-abi=hard",
-          "-mfpu=fpv5-sp-d16",
-          s"-T${ldScript}",
-          "--entry",
-          "eventHandlerShim",
-          "-Wl,--defsym=_fini=0",
-          "-Wl,--defsym=__exidx_start=0",
-          "-Wl,--defsym=__exidx_end=0",
+          },
+          playdateDeviceBuildImpl,
+          playdateDeviceRunImpl,
+          pdutilDatadiskImpl,
+          playdateCopyCrashLogsImpl,
         )
-      },
-      generateEnvCImpl,
-      playdateBuildImpl,
-      playdateRunImpl,
-      pdutilDatadiskImpl,
-      playdateCopyCrashLogsImpl,
-    )
-  }
+    }
+    .playdateRow(PlaydateRuntime.Simulator) {
+      _.settings(commonGameSettings)
+        .settings(
+          nativeConfig := {
+            val gameDir =
+              (ThisBuild / baseDirectory).value / "modules" / "game" / "src" / "main" / "playdate"
+            nativeConfig
+              .value
+              .withBuildTarget(BuildTarget.libraryDynamic)
+              .withGC(GC.immix)
+              .withCompileOptions(
+                simulatorCFlags(playdateSdk) ++ Seq(
+                  s"-I${gameDir}",
+                  // Simulator-only: disable the dylib constructor that auto-calls
+                  // ScalaNativeInit(), because eventHandler already calls it manually.
+                  // Without this, two MutatorThreads get registered and GC hangs.
+                  "-DSCALANATIVE_NO_DYLIB_CTOR",
+                )
+              )
+              .withMultithreading(false)
+          },
+          simulatorNativeSourcesImpl,
+          playdateSimulatorBuildImpl,
+          playdateSimulatorRunImpl,
+        )
+    }
 
 val root = project
   .in(file("."))
   .settings(
-    scalaVersion := "3.8.3",
+    scalaVersion := "3.8.3"
   )
   .aggregate(game.projectRefs: _*)

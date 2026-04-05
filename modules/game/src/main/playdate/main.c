@@ -2,16 +2,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <pd_api.h>
-#include "mylib.h"
-#include <stdarg.h>
-#include <time.h>
-#include <stdbool.h>
+#ifdef TARGET_PLAYDATE
 #include <sys/stat.h>
 #include <errno.h>
 #ifdef errno
 #undef errno
 #endif
+#endif
+#include <pd_api.h>
+#include "mylib.h"
+#include <stdarg.h>
+#include <time.h>
+#include <stdbool.h>
 
 #ifndef PLAYDATE_HOLDER
 #define PLAYDATE_HOLDER
@@ -32,56 +34,47 @@ void pd_scalanative_init(PlaydateAPI *pd)
     _pd = pd;
 }
 
-extern void scalanative_GC_setStackBottom(void *stackbottom);
-
+void pd_httpbin_request(void);
 static int update(void *userdata)
 {
-    // Refresh the GC's stack bottom to the current frame. The GC needs
-    // accurate stack bounds for its conservative root scan. stackBottom was
-    // originally set during GC_init (called from eventHandler), but the
-    // Playdate SDK calls update() from a different stack depth, so we must
-    // update it here before any Scala code (which may trigger GC) runs.
-    // See Marker_markProgramStack in Marker.c for the full explanation.
-    volatile int stackMarker = 0;
-    scalanative_GC_setStackBottom((void *)&stackMarker);
-
     PlaydateAPI *pd = userdata;
 
     PDButtons pressed;
     pd->system->getButtonState(NULL, &pressed, NULL);
 
-    // if (pressed & kButtonB)
-    // {
-    // }
-
     return sn_update(pd);
 };
 
+#ifdef TARGET_PLAYDATE
 void log_old_errors(void);
 void truncate_errors(void);
-void pd_httpbin_request(void);
+#endif
 
-int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
+__attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSystemEvent event, uint32_t arg)
 {
 
     if (event == kEventInit)
     {
+        volatile int ehMarker = 0;
         pd_scalanative_init(pd);
+        pd->system->logToConsole("eventHandler(kEventInit) stack @ %p", &ehMarker);
+
         ScalaNativeInit();
 
+        sn_event(pd, kEventInit);
         pd->system->setUpdateCallback(update, pd);
-
-        pd_httpbin_request();
     }
 
     // log_old_errors();
 
     pd_log_error("eventHandler before terminate check");
-    if (event == kEventTerminate)
-    {
-        _pd->system->logToConsole("App exiting normally, truncating errors...");
-        truncate_errors();
-    }
+    // #ifdef TARGET_PLAYDATE
+    //     if (event == kEventTerminate)
+    //     {
+    //         _pd->system->logToConsole("App exiting normally, truncating errors...");
+    //         truncate_errors();
+    //     }
+    // #endif
 
     pd_log_error("eventHandler logging event");
     pd->system->logToConsole("Event: %d", event);
@@ -124,6 +117,7 @@ void scalanative_pd_abort(const char *file, int line)
     _exit(1);
 }
 
+#ifdef TARGET_PLAYDATE
 int errno = 0;
 
 int *__error(void)
@@ -278,6 +272,7 @@ void truncate_errors()
     SDFile *file = _pd->file->open("jk-errors.txt", kFileWrite);
     _pd->file->close(file);
 }
+#endif /* TARGET_PLAYDATE */
 
 // PD API forwarders
 
