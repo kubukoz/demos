@@ -8,6 +8,9 @@ import smithy4s.json.Json
 
 import scalanative.unsafe.*
 import scalanative.unsigned.*
+import cats.effect.IO
+import cats.syntax.all.*
+import cats.kernel.Monoid
 
 object pdapiBindings {
 
@@ -380,7 +383,7 @@ object Score {
   val Init: Score = 0
   val passedTram: Score = 10
 
-  extension (l: List[Score]) def combineAll: Score = l.foldLeft(Score.Init)(_ + _)
+  given Monoid[Score] = Monoid[Int]
 }
 
 enum GameMode derives CanEqual {
@@ -614,6 +617,7 @@ object MainGame {
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
 
   def update(ctx: GameContext): GameState => GameState = {
+    // Main.taskRunner.runPendingTasks()
 
     val clearEvents: GameState => GameState = state => state.copy(events = Nil)
 
@@ -968,7 +972,6 @@ object MainGame {
 
     Render.TextWidth(text).flatMap { textWidth =>
       Render.TextHeight(text, textWidth).flatMap { textHeight =>
-        info("text height: " + textHeight)
         val paddingW = 20
         val paddingH = 20
 
@@ -1158,6 +1161,8 @@ case class GameConfig(fps: Int)
 
 object Main {
 
+  // val (runtime, taskRunner) = mkCatsRuntime()
+
   private val game = MainGame
 
   private var state: GameState = null
@@ -1170,6 +1175,21 @@ object Main {
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     event.match {
       case `kEventInit` =>
+        // Test exception handling
+        try {
+          info("About to throw...")
+          throw new RuntimeException("Hello from Playdate exceptions!")
+        } catch {
+          case e: RuntimeException =>
+            info("Caught exception: " + e.getMessage())
+            val trace = e.getStackTrace()
+            info("Stack trace length: " + trace.length)
+            trace.foreach { elem =>
+              info("  at " + elem.toString())
+            }
+        }
+        info("Exception test passed!")
+
         val ctx = deriveContext()
         game.init(ctx).compile() match {
           case (state, cleanupState) =>
@@ -1180,11 +1200,19 @@ object Main {
         val cfg = game.config
         pd_display_setRefreshRate(cfg.fps)
 
-        val input = Foo("hello!")
-        val encoded = Json.writePrettyString(input)
-        info("encoded: " + encoded)
-        val decoded = Json.read[Foo](Blob(encoded))
-        info("decoded: " + decoded)
+        val prog = IO(info("in top-level io"))
+          .as(10)
+          .mproduct { _ =>
+            IO.cede *>
+              IO(info("in flatmapped io")).as(42)
+          }
+          .flatMap { case (a, b) => IO(info(s"in flatMap. a: $a, b: $b")).as(a + b) }
+
+        // val result =
+        //   prog.unsafeRunAndForget()(
+        //     using runtime
+        //   )
+        // info(s"io result: ${result}")
 
         makeClient(GreetService, "192.168.1.96", 9000).greet("playdate world").run { response =>
           info("got response from backend: " + response.greeting)

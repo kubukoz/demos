@@ -342,7 +342,7 @@ val shared =
       ),
     )
     .settings(
-      scalacOptions += "-no-indent",
+      scalacOptions += "-no-indent"
     )
 
 val backend = project
@@ -367,7 +367,8 @@ val commonGameSettings = Seq(
   ),
   generateEnvCImpl,
   libraryDependencies ++= Seq(
-    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % smithy4sNativeVersion
+    "com.disneystreaming.smithy4s" %%% "smithy4s-json" % smithy4sNativeVersion,
+    "org.typelevel" %%% "cats-effect" % "3.7.0",
   ),
 )
 

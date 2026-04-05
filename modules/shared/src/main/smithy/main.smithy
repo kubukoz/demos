@@ -11,7 +11,9 @@ structure Foo {
 
 @simpleRestJson
 service GreetService {
-    operations: [Greet]
+    operations: [
+        Greet
+    ]
 }
 
 @http(method: "POST", uri: "/greet")
@@ -20,6 +22,7 @@ operation Greet {
         @required
         name: String
     }
+
     output := {
         @required
         greeting: String
