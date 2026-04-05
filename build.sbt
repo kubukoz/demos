@@ -196,6 +196,11 @@ val playdateDeviceRunImpl = Seq(
     val args = Def.spaceDelimited("<launch args>").parsed
     runOnPlaydate(buildPdxPath = pdx, launchArgs = args)
   },
+  justRun := {
+    val pdxDir = target.value / "playdate" / s"${playdateGameName.value}.pdx"
+    val args = Def.spaceDelimited("<launch args>").parsed
+    runOnPlaydate(buildPdxPath = pdxDir, launchArgs = args)
+  },
 )
 
 val simulatorNativeSourcesImpl =
@@ -257,6 +262,21 @@ val playdateSimulatorRunImpl =
     val rc = Process(cmd).!
     require(rc == 0, s"Simulator exited with code $rc")
   }
+
+val playdateSimulatorJustRunImpl =
+  justRun := {
+    import sys.process._
+    val pdxDir = target.value / "playdate" / s"${playdateGameName.value}.pdx"
+    val args = Def.spaceDelimited("<launch args>").parsed
+    val simulator =
+      playdateSdk / "bin" / "Playdate Simulator.app" / "Contents" / "MacOS" / "Playdate Simulator"
+    val cmd = Seq(simulator.toString, pdxDir.getAbsolutePath) ++ args
+    streams.value.log.info(s"Launching Playdate Simulator")
+    val rc = Process(cmd).!
+    require(rc == 0, s"Simulator exited with code $rc")
+  }
+
+lazy val justRun = inputKey[Unit]("Run the game without rebuilding")
 
 val playdateCopyCrashLogs = taskKey[Unit]("Copy crash logs from the connected Playdate device")
 
@@ -465,6 +485,7 @@ val game =
           simulatorNativeSourcesImpl,
           playdateSimulatorBuildImpl,
           playdateSimulatorRunImpl,
+          playdateSimulatorJustRunImpl,
         )
     }
 
