@@ -29,6 +29,9 @@ This project builds a Playdate game using Scala Native, targeting ARM Cortex-M7 
 - **`nativelib/.../stackOverflowGuards.c`**: Entire file no-oped (no MMU, no signals, no `mprotect`)
 - **`clib/.../stdatomic.c`**: 64-bit atomic ops (`llong`/`ullong`) use plain reads/writes via `PD_LL`/`PD_ULL` casts to avoid `__atomic_load_8` (no `libatomic` on this ARM toolchain)
 
+## Code Style
+- Ignore unused import warnings — don't fix or mention them.
+
 ## Debugging
 - Crash logs: `sbt playdateCopyCrashLogs` copies from device to `./crashlog.txt`
 - ELF for addr2line: `game/Source/pdex.elf` or `game/HelloWorld.elf` (note: Playdate loads at base `0x90000000`)

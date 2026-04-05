@@ -34,7 +34,6 @@ void pd_scalanative_init(PlaydateAPI *pd)
     _pd = pd;
 }
 
-void pd_httpbin_request(void);
 static int update(void *userdata)
 {
     PlaydateAPI *pd = userdata;
@@ -61,7 +60,6 @@ __attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSyste
 
         ScalaNativeInit();
         pd->system->setUpdateCallback(update, pd);
-        pd_httpbin_request();
     }
 
     // log_old_errors();
@@ -463,101 +461,103 @@ void pd_system_resetElapsedTime()
     _pd->system->resetElapsedTime();
 }
 
-// --- HTTPBin sample request ---
+// --- Playdate HTTP API bindings ---
 
-static const struct playdate_http *_http;
-static HTTPConnection *_httpbin_conn;
+typedef void (*pd_http_header_callback)(HTTPConnection *conn, const char *key, const char *value);
+typedef void (*pd_http_connection_callback)(HTTPConnection *conn);
+typedef void (*pd_http_access_callback)(bool allowed, void *userdata);
 
-static void httpbin_header_received(HTTPConnection *conn, const char *key, const char *value)
+static const struct playdate_http *pd_http(void)
 {
-    _pd->system->logToConsole("httpbin: header %s = %s", key, value);
+    return _pd->network->http;
 }
 
-static void httpbin_headers_read(HTTPConnection *conn)
+int pd_http_available(void)
 {
-    int status = _http->getResponseStatus(conn);
-    _pd->system->logToConsole("httpbin: headers done, HTTP %d", status);
+    return _pd->network != NULL && _pd->network->http != NULL;
 }
 
-static void httpbin_response(HTTPConnection *conn)
+int pd_http_requestAccess(const char *server, int port, int usessl, const char *purpose, pd_http_access_callback callback, void *userdata)
 {
-    _pd->system->logToConsole("httpbin: response callback");
-    int avail = _http->getBytesAvailable(conn);
-    _pd->system->logToConsole("httpbin: %d bytes available", (int)avail);
+    return pd_http()->requestAccess(server, port, usessl, purpose, callback, userdata);
 }
 
-static void httpbin_request_complete(HTTPConnection *conn)
+HTTPConnection *pd_http_newConnection(const char *server, int port, int usessl)
 {
-    PDNetErr err = _http->getError(conn);
-    if (err != NET_OK)
-    {
-        _pd->system->logToConsole("httpbin: request error %d", err);
-        _http->release(conn);
-        _httpbin_conn = NULL;
-        return;
-    }
-
-    _pd->system->logToConsole("httpbin: request complete");
-
-    int avail;
-    while ((avail = _http->getBytesAvailable(conn)) > 0)
-    {
-        char buf[512];
-        int n = _http->read(conn, buf, sizeof(buf) - 1);
-        if (n > 0)
-        {
-            buf[n] = '\0';
-            _pd->system->logToConsole("%s", buf);
-        }
-    }
-
-    _http->release(conn);
-    _httpbin_conn = NULL;
+    return pd_http()->newConnection(server, port, usessl);
 }
 
-static void httpbin_closed(HTTPConnection *conn)
+void pd_http_release(HTTPConnection *conn)
 {
-    PDNetErr err = _http->getError(conn);
-    _pd->system->logToConsole("httpbin: connection closed, err=%d", err);
+    pd_http()->release(conn);
 }
 
-static void httpbin_do_request(void)
+int pd_http_query(HTTPConnection *conn, const char *method, const char *path, const char *headers, size_t headerlen, const char *body, size_t bodylen)
 {
-    _httpbin_conn = _http->newConnection("localhost", 9000, false);
-    _http->setHeaderReceivedCallback(_httpbin_conn, httpbin_header_received);
-    _http->setHeadersReadCallback(_httpbin_conn, httpbin_headers_read);
-    _http->setResponseCallback(_httpbin_conn, httpbin_response);
-    _http->setRequestCompleteCallback(_httpbin_conn, httpbin_request_complete);
-    _http->setConnectionClosedCallback(_httpbin_conn, httpbin_closed);
-
-    const char *body = "{\"name\":\"Playdate\"}";
-    const char *headers = "Content-Type: application/json\r\n";
-    PDNetErr err = _http->post(_httpbin_conn, "/greet", headers, strlen(headers), body, strlen(body));
-    _pd->system->logToConsole("greet: POST /greet sent, err=%d", err);
+    return pd_http()->query(conn, method, path, headers, headerlen, body, bodylen);
 }
 
-static void httpbin_access_callback(bool allowed, void *userdata)
+int pd_http_getError(HTTPConnection *conn)
 {
-    _pd->system->logToConsole("httpbin: access %s", allowed ? "granted" : "denied");
-    if (allowed)
-        httpbin_do_request();
+    return pd_http()->getError(conn);
 }
 
-void pd_httpbin_request(void)
+int pd_http_getResponseStatus(HTTPConnection *conn)
 {
-    if (_pd->network == NULL)
-    {
-        _pd->system->logToConsole("httpbin: network is NULL");
-        return;
-    }
-    _http = _pd->network->http;
-    if (_http == NULL)
-    {
-        _pd->system->logToConsole("httpbin: http is NULL");
-        return;
-    }
+    return pd_http()->getResponseStatus(conn);
+}
 
-    enum accessReply reply = _http->requestAccess("localhost", 9000, false, "Greet API", httpbin_access_callback, NULL);
-    if (reply == kAccessAllow)
-        httpbin_do_request();
+size_t pd_http_getBytesAvailable(HTTPConnection *conn)
+{
+    return pd_http()->getBytesAvailable(conn);
+}
+
+int pd_http_read(HTTPConnection *conn, void *buf, unsigned int buflen)
+{
+    return pd_http()->read(conn, buf, buflen);
+}
+
+void pd_http_close(HTTPConnection *conn)
+{
+    pd_http()->close(conn);
+}
+
+void pd_http_setHeaderReceivedCallback(HTTPConnection *conn, pd_http_header_callback callback)
+{
+    pd_http()->setHeaderReceivedCallback(conn, callback);
+}
+
+void pd_http_setHeadersReadCallback(HTTPConnection *conn, pd_http_connection_callback callback)
+{
+    pd_http()->setHeadersReadCallback(conn, callback);
+}
+
+void pd_http_setResponseCallback(HTTPConnection *conn, pd_http_connection_callback callback)
+{
+    pd_http()->setResponseCallback(conn, callback);
+}
+
+void pd_http_setRequestCompleteCallback(HTTPConnection *conn, pd_http_connection_callback callback)
+{
+    pd_http()->setRequestCompleteCallback(conn, callback);
+}
+
+void pd_http_setConnectionClosedCallback(HTTPConnection *conn, pd_http_connection_callback callback)
+{
+    pd_http()->setConnectionClosedCallback(conn, callback);
+}
+
+void pd_http_setConnectTimeout(HTTPConnection *conn, int ms)
+{
+    pd_http()->setConnectTimeout(conn, ms);
+}
+
+void pd_http_setReadTimeout(HTTPConnection *conn, int ms)
+{
+    pd_http()->setReadTimeout(conn, ms);
+}
+
+void pd_http_setReadBufferSize(HTTPConnection *conn, int bytes)
+{
+    pd_http()->setReadBufferSize(conn, bytes);
 }

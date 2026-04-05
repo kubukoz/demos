@@ -1,11 +1,13 @@
 package demo
 
-import scalanative.unsafe.*
-import scalanative.unsigned.*
 import demo.pdapiBindings.pd_log_error_raw
 import demosmithy.Foo
-import smithy4s.json.Json
+import demosmithy.GreetService
 import smithy4s.Blob
+import smithy4s.json.Json
+
+import scalanative.unsafe.*
+import scalanative.unsigned.*
 
 object pdapiBindings {
 
@@ -46,6 +48,24 @@ object pdapiBindings {
     opaque type SamplePlayer = Nothing
     opaque type LCDBitmap = Nothing
     opaque type LCDSprite = Nothing
+    opaque type HTTPConnection = Nothing
+
+    opaque type PDNetErr = Int
+    val NET_OK: PDNetErr = 0
+
+    extension (e: PDNetErr) {
+      def isOk: Boolean = e == NET_OK
+      def code: Int = e
+    }
+
+    given Tag[PDNetErr] = Tag.Int
+
+    opaque type AccessReply = Int
+    val kAccessAllow: AccessReply = 0
+    val kAccessDeny: AccessReply = 1
+    val kAccessPending: AccessReply = 2
+
+    given Tag[AccessReply] = Tag.Int
   }
 
   import primitives._
@@ -217,6 +237,79 @@ object pdapiBindings {
     rate: Float
   ): Unit = extern
 
+  // HTTP API
+
+  @extern def pd_http_available(): Int = extern
+
+  @extern def pd_http_requestAccess(
+    server: CString,
+    port: Int,
+    usessl: Int,
+    purpose: CString,
+    callback: CFuncPtr2[Boolean, Ptr[Byte], Unit],
+    userdata: Ptr[Byte],
+  ): AccessReply = extern
+
+  @extern def pd_http_newConnection(
+    server: CString,
+    port: Int,
+    usessl: Int,
+  ): Ptr[HTTPConnection] = extern
+
+  @extern def pd_http_release(conn: Ptr[HTTPConnection]): Unit = extern
+
+  @extern def pd_http_query(
+    conn: Ptr[HTTPConnection],
+    method: CString,
+    path: CString,
+    headers: CString,
+    headerlen: CSize,
+    body: CString,
+    bodylen: CSize,
+  ): PDNetErr = extern
+
+  @extern def pd_http_getError(conn: Ptr[HTTPConnection]): PDNetErr = extern
+
+  @extern def pd_http_getResponseStatus(conn: Ptr[HTTPConnection]): Int = extern
+
+  @extern def pd_http_getBytesAvailable(conn: Ptr[HTTPConnection]): CSize = extern
+
+  @extern def pd_http_read(conn: Ptr[HTTPConnection], buf: Ptr[Byte], buflen: CUnsignedInt): Int =
+    extern
+
+  @extern def pd_http_close(conn: Ptr[HTTPConnection]): Unit = extern
+
+  @extern def pd_http_setHeaderReceivedCallback(
+    conn: Ptr[HTTPConnection],
+    callback: CFuncPtr3[Ptr[HTTPConnection], CString, CString, Unit],
+  ): Unit = extern
+
+  @extern def pd_http_setHeadersReadCallback(
+    conn: Ptr[HTTPConnection],
+    callback: CFuncPtr1[Ptr[HTTPConnection], Unit],
+  ): Unit = extern
+
+  @extern def pd_http_setResponseCallback(
+    conn: Ptr[HTTPConnection],
+    callback: CFuncPtr1[Ptr[HTTPConnection], Unit],
+  ): Unit = extern
+
+  @extern def pd_http_setRequestCompleteCallback(
+    conn: Ptr[HTTPConnection],
+    callback: CFuncPtr1[Ptr[HTTPConnection], Unit],
+  ): Unit = extern
+
+  @extern def pd_http_setConnectionClosedCallback(
+    conn: Ptr[HTTPConnection],
+    callback: CFuncPtr1[Ptr[HTTPConnection], Unit],
+  ): Unit = extern
+
+  @extern def pd_http_setConnectTimeout(conn: Ptr[HTTPConnection], ms: Int): Unit = extern
+
+  @extern def pd_http_setReadTimeout(conn: Ptr[HTTPConnection], ms: Int): Unit = extern
+
+  @extern def pd_http_setReadBufferSize(conn: Ptr[HTTPConnection], bytes: Int): Unit = extern
+
 }
 
 import pdapiBindings.primitives._
@@ -309,6 +402,7 @@ case class GameState(
   crankDocked: Boolean,
   // Vector is broken, apparently
   events: List[GameEvent],
+  serverGreeting: Option[String],
 ) derives CanEqual {
 
   def addEvents(newEvents: List[GameEvent]): GameState = copy(events = events ++ newEvents)
@@ -510,11 +604,11 @@ object MainGame {
     score = Score.Init,
     highScore = highScore,
     boost = false,
-    mode = GameMode.Playing,
-    // mode = GameMode.Initial(rendered = false),
+    mode = GameMode.Initial(rendered = false),
     events = Nil,
     isDeadly = true,
     crankDocked = ctx.crank.docked,
+    serverGreeting = None,
   )
 
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
@@ -831,13 +925,17 @@ object MainGame {
 
     val isGameOver = state.mode == GameMode.GameOver
 
+    val greetingText =
+      state.serverGreeting match {
+        case Some(text) => "Response: " + text
+        case None       => "LOADING..."
+      }
+
     def gameInit =
       textBox(
         ctx,
-        """Welcome to Rat Racer!
-          |Press A to start!""".stripMargin,
+        greetingText,
       )
-        |+| crankIndicator.unless(isGameOver)
 
     def gameOver =
       textBox(
@@ -1087,6 +1185,14 @@ object Main {
         info("encoded: " + encoded)
         val decoded = Json.read[Foo](Blob(encoded))
         info("decoded: " + decoded)
+
+        makeClient(GreetService, "192.168.1.96", 9000).greet("playdate world").run { response =>
+          info("got response from backend: " + response.greeting)
+          state = state.copy(
+            serverGreeting = Some(response.greeting),
+            mode = GameMode.Initial(rendered = false),
+          )
+        }
 
       case `kEventTerminate` =>
         cleanupState()
