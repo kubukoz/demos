@@ -11,6 +11,7 @@ import scalanative.unsigned.*
 import cats.effect.IO
 import cats.syntax.all.*
 import cats.kernel.Monoid
+import scala.concurrent.duration.*
 
 object pdapiBindings {
 
@@ -130,6 +131,10 @@ object pdapiBindings {
   @extern def pd_system_getElapsedTime(): Float = extern
 
   @extern def pd_system_resetElapsedTime(): Unit = extern
+
+  @extern def pd_getCurrentTimeMilliseconds(): CUnsignedInt = extern
+
+  @extern def pd_getSecondsSinceEpoch(milliseconds: Ptr[CUnsignedInt]): CUnsignedInt = extern
 
   @extern def pd_system_drawFPS(
     x: Int,
@@ -617,7 +622,7 @@ object MainGame {
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
 
   def update(ctx: GameContext): GameState => GameState = {
-    // Main.taskRunner.runPendingTasks()
+    Main.taskRunner.runPendingTasks()
 
     val clearEvents: GameState => GameState = state => state.copy(events = Nil)
 
@@ -1161,7 +1166,7 @@ case class GameConfig(fps: Int)
 
 object Main {
 
-  // val (runtime, taskRunner) = mkCatsRuntime()
+  val (runtime, taskRunner) = mkCatsRuntime()
 
   private val game = MainGame
 
@@ -1204,23 +1209,41 @@ object Main {
           .as(10)
           .mproduct { _ =>
             IO.cede *>
+              IO.sleep(2.seconds)
+                .timeout(500.millis)
+                .orElse(
+                  IO(info("fallback triggered, sleep one more second...")) *>
+                    IO.sleep(1.seconds)
+                      .as(10)
+                ) *>
               IO(info("in flatmapped io")).as(42)
           }
           .flatMap { case (a, b) => IO(info(s"in flatMap. a: $a, b: $b")).as(a + b) }
+          .timed
+          .map(_._1)
+          .map { result =>
+            s"result computed in: ${result}"
+          }
 
-        // val result =
-        //   prog.unsafeRunAndForget()(
-        //     using runtime
-        //   )
-        // info(s"io result: ${result}")
+        val client = makeClient(GreetService, "192.168.1.96", 9000)
 
-        makeClient(GreetService, "192.168.1.96", 9000).greet("playdate world").run { response =>
-          info("got response from backend: " + response.greeting)
-          state = state.copy(
-            serverGreeting = Some(response.greeting),
-            mode = GameMode.Initial(rendered = false),
+        prog
+          .flatMap { msg =>
+            client
+              .greet(s"playdate world!\n$msg")
+          }
+          .flatMap { response =>
+            IO {
+              info("got response from backend: " + response.greeting)
+              state = state.copy(
+                serverGreeting = Some(response.greeting),
+                mode = GameMode.Initial(rendered = false),
+              )
+            }
+          }
+          .unsafeRunAndForget()(
+            using runtime
           )
-        }
 
       case `kEventTerminate` =>
         cleanupState()

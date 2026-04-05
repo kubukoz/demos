@@ -29,6 +29,11 @@ unsigned int pd_getCurrentTimeMilliseconds(void)
     return _pd->system->getCurrentTimeMilliseconds();
 }
 
+unsigned int pd_getSecondsSinceEpoch(unsigned int *milliseconds)
+{
+    return _pd->system->getSecondsSinceEpoch(milliseconds);
+}
+
 void pd_scalanative_init(PlaydateAPI *pd)
 {
     _pd = pd;

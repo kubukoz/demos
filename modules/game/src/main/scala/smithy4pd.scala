@@ -16,66 +16,27 @@ import smithy4s.json.Json
 
 import scalanative.unsafe.*
 import scalanative.unsigned.*
-
-trait ClientCall[Output] {
-  def run(onComplete: Output => Unit): Unit
-
-  def map[Output2](f: Output => Output2): ClientCall[Output2] =
-    onComplete =>
-      run { output =>
-        onComplete(f(output))
-      }
-
-  def flatMap[Output2](f: Output => ClientCall[Output2]): ClientCall[Output2] =
-    onComplete =>
-      run {
-        f(_).run(onComplete)
-      }
-
-}
-
-object ClientCall {
-
-  def pure[A](a: A): ClientCall[A] =
-    new ClientCall[A] {
-      def run(onComplete: A => Unit): Unit = onComplete(a)
-    }
-
-  def raiseError[A](e: Throwable): ClientCall[A] =
-    new ClientCall[A] {
-      def run(onComplete: A => Unit): Unit = throw e
-    }
-
-  given smithy4s.capability.MonadThrowLike[ClientCall] with {
-    def pure[A](a: A): ClientCall[A] = ClientCall.pure(a)
-
-    def handleErrorWith[A](fa: ClientCall[A])(f: Throwable => ClientCall[A]): ClientCall[A] =
-      new ClientCall[A] {
-        def run(onComplete: A => Unit): Unit =
-          try fa.run(onComplete)
-          catch { case e: Throwable => f(e).run(onComplete) }
-      }
-
-    def flatMap[A, B](fa: ClientCall[A])(f: A => ClientCall[B]): ClientCall[B] =
-      fa.flatMap(f)
-
-    def raiseError[A](e: Throwable): ClientCall[A] = ClientCall.raiseError(e)
-
-    def zipMapAll[A](seq: IndexedSeq[ClientCall[Any]])(f: IndexedSeq[Any] => A): ClientCall[A] = {
-      val sequenced: ClientCall[IndexedSeq[Any]] =
-        seq.foldLeft(pure(IndexedSeq.empty[Any])) { (acc, cc) =>
-          acc.flatMap(results => cc.flatMap(a => pure(results :+ a)))
-        }
-
-      sequenced.map(f)
-    }
-
-  }
-
-}
+import cats.effect.IO
 
 import pdapiBindings._
-import ClientCall.given
+import smithy4s.capability.MonadThrowLike
+
+given MonadThrowLike[IO] with {
+  def flatMap[A, B](fa: IO[A])(f: A => IO[B]): IO[B] = fa.flatMap(f)
+  def handleErrorWith[A](fa: IO[A])(f: Throwable => IO[A]): IO[A] = fa.handleErrorWith(f)
+  def pure[A](a: A): IO[A] = IO.pure(a)
+  def raiseError[A](e: Throwable): IO[A] = IO.raiseError(e)
+
+  def zipMapAll[A](seq: IndexedSeq[IO[Any]])(f: IndexedSeq[Any] => A): IO[A] =
+    seq
+      .foldLeft(IO(Vector.empty[Any])) { (acc, io) =>
+        acc.flatMap { vec =>
+          io.map(result => vec :+ result)
+        }
+      }
+      .map(f)
+
+}
 
 private def httpUriToPath(uri: smithy4s.http.HttpUri): String = {
   val path = "/" + uri.path.mkString("/")
@@ -188,7 +149,7 @@ private def executeRequest(
   }
 
 def makeClient[Alg[_[_, _, _, _, _]]](service: smithy4s.Service[Alg], host: String, port: Int)
-  : service.Impl[ClientCall] = {
+  : service.Impl[IO] = {
 
   val hintMask = alloy.SimpleRestJson.protocol.hintMask
   val jsonCodecs = Json
@@ -221,23 +182,27 @@ def makeClient[Alg[_[_, _, _, _, _]]](service: smithy4s.Service[Alg], host: Stri
     .withSuccessBodyDecoders(jsonCodecs.decoders)
     .withErrorBodyDecoders(jsonCodecs.decoders)
     .withErrorDiscriminator(resp =>
-      ClientCall.pure(HttpDiscriminator.fromResponse(List(smithy4s.http.errorTypeHeader), resp))
+      IO.pure(HttpDiscriminator.fromResponse(List(smithy4s.http.errorTypeHeader), resp))
     )
     .withMetadataDecoders(Metadata.Decoder)
     .withMetadataEncoders(Metadata.Encoder)
-    .withBaseRequest(_ => ClientCall.pure(baseRequest))
+    .withBaseRequest(_ => IO.pure(baseRequest))
     .withRequestMediaType("application/json")
     .build()
 
   val lowLevelClient =
-    new UnaryLowLevelClient[ClientCall, HttpRequest[Blob], HttpResponse[Blob]] {
+    new UnaryLowLevelClient[IO, HttpRequest[Blob], HttpResponse[Blob]] {
       def run[Output](
         request: HttpRequest[Blob]
       )(
-        responseCB: HttpResponse[Blob] => ClientCall[Output]
-      ): ClientCall[Output] = { onComplete =>
-        executeRequest(host, port, request, responseCB(_).run(onComplete))
-      }
+        responseCB: HttpResponse[Blob] => IO[Output]
+      ): IO[Output] =
+        IO.async[HttpResponse[Blob]] { cb =>
+          IO {
+            executeRequest(host, port, request, hr => cb(Right(hr)))
+            None
+          }
+        }.flatMap(responseCB)
     }
 
   val compiler = UnaryClientCompiler(
