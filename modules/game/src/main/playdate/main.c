@@ -57,7 +57,7 @@ __attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSyste
     {
         volatile int ehMarker = 0;
         pd_scalanative_init(pd);
-        pd->system->logToConsole("eventHandler(kEventInit) stack @ %p", &ehMarker);
+        // pd->system->logToConsole("eventHandler(kEventInit) stack @ %p", &ehMarker);
 
         ScalaNativeInit();
         pd->system->setUpdateCallback(update, pd);
@@ -65,7 +65,7 @@ __attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSyste
 
     // log_old_errors();
 
-    pd_log_error("eventHandler before terminate check");
+    // pd_log_error("eventHandler before terminate check");
     // #ifdef TARGET_PLAYDATE
     //     if (event == kEventTerminate)
     //     {
@@ -74,10 +74,10 @@ __attribute__((visibility("default"))) int eventHandler(PlaydateAPI *pd, PDSyste
     //     }
     // #endif
 
-    pd_log_error("eventHandler logging event");
-    pd->system->logToConsole("Event: %d", event);
+    // pd_log_error("eventHandler logging event");
+    // pd->system->logToConsole("Event: %d", event);
 
-    pd_log_error("eventHandler calling sn_event");
+    // pd_log_error("eventHandler calling sn_event");
     return sn_event(pd, event);
 }
 
