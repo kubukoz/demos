@@ -105,57 +105,43 @@ object SmithyClientMain {
     acquireConn.toResource.map { conn =>
       new Socket {
         def incoming: Stream[IO, Byte] =
-          if true then Stream.empty
-          else
-            logS("Setting TCP read timeout to 0 (non-blocking)") ++
-              Stream.exec(IO(pdapiBindings.pd_tcp_setReadTimeout(conn, 0))) ++
-              Stream
-                .repeatEval {
-                  IO {
-                    val avail = pdapiBindings.pd_tcp_getBytesAvailable(conn)
-                    logRaw(s"Checking TCP incoming data: $avail bytes available")
-                    if (avail.toInt > 0) {
-                      val toRead = math.min(avail.toLong, 4096L).toInt
-                      val buf = stackalloc[Byte](4096)
-                      val n = pdapiBindings.pd_tcp_read(conn, buf, toRead.toUInt)
-                      if (n < 0)
-                        throw new RuntimeException(s"TCP read error: $n")
-                      else if (n > 0) {
-                        val arr = new Array[Byte](n)
-                        var i = 0
-                        while (i < n) {
-                          arr(i) = !(buf + i)
-                          i += 1
-                        }
-                        Some(Chunk.array(arr))
-                      } else
-                        None
-                    } else
-                      None
-                  }.flatTap {
-                    case None => IO.sleep(10.millis) *> IO.cede
-                    case _    => IO.cede
-                  }
-                }
-                .unNone
-                .unchunks
+          Stream
+            .repeatEval {
+              IO {
+                val avail = pdapiBindings.pd_tcp_getBytesAvailable(conn)
+                if (avail.toInt > 0) {
+                  val toRead = math.min(avail.toLong, 4096L).toInt
+                  val arr = new Array[Byte](toRead)
+                  val n = pdapiBindings.pd_tcp_read(conn, arr.at(0), toRead.toUInt)
+                  if (n < 0)
+                    throw new RuntimeException(s"TCP read error: $n")
+                  else if (n > 0)
+                    Some(Chunk.array(arr, 0, n))
+                  else
+                    None
+                } else
+                  None
+              } <* IO.cede
+            }
+            .unNone
+            .unchunks
 
-        def outgoing: Pipe[IO, Byte, Unit] =
+        def outgoing: Pipe[IO, Byte, Unit] = {
+          // Single-shot write. pd_tcp_write appears to queue the buffer
+          // asynchronously; calling it again with the "remaining" bytes
+          // collides with the in-flight queued data and corrupts the stream.
+          def writeAll(arr: Array[Byte]): IO[Unit] =
+            IO {
+              val written = pdapiBindings.pd_tcp_write(conn, arr.at(0), arr.length.toUInt)
+              if (written < 0)
+                logRaw(s"TCP write error: $written")
+            }
+
           in =>
             in.chunks.evalMap { chunk =>
-              IO {
-                val arr = chunk.toArray
-                val buf = stackalloc[Byte](arr.length)
-                var i = 0
-                while (i < arr.length) {
-                  !(buf + i) = arr(i)
-                  i += 1
-                }
-                val written = pdapiBindings.pd_tcp_write(conn, buf, arr.length.toUInt)
-                if (written < 0)
-                  logRaw(s"TCP write error: $written")
-              }
+              writeAll(chunk.toArray)
             }
+        }
       }
     }
   }
@@ -178,10 +164,10 @@ object SmithyClientMain {
             fs2Channel
               .output
               .map { msg =>
-                import com.github.plokhotnyuk.jsoniter_scala.circe.JsoniterScalaCodec._
-                import com.github.plokhotnyuk.jsoniter_scala.core._
                 val json = io.circe.Encoder[jsonrpclib.Message].apply(msg)
-                new String(writeToArray(json)) + "\n"
+                // Using circe's noSpaces instead of jsoniter's writeToArray
+                // to work around a ByteArrayAccess.setInt bug on 32-bit ARM
+                json.noSpaces + "\n"
               }
               .through(fs2.text.utf8.encode)
               .through(socket.outgoing)
@@ -189,7 +175,9 @@ object SmithyClientMain {
           .concurrently(
             socket
               .incoming
-              .through(fs2.text.utf8.decode)
+              .chunks
+              // Bypassing fs2.text.utf8.decode — it crashes on 32-bit ARM
+              .map(c => new String(c.toArray))
               .through(fs2.text.lines)
               .filter(_.nonEmpty)
               .map { line =>
@@ -204,14 +192,14 @@ object SmithyClientMain {
               }
               .through(fs2Channel.inputOrBounce)
           )
-        // .concurrently(rp.stderr.through(fs2.io.stderr[IO]))
 
-        ////////////////////////////////////////////////////////
-        /////// INTERACTION
-        ////////////////////////////////////////////////////////
-        // result1 <- Stream.eval(server.greet("Client"))
-        // _ <- logS1(s"Client received $result1")
-        // _ <- Stream.eval(server.ping("Ping"))
+        //////////////////////////////////////////////////////
+        ///// INTERACTION
+        //////////////////////////////////////////////////////
+        result1 <- Stream.eval(server.greet("Client"))
+        _ <- logS1(s"greet response: $result1")
+        _ <- Stream.eval(server.ping("Ping"))
+        _ <- logS1("ping succeeded")
       } yield ()
     run.compile.drain.guarantee(log("Terminating client"))
   }

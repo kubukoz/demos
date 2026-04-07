@@ -81,8 +81,10 @@ def runOnPlaydate(buildPdxPath: File, launchArgs: Seq[String] = Seq.empty) = {
   }
 
   val pdxPath =
-    if (launchArgs.isEmpty) s"/Games/$pdxFileName"
-    else s"/Games/$pdxFileName?${launchArgs.mkString("&")}"
+    if (launchArgs.isEmpty)
+      s"/Games/$pdxFileName"
+    else
+      s"/Games/$pdxFileName?${launchArgs.mkString("&")}"
 
   println(s"launching game with path: $pdxPath")
   pdutil("run", pdxPath)
@@ -105,7 +107,7 @@ def deviceCFlags(sdk: File) = Seq(
   "-fno-common",
   "-DTARGET_PLAYDATE=1",
   "-DTARGET_EXTENSION=1",
-  // "-DPD_DEBUG=1",
+  "-DPD_DEBUG=1",
   s"-I${sdk / "C_API"}",
 )
 
@@ -369,9 +371,9 @@ val shared =
     .settings(
       scalacOptions += "-no-indent",
       libraryDependencies ++= Seq(
-        "tech.neander" % "jsonrpclib-smithy" % "0.1.0+3-fe111ed5+20260405-1915-SNAPSHOT" % Smithy4s,
-        "tech.neander" %%% "jsonrpclib-smithy4s" % "0.1.0+3-fe111ed5+20260405-1915-SNAPSHOT",
-        "tech.neander" %%% "jsonrpclib-fs2" % "0.1.0+3-fe111ed5+20260405-1915-SNAPSHOT",
+        "tech.neander" % "jsonrpclib-smithy" % "0.1.0+4-dc0ac59d+20260407-1932-SNAPSHOT" % Smithy4s,
+        "tech.neander" %%% "jsonrpclib-smithy4s" % "0.1.0+4-dc0ac59d+20260407-1932-SNAPSHOT",
+        "tech.neander" %%% "jsonrpclib-fs2" % "0.1.0+4-dc0ac59d+20260407-1932-SNAPSHOT",
         "co.fs2" %%% "fs2-io" % "3.13.0",
       ),
     )

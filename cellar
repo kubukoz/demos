@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Wrapper for cellar (https://github.com/virtuslab/cellar) — runs via nix.
+exec nix run github:virtuslab/cellar -- "$@"

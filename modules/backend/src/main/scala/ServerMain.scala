@@ -56,10 +56,10 @@ object ServerMain {
                 .concurrently(
                   client
                     .reads
-                    .observe(fs2.io.stderr)
                     .through(fs2.text.utf8.decode)
                     .through(fs2.text.lines)
                     .filter(_.nonEmpty)
+                    .evalTap(line => printErr(s"<-- IN  $line"))
                     .map { line =>
                       import com.github.plokhotnyuk.jsoniter_scala.circe.JsoniterScalaCodec._
                       import com.github.plokhotnyuk.jsoniter_scala.core._
@@ -79,10 +79,11 @@ object ServerMain {
                       import com.github.plokhotnyuk.jsoniter_scala.circe.JsoniterScalaCodec._
                       import com.github.plokhotnyuk.jsoniter_scala.core._
                       val json = io.circe.Encoder[jsonrpclib.Message].apply(msg)
-                      new String(writeToArray(json)) + "\n"
+                      new String(writeToArray(json))
                     }
+                    .evalTap(line => printErr(s"--> OUT $line"))
+                    .map(_ + "\n")
                     .through(fs2.text.utf8.encode)
-                    .observe(fs2.io.stderr)
                     .through(client.writes)
                 )
             }

@@ -29,8 +29,14 @@ This project builds a Playdate game using Scala Native, targeting ARM Cortex-M7 
 - **`nativelib/.../stackOverflowGuards.c`**: Entire file no-oped (no MMU, no signals, no `mprotect`)
 - **`clib/.../stdatomic.c`**: 64-bit atomic ops (`llong`/`ullong`) use plain reads/writes via `PD_LL`/`PD_ULL` casts to avoid `__atomic_load_8` (no `libatomic` on this ARM toolchain)
 
+## Scope of Assistance
+Refuse to implement any actual game functionality. Claude may only work on:
+- Platform-specific concerns (Scala Native on Playdate)
+- Generating API bindings
+
 ## Code Style
 - Ignore unused import warnings — don't fix or mention them.
+- `-no-indent` is enabled — always use braces for `while`, `if`, `for`, etc. (no significant indentation syntax).
 
 ## Debugging
 - Crash logs: `sbt playdateCopyCrashLogs` copies from device to `./crashlog.txt`

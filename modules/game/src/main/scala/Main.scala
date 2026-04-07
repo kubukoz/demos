@@ -1219,20 +1219,7 @@ object Main {
   def eventNative(pd: Ptr[PlaydateAPI], event: PDSystemEvent) = {
     event.match {
       case `kEventInit` =>
-        // Test exception handling
-        // try {
-        //   info("About to throw...")
-        //   throw new RuntimeException("Hello from Playdate exceptions!")
-        // } catch {
-        //   case e: RuntimeException =>
-        //     info("Caught exception: " + e.getMessage())
-        //     val trace = e.getStackTrace()
-        //     info("Stack trace length: " + trace.length)
-        //     trace.foreach { elem =>
-        //       info("  at " + elem.toString())
-        //     }
-        // }
-        // info("Exception test passed!")
+        // Cross-function exceptions work via SJLJ (setjmp/longjmp)
 
         val ctx = deriveContext()
         game.init(ctx).compile() match {
@@ -1243,43 +1230,6 @@ object Main {
 
         val cfg = game.config
         pd_display_setRefreshRate(cfg.fps)
-
-        val prog = IO(info("in top-level io"))
-          .as(10)
-          .mproduct { _ =>
-            IO.cede *>
-              IO.sleep(2.seconds)
-                .timeout(500.millis)
-                .orElse(
-                  IO(info("fallback triggered, sleep one more second...")) *>
-                    IO.sleep(1.seconds)
-                      .as(10)
-                ) *>
-              IO(info("in flatmapped io")).as(42)
-          }
-          .flatMap { case (a, b) => IO(info(s"in flatMap. a: $a, b: $b")).as(a + b) }
-          .timed
-          .map(_._1)
-          .map { result =>
-            s"result computed in: ${result}"
-          }
-
-        // val client = makeClient(GreetService, "192.168.1.96", 9000)
-
-        // val httpProg = prog
-        //   .flatMap { msg =>
-        //     client
-        //       .greet(s"playdate world!\n$msg")
-        //   }
-        //   .flatMap { response =>
-        //     IO {
-        //       info("got response from backend: " + response.greeting)
-        //       state = state.copy(
-        //         serverGreeting = Some(response.greeting),
-        //         mode = GameMode.Initial(rendered = false),
-        //       )
-        //     }
-        //   }
 
         val tcpProg = SmithyClientMain
           .run
