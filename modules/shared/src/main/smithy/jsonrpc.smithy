@@ -57,6 +57,7 @@ operation GetTime {
 
     output := {
         @required
-        time: String
+        @timestampFormat("epoch-seconds")
+        time: Timestamp
     }
 }

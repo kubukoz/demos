@@ -1,13 +1,17 @@
 package examples.smithy.server
 
 import cats.effect._
+import cats.effect.std.Random
+import cats.syntax.all._
 import com.comcast.ip4s._
 import fs2.Stream
 import fs2.io.net.Network
+import fs2.io.net.SocketOption
 import jsonrpclib.fs2._
 import jsonrpclib.smithy4sinterop.ClientStub
 import jsonrpclib.smithy4sinterop.ServerEndpoints
 import jsonrpclib.CallId
+import scala.concurrent.duration._
 import test._ // smithy4s-generated package
 
 object ServerMain {
@@ -22,7 +26,7 @@ object ServerMain {
       for {
         _ <- printErr(s"greet(name = $name)")
         timeResult <- client.getTime()
-        _ <- printErr(s"greet: client time is ${timeResult.time}")
+        _ <- printErr(s"greet: client time is ${timeResult.time.toInstant}")
         response = GreetOutput(s"Server says: hello $name !")
         _ <- printErr(s"greet: responding: ${response.message}")
       } yield response
@@ -38,18 +42,37 @@ object ServerMain {
 
   def run: IO[Unit] = {
     val run =
-      Stream.resource(Network[IO].serverResource(port = Some(port"9999"))).flatMap { (_, server) =>
+      Stream.resource(
+        Network[IO].serverResource(
+          port = Some(port"9999"),
+          options = List(SocketOption.noDelay(true)),
+        )
+      ).flatMap { (_, server) =>
         server.map { client =>
-          FS2Channel
-            .stream[IO](cancelTemplate = Some(cancelEndpoint))
-            .flatMap { channel =>
-              Stream.eval(IO.fromEither(ClientStub(TestClient, channel))).flatMap { testClient =>
-                Stream.eval(IO.fromEither(ServerEndpoints(new ServerImpl(testClient)))).flatMap {
-                  se =>
-                    channel.withEndpointsStream(se)
-                }
-              }
-            }
+          val channelResource =
+            for {
+              channel <- FS2Channel.resource[IO](cancelTemplate = Some(cancelEndpoint))
+              testClient <- IO.fromEither(ClientStub(TestClient, channel)).toResource
+              se <- IO.fromEither(ServerEndpoints(new ServerImpl(testClient))).toResource
+              _ <- channel.withEndpoints(se)
+              random <- Random.scalaUtilRandom[IO].toResource
+              _ <-
+                Stream
+                  .repeatEval(
+                    random.betweenInt(20, 1201).flatMap { delay =>
+                      IO.sleep(delay.millis) >>
+                        IO.realTimeInstant.flatMap { now =>
+                          testClient.pong(s"server pong at: ${now}")
+                        }
+                    }
+                  )
+                  .compile
+                  .drain
+                  .background
+            } yield channel
+
+          Stream
+            .resource(channelResource)
             .flatMap { channel =>
               Stream
                 .eval(IO.never)
@@ -85,6 +108,9 @@ object ServerMain {
                     .map(_ + "\n")
                     .through(fs2.text.utf8.encode)
                     .through(client.writes)
+                    .handleErrorWith { e =>
+                      Stream.exec(printErr(s"client write failed, disconnecting: $e"))
+                    }
                 )
             }
         }.parJoinUnbounded

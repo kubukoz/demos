@@ -44,12 +44,15 @@ object SmithyClientMain {
     log(str)
   )
 
+  def logR(str: String): Resource[IO, Unit] =
+    log(str).toResource
+
   // Implementing the generated interface
-  object Client extends TestClient[IO] {
-    def pong(pong: String): IO[Unit] = log(s"Client received pong: $pong")
+  class Client(onPong: String => IO[Unit]) extends TestClient[IO] {
+    def pong(pong: String): IO[Unit] = log(s"Client received pong: $pong") *> onPong(pong)
 
     def getTime(): IO[GetTimeOutput] = {
-      val result = GetTimeOutput(System.currentTimeMillis().toString)
+      val result = GetTimeOutput(smithy4s.Timestamp.fromEpochMilli(System.currentTimeMillis()))
       log(s"Client getTime(), responding: ${result.time}").as(result)
     }
 
@@ -82,10 +85,10 @@ object SmithyClientMain {
           val err = pdapiBindings.pd_tcp_open(
             conn,
             CFuncPtr3.fromScalaFunction { (conn: Ptr[TCPConnection], err: PDNetErr, _: Ptr[Byte]) =>
-              logRaw(s"TCP open callback called with err code: ${err.code}")
+              logRaw(s"TCP open callback called with err: ${err.name} (${err.code})")
               val result =
                 if (!err.isOk)
-                  Left(new RuntimeException(s"TCP open failed with error code: ${err.code}"))
+                  Left(new RuntimeException(s"TCP open failed: ${err.name} (${err.code})"))
                 else
                   Right(conn)
 
@@ -94,8 +97,8 @@ object SmithyClientMain {
             null,
           )
           if (!err.isOk) {
-            logRaw(s"pd_tcp_open failed immediately with error code: ${err.code}")
-            connDef(Left(new RuntimeException(s"pd_tcp_open failed with error code: ${err.code}")))
+            logRaw(s"pd_tcp_open failed immediately: ${err.name} (${err.code})")
+            connDef(Left(new RuntimeException(s"pd_tcp_open failed: ${err.name} (${err.code})")))
           }
           None
         }
@@ -133,8 +136,11 @@ object SmithyClientMain {
           def writeAll(arr: Array[Byte]): IO[Unit] =
             IO {
               val written = pdapiBindings.pd_tcp_write(conn, arr.at(0), arr.length.toUInt)
-              if (written < 0)
-                logRaw(s"TCP write error: $written")
+              if (written < 0) {
+                val err = PDNetErr.fromInt(written)
+                logRaw(s"TCP write error: ${err.name} (${err.code})")
+              } else if (written != arr.length)
+                logRaw(s"TCP write short: wrote $written of ${arr.length} bytes")
             }
 
           in =>
@@ -146,62 +152,69 @@ object SmithyClientMain {
     }
   }
 
-  def run: IO[Unit] = {
+  def run(pongHandler: String => IO[Unit]): IO[Unit] = {
     val run =
       for {
-        _ <- logS1("Starting client")
+        _ <- logR("Starting client")
         ////////////////////////////////////////////////////////
         /////// BOOTSTRAPPING
         ////////////////////////////////////////////////////////
-        fs2Channel <- FS2Channel.stream[IO](cancelTemplate = cancelEndpoint.some)
-        se <- Stream.eval(IO.fromEither(ServerEndpoints.apply[TestClientGen, IO](Client)))
-        _ <- fs2Channel.withEndpointsStream(se)
-        server: TestServer[IO] <- Stream.eval(IO.fromEither(ClientStub(TestServer, fs2Channel)))
+        fs2Channel <- FS2Channel.resource[IO](cancelTemplate = cancelEndpoint.some)
+        se <-
+          ServerEndpoints.apply[TestClientGen, IO](new Client(pongHandler)).liftTo[IO].toResource
+        _ <- fs2Channel.withEndpoints(se)
+        server: TestServer[IO] <- ClientStub(TestServer, fs2Channel).liftTo[IO].toResource
 
-        socket <- fs2.Stream.resource(mkSocket("192.168.10.69", 9999))
-        _ <- Stream(())
-          .concurrently(
-            fs2Channel
-              .output
-              .map { msg =>
-                val json = io.circe.Encoder[jsonrpclib.Message].apply(msg)
-                // Using circe's noSpaces instead of jsoniter's writeToArray
-                // to work around a ByteArrayAccess.setInt bug on 32-bit ARM
-                json.noSpaces + "\n"
-              }
-              .through(fs2.text.utf8.encode)
-              .through(socket.outgoing)
-          )
-          .concurrently(
-            socket
-              .incoming
-              .chunks
-              // Bypassing fs2.text.utf8.decode — it crashes on 32-bit ARM
-              .map(c => new String(c.toArray))
-              .through(fs2.text.lines)
-              .filter(_.nonEmpty)
-              .map { line =>
-                import com.github.plokhotnyuk.jsoniter_scala.circe.JsoniterScalaCodec._
-                import com.github.plokhotnyuk.jsoniter_scala.core._
-                val json = readFromString[io.circe.Json](line)
-                io.circe
-                  .Decoder[jsonrpclib.Message]
-                  .apply(io.circe.HCursor.fromJson(json))
-                  .left
-                  .map(e => jsonrpclib.ProtocolError.ParseError(e.getMessage))
-              }
-              .through(fs2Channel.inputOrBounce)
-          )
+        socket <- mkSocket("192.168.10.69", 9999)
+        _ <-
+          Stream
+            .never[IO]
+            .concurrently(
+              fs2Channel
+                .output
+                .map { msg =>
+                  val json = io.circe.Encoder[jsonrpclib.Message].apply(msg)
+                  // Using circe's noSpaces instead of jsoniter's writeToArray
+                  // to work around a ByteArrayAccess.setInt bug on 32-bit ARM
+                  json.noSpaces + "\n"
+                }
+                .through(fs2.text.utf8.encode)
+                .through(socket.outgoing)
+            )
+            .concurrently(
+              socket
+                .incoming
+                .chunks
+                // Bypassing fs2.text.utf8.decode — it crashes on 32-bit ARM
+                .map(c => new String(c.toArray))
+                .through(fs2.text.lines)
+                .filter(_.nonEmpty)
+                .map { line =>
+                  import com.github.plokhotnyuk.jsoniter_scala.circe.JsoniterScalaCodec._
+                  import com.github.plokhotnyuk.jsoniter_scala.core._
+                  val json = readFromString[io.circe.Json](line)
+                  io.circe
+                    .Decoder[jsonrpclib.Message]
+                    .apply(io.circe.HCursor.fromJson(json))
+                    .left
+                    .map(e => jsonrpclib.ProtocolError.ParseError(e.getMessage))
+                }
+                .through(fs2Channel.inputOrBounce)
+            )
+            .compile
+            .drain
+            .background
 
         //////////////////////////////////////////////////////
         ///// INTERACTION
         //////////////////////////////////////////////////////
-        result1 <- Stream.eval(server.greet("Client"))
-        _ <- logS1(s"greet response: $result1")
-        _ <- Stream.eval(server.ping("Ping"))
-        _ <- logS1("ping succeeded")
+        result1 <- server.greet("Client").toResource
+        _ <- logR(s"greet response: $result1")
+        _ <- server.ping("Ping").toResource
+        _ <- logR("ping succeeded")
       } yield ()
-    run.compile.drain.guarantee(log("Terminating client"))
+
+    run.onFinalize(log("Terminating client")).useForever
   }
 
 }

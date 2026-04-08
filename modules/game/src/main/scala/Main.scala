@@ -57,11 +57,56 @@ object pdapiBindings {
     opaque type TCPConnection = Nothing
 
     opaque type PDNetErr = Int
+    object PDNetErr {
+      def fromInt(i: Int): PDNetErr = i
+    }
     val NET_OK: PDNetErr = 0
+    val NET_NO_DEVICE: PDNetErr = -1
+    val NET_BUSY: PDNetErr = -2
+    val NET_WRITE_ERROR: PDNetErr = -3
+    val NET_WRITE_BUSY: PDNetErr = -4
+    val NET_WRITE_TIMEOUT: PDNetErr = -5
+    val NET_READ_ERROR: PDNetErr = -6
+    val NET_READ_BUSY: PDNetErr = -7
+    val NET_READ_TIMEOUT: PDNetErr = -8
+    val NET_READ_OVERFLOW: PDNetErr = -9
+    val NET_FRAME_ERROR: PDNetErr = -10
+    val NET_OPEN_ERROR: PDNetErr = -11
+    val NET_OPEN_BUSY: PDNetErr = -12
+    val NET_OPEN_TIMEOUT: PDNetErr = -13
+    val NET_OPEN_SSL_ERROR: PDNetErr = -14
+    val NET_CLOSE_ERROR: PDNetErr = -15
+    val NET_CLOSE_BUSY: PDNetErr = -16
+    val NET_CLOSE_TIMEOUT: PDNetErr = -17
+    val NET_NOT_CONNECTED: PDNetErr = -18
+    val NET_NOT_RESOLVED: PDNetErr = -19
 
     extension (e: PDNetErr) {
       def isOk: Boolean = e == NET_OK
       def code: Int = e
+      def name: String = e match {
+        case NET_OK            => "NET_OK"
+        case NET_NO_DEVICE     => "NET_NO_DEVICE"
+        case NET_BUSY          => "NET_BUSY"
+        case NET_WRITE_ERROR   => "NET_WRITE_ERROR"
+        case NET_WRITE_BUSY    => "NET_WRITE_BUSY"
+        case NET_WRITE_TIMEOUT => "NET_WRITE_TIMEOUT"
+        case NET_READ_ERROR    => "NET_READ_ERROR"
+        case NET_READ_BUSY     => "NET_READ_BUSY"
+        case NET_READ_TIMEOUT  => "NET_READ_TIMEOUT"
+        case NET_READ_OVERFLOW => "NET_READ_OVERFLOW"
+        case NET_FRAME_ERROR   => "NET_FRAME_ERROR"
+        case NET_OPEN_ERROR    => "NET_OPEN_ERROR"
+        case NET_OPEN_BUSY     => "NET_OPEN_BUSY"
+        case NET_OPEN_TIMEOUT  => "NET_OPEN_TIMEOUT"
+        case NET_OPEN_SSL_ERROR => "NET_OPEN_SSL_ERROR"
+        case NET_CLOSE_ERROR   => "NET_CLOSE_ERROR"
+        case NET_CLOSE_BUSY    => "NET_CLOSE_BUSY"
+        case NET_CLOSE_TIMEOUT => "NET_CLOSE_TIMEOUT"
+        case NET_NOT_CONNECTED => "NET_NOT_CONNECTED"
+        case NET_NOT_RESOLVED  => "NET_NOT_RESOLVED"
+        case other             => s"UNKNOWN($other)"
+      }
     }
 
     given Tag[PDNetErr] = Tag.Int
@@ -661,7 +706,6 @@ object MainGame {
   extension [A, B](f: A => B) def flatMap[C](g: B => (A => C)): A => C = a => g(f(a))(a)
 
   def update(ctx: GameContext): GameState => GameState = {
-    Main.taskRunner.runPendingTasks()
 
     val clearEvents: GameState => GameState = state => state.copy(events = Nil)
 
@@ -975,7 +1019,7 @@ object MainGame {
 
     val greetingText =
       state.serverGreeting match {
-        case Some(text) => "Response: " + text
+        case Some(text) => "Response: \n" + text
         case None       => "LOADING..."
       }
 
@@ -998,6 +1042,7 @@ object MainGame {
       case GameMode.Initial(_) =>
         Clear(Color.White)
           |+| gameInit
+          |+| FPS(0, 0)
 
       case _ =>
         Clear(Color.White)
@@ -1212,6 +1257,11 @@ object Main {
   private var state: GameState = null
   private var cleanupState: () => Unit = null
 
+  def modState(f: GameState => GameState): IO[Unit] = IO {
+    debug("modState called with state: " + state)
+    state = f(state)
+  }
+
   import pdapiBindings._
 
   given CanEqual[PDSystemEvent, PDSystemEvent] = CanEqual.derived
@@ -1232,7 +1282,7 @@ object Main {
         pd_display_setRefreshRate(cfg.fps)
 
         val tcpProg = SmithyClientMain
-          .run
+          .run(pongHandler = msg => modState(_.copy(serverGreeting = Some(msg))))
           .handleErrorWith { e =>
             IO(info(s"TCP client failed: ${e.getMessage}"))
           }
@@ -1255,12 +1305,16 @@ object Main {
   def updateNative(
     pd: Ptr[PlaydateAPI]
   ): Int = {
+    val oldState = state
+    Main.taskRunner.runPendingTasks()
+    val stateAfterTasks = state
+
     debug("updateNative start")
     val ctx: GameContext = deriveContext()
     debug("derived context")
-    val newState = game.update(ctx)(state)
+    val newState = game.update(ctx)(stateAfterTasks)
 
-    if newState == state then {
+    if newState == oldState then {
       debug("state unchanged")
       0
     } else {

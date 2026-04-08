@@ -22,28 +22,26 @@ def mkCatsRuntime(): (IORuntime, TaskRunner) = {
 
   def nowNanos(): Long = pdapiBindings.pd_getCurrentTimeMilliseconds().toLong * 1000000L
 
+  // Frame budget: keep draining tasks within this many nanos per call,
+  // so fibers that yield and re-enqueue can keep running in the same frame.
+  val frameBudgetNanos: Long = 10L * 1000000L
+
   val runner =
     new TaskRunner {
       def runPendingTasks(): Unit = {
-        val now = nowNanos()
-        val scheduledDue = scheduled.dequeueAll((targetNanos, _) => targetNanos <= now)
-        // if scheduledDue.nonEmpty then info(s"Found ${scheduledDue.size} scheduled tasks due to run")
-        // else if scheduledDue.isEmpty then info(
-        //   s"No scheduled tasks due to run. Now is ${now}, next task is at ${scheduled.headOption.map(_._1)} (in ns: ${scheduled.headOption.map(_._1 - now)})"
-        // )
+        val deadline = nowNanos() + frameBudgetNanos
 
-        scheduledDue.foreach { case (_, task) =>
-          // info(s"Running due scheduled task")
-          task.run()
-        }
+        var keepGoing = true
+        while (keepGoing) {
+          val now = nowNanos()
+          val scheduledDue = scheduled.dequeueAll((targetNanos, _) => targetNanos <= now)
+          scheduledDue.foreach { case (_, task) => task.run() }
 
-        val pendingDue = tasks.dequeueAll(_ => true)
+          val pendingDue = tasks.dequeueAll(_ => true)
+          pendingDue.foreach(_.run())
 
-        // if pendingDue.nonEmpty then info(s"Found ${pendingDue.size} pending tasks to run")
-
-        pendingDue.foreach { task =>
-          // info("Running pending task")
-          task.run()
+          val didWork = scheduledDue.nonEmpty || pendingDue.nonEmpty
+          keepGoing = didWork && nowNanos() < deadline
         }
       }
     }
