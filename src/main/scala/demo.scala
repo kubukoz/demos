@@ -1,4 +1,13 @@
-import library.internal.{AAAA as A1, BBBB as B1, CCCC as C1, DDDD as D1, EEEE as E1, FFFF as F1, GGGG as G1, HHHH as H1}
+import library.internal.{
+  AAAA as A1,
+  BBBB as B1,
+  CCCC as C1,
+  DDDD as D1,
+  EEEE as E1,
+  FFFF as F1,
+  GGGG as G1,
+  HHHH as H1
+}
 import library.internal.{X, *}
 
 @main def demo = {
